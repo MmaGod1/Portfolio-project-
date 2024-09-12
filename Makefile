@@ -12,7 +12,7 @@ $(EXECUTABLE): $(OBJECTS)
     $(CC) $(LDFLAGS) $(OBJECTS) -o $@
 
 .c.o:
-    $(CC) $(CFLAGS) $< -o $@
+    $(CC) $(CFLAGS) $< -o $@  # <--- This line should be indented with a tab character
 
 clean:
     rm -f *.o $(EXECUTABLE)
