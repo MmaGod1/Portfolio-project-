@@ -1,40 +1,68 @@
 #include <SDL2/SDL.h>
 #include "init.h"
 #include "player.h"
+#include "constants.h"
 
-int main(void) {
-    SDL_Window *window = NULL;
-    SDL_Renderer *renderer = NULL;
-    
-    /* Initialize SDL */
-    if (init(&window, &renderer) != 0) {
-        return 1;
-    }
+/* Rotation speed in radians */
+#define ROTATION_SPEED 0.05
 
-    /* Initialize Player */
-    Player player;
-    player.x = 0.0f;    // Set initial x position
-    player.y = 0.0f;    // Set initial y position
-    player.angle = 0.0f; // Set initial angle
-
-    /* Main loop */
-    int running = 1;
+void handle_input(Player *player)
+{
     SDL_Event event;
-    while (running) {
-        while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) {
-                running = 0;
+
+    while (SDL_PollEvent(&event))
+    {
+        if (event.type == SDL_QUIT)
+        {
+            exit(0);
+        }
+        else if (event.type == SDL_KEYDOWN)
+        {
+            switch (event.key.keysym.sym)
+            {
+                case SDLK_LEFT:
+                    /* Rotate camera left */
+                    player->angle -= ROTATION_SPEED;
+                    if (player->angle < 0)
+                    {
+                        player->angle += 2 * M_PI;
+                    }
+                    break;
+                case SDLK_RIGHT:
+                    /* Rotate camera right */
+                    player->angle += ROTATION_SPEED;
+                    if (player->angle >= 2 * M_PI)
+                    {
+                        player->angle -= 2 * M_PI;
+                    }
+                    break;
+                default:
+                    break;
             }
         }
-        
-        /* Draw the scene */
-        draw(renderer, player);
+    }
+}
 
-        /* Delay to control frame rate */
-        SDL_Delay(16);
+int main(void)
+{
+    SDL_Window *window;
+    SDL_Renderer *renderer;
+    Player player = { .x = 2, .y = 2, .angle = 0 }; /* Initial player position and angle */
+
+    if (init_sdl(&window, &renderer) != 0)
+    {
+        return (1);
     }
 
-    /* Clean up */
-    cleanup(window, renderer);
-    return 0;
+    while (1)
+    {
+        handle_input(&player);
+        draw(renderer, player);
+        SDL_Delay(16); /* Limit frame rate to ~60 FPS */
+    }
+
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
+    return (0);
 }
