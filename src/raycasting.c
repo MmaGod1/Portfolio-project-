@@ -34,7 +34,8 @@ void draw(SDL_Renderer *renderer, Player player) {
         float cameraX = 2 * x / (float)SCREEN_WIDTH - 1;
         float rayDirX = player.dirX + player.planeX * cameraX;
         float rayDirY = player.dirY + player.planeY * cameraX;
-        
+        printf("cameraX: %f, rayDirX: %f, rayDirY: %f\n", cameraX, rayDirX, rayDirY);
+
         int mapX = (int)player.posX;
         int mapY = (int)player.posY;
 
@@ -74,14 +75,18 @@ void draw(SDL_Renderer *renderer, Player player) {
                 side = 1;
             }
             if (mapX >= MAP_WIDTH || mapX < 0 || mapY >= MAP_HEIGHT || mapY < 0) {
-                hit = 1; // Out of bounds
+                hit = 1; // Exit if out of bounds
             } else if (map[mapX][mapY] > 0) {
                 hit = 1;
             }
         }
 
-        if (side == 0) perpWallDist = (mapX - player.posX + (1 - stepX) / 2.0) / rayDirX;
-        else           perpWallDist = (mapY - player.posY + (1 - stepY) / 2.0) / rayDirY;
+        if (side == 0) {
+            perpWallDist = (mapX - player.posX + (1 - stepX) / 2.0) / rayDirX;
+        } else {
+            perpWallDist = (mapY - player.posY + (1 - stepY) / 2.0) / rayDirY;
+        }
+        printf("perpWallDist: %f\n", perpWallDist);
 
         int lineHeight = (int)(SCREEN_HEIGHT / perpWallDist);
         int drawStart = -lineHeight / 2 + SCREEN_HEIGHT / 2;
@@ -91,9 +96,6 @@ void draw(SDL_Renderer *renderer, Player player) {
 
         SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255); // Wall color
         SDL_RenderDrawLine(renderer, x, drawStart, x, drawEnd);
-
-        // Debug output
-        printf("x: %d, drawStart: %d, drawEnd: %d, perpWallDist: %f\n", x, drawStart, drawEnd, perpWallDist);
     }
 
     SDL_RenderPresent(renderer);
