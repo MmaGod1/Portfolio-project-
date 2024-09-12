@@ -9,10 +9,10 @@ EXECUTABLE=raycasting
 all: $(EXECUTABLE)
 
 $(EXECUTABLE): $(OBJECTS)
-\t$(CC) $(LDFLAGS) $(OBJECTS) -o $@
+    $(CC) $(LDFLAGS) $(OBJECTS) -o $@
 
 .c.o:
-\t$(CC) $(CFLAGS) $< -o $@
+    $(CC) $(CFLAGS) $< -o $@
 
 clean:
-\trm -f *.o $(EXECUTABLE)
+    rm -f *.o $(EXECUTABLE)
