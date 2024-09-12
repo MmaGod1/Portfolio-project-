@@ -38,20 +38,15 @@ void draw(SDL_Renderer *renderer, Player player) {
     for (int x = 0; x < width; x++) {
         /* Calculate ray angle */
         float cameraX = 2 * x / (float)width - 1; // Coordinate in camera space
-        float rayDirX = player.angle + player.x + cameraX;
-        float rayDirY = player.y;
-        
-        /* Raycasting */
-        // This should be more detailed, involving collision detection and rendering
-        // Basic example: vertical line based on map value
-        int mapX = (int)player.x;
-        int mapY = (int)player.y;
+        float rayDirX = player.angle + cameraX; // Adjust based on player's angle
+        float rayDirY = player.y; // This should be used for vertical direction adjustment
 
-        // Assuming simple vertical wall detection
-        if (map[mapY][mapX] == 1) {
-            SDL_SetRenderDrawColor(renderer, 128, 128, 128, 255); // Gray for walls
-            SDL_RenderDrawLine(renderer, x, height / 2, x, height / 2 - 50); // Draw wall slice
-        }
+        // This is a placeholder for actual raycasting and collision detection logic
+        // You should implement a proper raycasting algorithm here
+
+        // Example code to visualize ray direction
+        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Red for rays
+        SDL_RenderDrawLine(renderer, player.x, player.y, player.x + rayDirX * 50, player.y + rayDirY * 50); // Draw ray direction line
     }
 
     /* Present the rendered frame */
