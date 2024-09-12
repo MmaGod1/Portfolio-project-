@@ -14,7 +14,28 @@ src/init.o: src/init.c inc/init.h
 
 src/main.o: src/main.c inc/init.h
     $(CC) $(CFLAGS) -c src/main.c -o src/main.o
+# Variables
+CC = gcc
+CFLAGS = -Wall -Werror -Wextra -pedantic -Iinc
+LDFLAGS = `sdl2-config --cflags --libs` -lm
 
+# Targets
+all: my_project
+
+my_project: src/init.o src/main.o src/raycasting.o
+	$(CC) $(LDFLAGS) -o my_project src/init.o src/main.o src/raycasting.o
+
+src/init.o: src/init.c inc/init.h
+	$(CC) $(CFLAGS) -c src/init.c -o src/init.o
+
+src/main.o: src/main.c inc/init.h
+	$(CC) $(CFLAGS) -c src/main.c -o src/main.o
+
+src/raycasting.o: src/raycasting.c inc/player.h
+	$(CC) $(CFLAGS) -c src/raycasting.c -o src/raycasting.o
+
+clean:
+	rm -f src/*.o my_project
 src/raycasting.o: src/raycasting.c inc/player.h
     $(CC) $(CFLAGS) -c src/raycasting.c -o src/raycasting.o
 
