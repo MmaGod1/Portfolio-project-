@@ -1,6 +1,7 @@
 #include <SDL2/SDL.h>
 #include <math.h>
 #include "init.h"
+#include "player.h"
 
 /* Define constants for the maze and display */
 #define MAP_WIDTH 10
