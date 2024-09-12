@@ -83,7 +83,7 @@ void draw(SDL_Renderer *renderer, Player player) {
                 side = 1;
             }
             // Check if ray has hit a wall
-            if (worldMap[mapX][mapY] > 0) hit = 1;
+            if (map[mapX][mapY] > 0) hit = 1;
         }
 
         // Calculate distance projected on camera direction
@@ -103,7 +103,7 @@ void draw(SDL_Renderer *renderer, Player player) {
         SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255); // Default wall color
 
         // Draw the vertical stripe
-        SDL_RenderDrawLine(renderer, posX, drawStart, posX, drawEnd);
+        SDL_RenderDrawLine(renderer, x, drawStart, x, drawEnd);
     }
 
     // Present the renderer
