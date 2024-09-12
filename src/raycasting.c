@@ -21,13 +21,16 @@ int map[MAP_HEIGHT][MAP_WIDTH] = {
     {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
 };
 
-
 /**
  * draw - Draws the scene using raycasting based on the player's position.
  * @renderer: The SDL renderer.
  * @player: The player's position and angle.
  */
 void draw(SDL_Renderer *renderer, Player player) {
+    // Clear the screen with a black color
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_RenderClear(renderer);
+
     for (int x = 0; x < SCREEN_WIDTH; x++) {
         float cameraX = 2 * x / (float)SCREEN_WIDTH - 1;  // X-coordinate in camera space
 
@@ -100,10 +103,13 @@ void draw(SDL_Renderer *renderer, Player player) {
         if (drawEnd >= SCREEN_HEIGHT) drawEnd = SCREEN_HEIGHT - 1;
 
         // Choose wall color
-        SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255); // Default wall color
+        SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255); // Light gray for walls
 
         // Draw the vertical stripe
         SDL_RenderDrawLine(renderer, x, drawStart, x, drawEnd);
+
+        // Debug output
+        printf("x: %d, drawStart: %d, drawEnd: %d, perpWallDist: %f\n", x, drawStart, drawEnd, perpWallDist);
     }
 
     // Present the renderer
