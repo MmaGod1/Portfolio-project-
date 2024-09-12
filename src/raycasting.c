@@ -36,8 +36,8 @@ void draw(SDL_Renderer *renderer, Player player) {
         float rayDirY = player.dirY + player.planeY * cameraX;
 
         /* Which box of the map we're in */
-        int mapX = (int)player.x;
-        int mapY = (int)player.y;
+        int mapX = (int)player.posX;
+        int mapY = (int)player.posY;
 
         /* Length of ray from current position to next x or y-side */
         float sideDistX;
@@ -57,17 +57,17 @@ void draw(SDL_Renderer *renderer, Player player) {
         /* Calculate step and initial sideDist */
         if (rayDirX < 0) {
             stepX = -1;
-            sideDistX = (player.x - mapX) * deltaDistX;
+            sideDistX = (player.posX - mapX) * deltaDistX;
         } else {
             stepX = 1;
-            sideDistX = (mapX + 1.0 - player.x) * deltaDistX;
+            sideDistX = (mapX + 1.0 - player.posX) * deltaDistX;
         }
         if (rayDirY < 0) {
             stepY = -1;
-            sideDistY = (player.y - mapY) * deltaDistY;
+            sideDistY = (player.posY - mapY) * deltaDistY;
         } else {
             stepY = 1;
-            sideDistY = (mapY + 1.0 - player.y) * deltaDistY;
+            sideDistY = (mapY + 1.0 - player.posY) * deltaDistY;
         }
 
         /* Perform DDA to find wall */
@@ -87,8 +87,8 @@ void draw(SDL_Renderer *renderer, Player player) {
         }
 
         // Calculate distance projected on camera direction
-        if (side == 0) perpWallDist = (mapX - player.x + (1 - stepX) / 2) / rayDirX;
-        else           perpWallDist = (mapY - player.y + (1 - stepY) / 2) / rayDirY;
+        if (side == 0) perpWallDist = (mapX - player.posX + (1 - stepX) / 2) / rayDirX;
+        else           perpWallDist = (mapY - player.posY + (1 - stepY) / 2) / rayDirY;
 
         // Calculate height of line to draw on screen
         int lineHeight = (int)(SCREEN_HEIGHT / perpWallDist);
@@ -103,7 +103,7 @@ void draw(SDL_Renderer *renderer, Player player) {
         SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255); // Default wall color
 
         // Draw the vertical stripe
-        SDL_RenderDrawLine(renderer, x, drawStart, x, drawEnd);
+        SDL_RenderDrawLine(renderer, posX, drawStart, posX, drawEnd);
     }
 
     // Present the renderer
