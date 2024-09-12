@@ -9,11 +9,6 @@
 #define FOV 60  // Field of view in degrees
 #define VIEW_DIST 1000 // Maximum view distance
 
-/* Player position and orientation */
-typedef struct {
-    float x, y; // Player position
-    float angle; // Player viewing angle
-} Player;
 
 void draw(SDL_Renderer *renderer, Player player) {
     /* Define the map (example map size 10x10) */
