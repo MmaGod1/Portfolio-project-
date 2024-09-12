@@ -1,7 +1,7 @@
 #include <SDL2/SDL.h>
 #include "init.h"
 
-int main() {
+int main(void) {
     SDL_Window *window = NULL;
     SDL_Renderer *renderer = NULL;
     
