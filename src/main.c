@@ -21,7 +21,7 @@ int main(void) {
         }
         
         /* Draw the scene */
-        draw(renderer);
+        draw(renderer, player);
 
         /* Delay to control frame rate */
         SDL_Delay(16);
