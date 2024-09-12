@@ -6,40 +6,31 @@
 /* Rotation speed in radians */
 #define ROTATION_SPEED 0.05
 
-void handle_input(Player *player)
-{
-    SDL_Event event;
+void handle_input(Player *player) {
+    const Uint8 *state = SDL_GetKeyboardState(NULL);
+    
+    float rotateSpeed = 0.05; // Speed of rotation
 
-    while (SDL_PollEvent(&event))
-    {
-        if (event.type == SDL_QUIT)
-        {
-            exit(0);
-        }
-        else if (event.type == SDL_KEYDOWN)
-        {
-            switch (event.key.keysym.sym)
-            {
-                case SDLK_LEFT:
-                    /* Rotate camera left */
-                    player->angle -= ROTATION_SPEED;
-                    if (player->angle < 0)
-                    {
-                        player->angle += 2 * M_PI;
-                    }
-                    break;
-                case SDLK_RIGHT:
-                    /* Rotate camera right */
-                    player->angle += ROTATION_SPEED;
-                    if (player->angle >= 2 * M_PI)
-                    {
-                        player->angle -= 2 * M_PI;
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
+    if (state[SDL_SCANCODE_LEFT]) {
+        // Rotate player to the left
+        float oldDirX = player->dirX;
+        player->dirX = player->dirX * cos(-rotateSpeed) - player->dirY * sin(-rotateSpeed);
+        player->dirY = oldDirX * sin(-rotateSpeed) + player->dirY * cos(-rotateSpeed);
+
+        float oldPlaneX = player->planeX;
+        player->planeX = player->planeX * cos(-rotateSpeed) - player->planeY * sin(-rotateSpeed);
+        player->planeY = oldPlaneX * sin(-rotateSpeed) + player->planeY * cos(-rotateSpeed);
+    }
+
+    if (state[SDL_SCANCODE_RIGHT]) {
+        // Rotate player to the right
+        float oldDirX = player->dirX;
+        player->dirX = player->dirX * cos(rotateSpeed) - player->dirY * sin(rotateSpeed);
+        player->dirY = oldDirX * sin(rotateSpeed) + player->dirY * cos(rotateSpeed);
+
+        float oldPlaneX = player->planeX;
+        player->planeX = player->planeX * cos(rotateSpeed) - player->planeY * sin(rotateSpeed);
+        player->planeY = oldPlaneX * sin(rotateSpeed) + player->planeY * cos(rotateSpeed);
     }
 }
 
