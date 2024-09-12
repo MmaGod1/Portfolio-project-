@@ -1,22 +1,22 @@
-# Variables
 CC = gcc
 CFLAGS = -Wall -Werror -Wextra -pedantic -Iinc
-LDFLAGS = `sdl2-config --cflags --libs` -lm
+LDFLAGS = `sdl2-config --cflags --libs`
+TARGET = my_project
+OBJS = src/init.o src/main.o src/raycasting.o
 
-# Targets
-all: my_project
+all: $(TARGET)
 
-my_project: src/init.o src/main.o src/raycasting.o
-	$(CC) $(LDFLAGS) -o my_project src/init.o src/main.o src/raycasting.o
+$(TARGET): $(OBJS)
+	$(CC) -o $(TARGET) $(OBJS) $(LDFLAGS)
 
 src/init.o: src/init.c inc/init.h
 	$(CC) $(CFLAGS) -c src/init.c -o src/init.o
 
-src/main.o: src/main.c inc/init.h
+src/main.o: src/main.c inc/init.h inc/player.h
 	$(CC) $(CFLAGS) -c src/main.c -o src/main.o
 
 src/raycasting.o: src/raycasting.c inc/player.h
 	$(CC) $(CFLAGS) -c src/raycasting.c -o src/raycasting.o
 
 clean:
-	rm -f src/*.o my_project
+	rm -f $(OBJS) $(TARGET)
