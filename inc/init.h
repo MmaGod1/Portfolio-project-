@@ -9,4 +9,7 @@ int init(SDL_Window **window, SDL_Renderer **renderer);
 /* Cleans up SDL resources */
 void cleanup(SDL_Window *window, SDL_Renderer *renderer);
 
+/* Draws walls and ground using raycasting */
+void draw(SDL_Renderer *renderer);
+
 #endif /* INIT_H */
