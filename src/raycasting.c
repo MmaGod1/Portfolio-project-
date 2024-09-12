@@ -38,15 +38,38 @@ void draw(SDL_Renderer *renderer, Player player) {
     for (int x = 0; x < width; x++) {
         /* Calculate ray angle */
         float cameraX = 2 * x / (float)width - 1; // Coordinate in camera space
-        float rayDirX = player.angle + cameraX; // Adjust based on player's angle
-        float rayDirY = player.y; // This should be used for vertical direction adjustment
+        float rayDirX = cos(player.angle) + cameraX * sin(player.angle); // Adjust based on player's angle
+        float rayDirY = sin(player.angle) - cameraX * cos(player.angle);
 
-        // This is a placeholder for actual raycasting and collision detection logic
-        // You should implement a proper raycasting algorithm here
+        /* Ray start position */
+        float rayPosX = player.x;
+        float rayPosY = player.y;
 
-        // Example code to visualize ray direction
-        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Red for rays
-        SDL_RenderDrawLine(renderer, player.x, player.y, player.x + rayDirX * 50, player.y + rayDirY * 50); // Draw ray direction line
+        /* Raycasting algorithm */
+        float stepSize = 0.1f; // This could be adjusted
+        float rayLength = 0.0f;
+        int hit = 0;
+
+        while (rayPosX >= 0 && rayPosX < MAP_WIDTH && rayPosY >= 0 && rayPosY < MAP_HEIGHT) {
+            // Check for wall hit
+            if (map[(int)rayPosY][(int)rayPosX] == 1) {
+                hit = 1;
+                break;
+            }
+
+            rayPosX += rayDirX * stepSize;
+            rayPosY += rayDirY * stepSize;
+            rayLength += stepSize;
+        }
+
+        // Draw the wall based on ray length
+        if (hit) {
+            int wallHeight = height / rayLength; // Simple wall height calculation
+            int wallTop = (height / 2) - (wallHeight / 2);
+            SDL_SetRenderDrawColor(renderer, 128, 128, 128, 255); // Gray for walls
+            SDL_Rect wallRect = {x, wallTop, 1, wallHeight};
+            SDL_RenderFillRect(renderer, &wallRect);
+        }
     }
 
     /* Present the rendered frame */
