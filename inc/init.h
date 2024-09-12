@@ -1,16 +1,6 @@
-#ifndef INIT_H
-#define INIT_H
+#ifndef RAYCASTING_H
+#define RAYCASTING_H
 
-#include <SDL2/SDL.h>
-#include "player.h"
+void cast_ray(float camera_x, float camera_y, float camera_angle);
 
-/* Initializes SDL and creates a window and renderer */
-int init_sdl(SDL_Window **window, SDL_Renderer **renderer);
-
-/* Cleans up SDL resources */
-void cleanup(SDL_Window *window, SDL_Renderer *renderer);
-
-/* Draws walls and ground using raycasting */
-void draw(SDL_Renderer *renderer, Player player);
-
-#endif /* INIT_H */
+#endif // RAYCASTING_H
