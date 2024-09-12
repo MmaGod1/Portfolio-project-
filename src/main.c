@@ -1,5 +1,6 @@
 #include <SDL2/SDL.h>
 #include "init.h"
+#include "player.h"
 
 int main(void) {
     SDL_Window *window = NULL;
