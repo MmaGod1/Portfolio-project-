@@ -2,6 +2,7 @@
 #define INIT_H
 
 #include <SDL2/SDL.h>
+#include "player.h"
 
 /* Initializes SDL and creates a window and renderer */
 int init(SDL_Window **window, SDL_Renderer **renderer);
