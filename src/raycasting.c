@@ -27,7 +27,7 @@ int map[MAP_HEIGHT][MAP_WIDTH] = {
  * @player: The player's position and angle.
  */
 void draw(SDL_Renderer *renderer, Player player) {
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // Set background to black
     SDL_RenderClear(renderer);
 
     for (int x = 0; x < SCREEN_WIDTH; x++) {
@@ -92,15 +92,16 @@ void draw(SDL_Renderer *renderer, Player player) {
         int drawEnd = lineHeight / 2 + SCREEN_HEIGHT / 2;
         if (drawEnd >= SCREEN_HEIGHT) drawEnd = SCREEN_HEIGHT - 1;
 
-        // Choose wall color based on orientation
-        SDL_Color color;
-        if (side == 0) { // Vertical wall
-            color = (rayDirX < 0) ? (SDL_Color){255, 0, 0, 255} : (SDL_Color){0, 255, 0, 255};
-        } else { // Horizontal wall
-            color = (rayDirY < 0) ? (SDL_Color){0, 0, 255, 255} : (SDL_Color){255, 255, 0, 255};
+        // Debug prints
+        printf("x: %d, drawStart: %d, drawEnd: %d, perpWallDist: %f, side: %d\n", x, drawStart, drawEnd, perpWallDist, side);
+
+        // Set color based on side
+        if (side == 0) {
+            SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Red for vertical walls
+        } else {
+            SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); // Green for horizontal walls
         }
 
-        SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
         SDL_RenderDrawLine(renderer, x, drawStart, x, drawEnd);
     }
 
