@@ -27,37 +27,27 @@ int map[MAP_HEIGHT][MAP_WIDTH] = {
  * @player: The player's position and angle.
  */
 void draw(SDL_Renderer *renderer, Player player) {
-    // Clear the screen with a black color
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
     for (int x = 0; x < SCREEN_WIDTH; x++) {
-        float cameraX = 2 * x / (float)SCREEN_WIDTH - 1;  // X-coordinate in camera space
-
-        /* Calculate ray position and direction */
+        float cameraX = 2 * x / (float)SCREEN_WIDTH - 1;
         float rayDirX = player.dirX + player.planeX * cameraX;
         float rayDirY = player.dirY + player.planeY * cameraX;
-
-        /* Which box of the map we're in */
+        
         int mapX = (int)player.posX;
         int mapY = (int)player.posY;
 
-        /* Length of ray from current position to next x or y-side */
         float sideDistX;
         float sideDistY;
-
-        /* Length of ray from one x or y-side to next x or y-side */
         float deltaDistX = fabs(rayDirX) > 0.0001 ? fabs(1 / rayDirX) : 1.0;
         float deltaDistY = fabs(rayDirY) > 0.0001 ? fabs(1 / rayDirY) : 1.0;
         float perpWallDist;
 
-        /* What direction to step in x or y-direction (either +1 or -1) */
-        int stepX;
-        int stepY;
-        int hit = 0;  // Was there a wall hit?
-        int side;     // Was a NS or EW wall hit?
+        int stepX, stepY;
+        int hit = 0;
+        int side;
 
-        /* Calculate step and initial sideDist */
         if (rayDirX < 0) {
             stepX = -1;
             sideDistX = (player.posX - mapX) * deltaDistX;
@@ -73,9 +63,7 @@ void draw(SDL_Renderer *renderer, Player player) {
             sideDistY = (mapY + 1.0 - player.posY) * deltaDistY;
         }
 
-        /* Perform DDA to find wall */
         while (hit == 0) {
-            // Jump to next map square
             if (sideDistX < sideDistY) {
                 sideDistX += deltaDistX;
                 mapX += stepX;
@@ -85,37 +73,28 @@ void draw(SDL_Renderer *renderer, Player player) {
                 mapY += stepY;
                 side = 1;
             }
-            // Check if ray has hit a wall
             if (mapX >= MAP_WIDTH || mapX < 0 || mapY >= MAP_HEIGHT || mapY < 0) {
-                hit = 1; // Exit loop if out of bounds
+                hit = 1; // Out of bounds
             } else if (map[mapX][mapY] > 0) {
                 hit = 1;
             }
         }
 
-        // Calculate distance projected on camera direction
-        if (side == 0) perpWallDist = (mapX - player.posX + (1 - stepX) / 2) / rayDirX;
-        else           perpWallDist = (mapY - player.posY + (1 - stepY) / 2) / rayDirY;
+        if (side == 0) perpWallDist = (mapX - player.posX + (1 - stepX) / 2.0) / rayDirX;
+        else           perpWallDist = (mapY - player.posY + (1 - stepY) / 2.0) / rayDirY;
 
-        // Calculate height of line to draw on screen
         int lineHeight = (int)(SCREEN_HEIGHT / perpWallDist);
-
-        // Calculate lowest and highest pixel to fill in current stripe
         int drawStart = -lineHeight / 2 + SCREEN_HEIGHT / 2;
         if (drawStart < 0) drawStart = 0;
         int drawEnd = lineHeight / 2 + SCREEN_HEIGHT / 2;
         if (drawEnd >= SCREEN_HEIGHT) drawEnd = SCREEN_HEIGHT - 1;
 
-        // Choose wall color
-        SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255); // Light gray for walls
-
-        // Draw the vertical stripe
+        SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255); // Wall color
         SDL_RenderDrawLine(renderer, x, drawStart, x, drawEnd);
 
         // Debug output
         printf("x: %d, drawStart: %d, drawEnd: %d, perpWallDist: %f\n", x, drawStart, drawEnd, perpWallDist);
     }
 
-    // Present the renderer
     SDL_RenderPresent(renderer);
 }
