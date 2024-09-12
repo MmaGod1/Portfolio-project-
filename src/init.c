@@ -2,7 +2,7 @@
 #include "init.h"
 
 /* Initializes SDL and creates a window and renderer */
-int init(SDL_Window **window, SDL_Renderer **renderer) {
+int init_sdl(SDL_Window **window, SDL_Renderer **renderer) {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         return -1;
     }
