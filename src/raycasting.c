@@ -20,56 +20,44 @@ int map[MAP_HEIGHT][MAP_WIDTH] = {
     {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
 };
 
-/* Function to draw the scene */
-void draw(SDL_Renderer *renderer, Player player) {
-    int width, height;
-    SDL_GetRendererOutputSize(renderer, &width, &height);
+/* Function to draw the player */
 
-    /* Clear screen with sky blue for the ceiling */
-    SDL_SetRenderDrawColor(renderer, 135, 206, 235, 255); // Sky blue
+void draw(SDL_Renderer *renderer, Player player) {
+    /* Clear the screen with sky blue */
+    SDL_SetRenderDrawColor(renderer, 135, 206, 250, 255); // Sky blue
     SDL_RenderClear(renderer);
 
-    /* Draw the floor */
-    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); // Green for the floor
-    SDL_Rect floor_rect = {0, height / 2, width, height / 2};
-    SDL_RenderFillRect(renderer, &floor_rect);
+    /* Draw the floor and ceiling */
+    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); // Green for floor
+    SDL_Rect floorRect = {0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2};
+    SDL_RenderFillRect(renderer, &floorRect);
 
-    /* Raycasting loop */
-    for (int x = 0; x < width; x++) {
-        /* Calculate ray angle */
-        float cameraX = 2 * x / (float)width - 1; // Coordinate in camera space
-        float rayDirX = cos(player.angle) + cameraX * sin(player.angle); // Adjust based on player's angle
-        float rayDirY = sin(player.angle) - cameraX * cos(player.angle);
+    SDL_SetRenderDrawColor(renderer, 135, 206, 250, 255); // Sky blue for ceiling
+    SDL_Rect ceilingRect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT / 2};
+    SDL_RenderFillRect(renderer, &ceilingRect);
 
-        /* Ray start position */
-        float rayPosX = player.x;
-        float rayPosY = player.y;
+    /* Raycasting logic */
+    for (int x = 0; x < SCREEN_WIDTH; x++) {
+        float cameraX = 2 * x / (float)SCREEN_WIDTH - 1;
+        float rayDirX = player.angle + cameraX; // Adjusted ray direction
+        float rayDirY = player.y; // Adjusted ray direction
 
-        /* Raycasting algorithm */
-        float stepSize = 0.1f; // This could be adjusted
-        float rayLength = 0.0f;
-        int hit = 0;
+        /* Raycasting calculations */
+        // For simplicity, we'll use placeholder values for now
+        int wallHeight = SCREEN_HEIGHT / 2; // Example height
 
-        while (rayPosX >= 0 && rayPosX < MAP_WIDTH && rayPosY >= 0 && rayPosY < MAP_HEIGHT) {
-            // Check for wall hit
-            if (map[(int)rayPosY][(int)rayPosX] == 1) {
-                hit = 1;
-                break;
-            }
-
-            rayPosX += rayDirX * stepSize;
-            rayPosY += rayDirY * stepSize;
-            rayLength += stepSize;
+        /* Determine wall color based on orientation */
+        SDL_Color wallColor;
+        if (rayDirX > rayDirY) { // Example condition for direction
+            wallColor = (SDL_Color){128, 128, 128, 255}; // Gray for wall facing EAST/WEST
+        } else {
+            wallColor = (SDL_Color){255, 0, 0, 255}; // Red for wall facing NORTH/SOUTH
         }
 
-        // Draw the wall based on ray length
-        if (hit) {
-            int wallHeight = height / rayLength; // Simple wall height calculation
-            int wallTop = (height / 2) - (wallHeight / 2);
-            SDL_SetRenderDrawColor(renderer, 128, 128, 128, 255); // Gray for walls
-            SDL_Rect wallRect = {x, wallTop, 1, wallHeight};
-            SDL_RenderFillRect(renderer, &wallRect);
-        }
+        /* Draw the wall */
+        SDL_SetRenderDrawColor(renderer, wallColor.r, wallColor.g, wallColor.b, wallColor.a);
+        SDL_Rect wallRect = {x, SCREEN_HEIGHT / 2 - wallHeight / 2, 1, wallHeight};
+        SDL_RenderFillRect(renderer, &wallRect);
     }
 
     /* Present the rendered frame */
