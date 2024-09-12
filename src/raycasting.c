@@ -38,8 +38,7 @@ void draw(SDL_Renderer *renderer, Player player) {
         int mapX = (int)player.posX;
         int mapY = (int)player.posY;
 
-        float sideDistX;
-        float sideDistY;
+        float sideDistX, sideDistY;
         float deltaDistX = fabs(rayDirX) > 0.0001 ? fabs(1 / rayDirX) : 1.0;
         float deltaDistY = fabs(rayDirY) > 0.0001 ? fabs(1 / rayDirY) : 1.0;
         float perpWallDist;
