@@ -10,6 +10,6 @@ int init(SDL_Window **window, SDL_Renderer **renderer);
 void cleanup(SDL_Window *window, SDL_Renderer *renderer);
 
 /* Draws walls and ground using raycasting */
-void draw(SDL_Renderer *renderer, Player player)
+void draw(SDL_Renderer *renderer, Player player);
 
 #endif /* INIT_H */
