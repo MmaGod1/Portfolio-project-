@@ -1,108 +1,46 @@
-#include <SDL2/SDL.h>
+#include "raycasting.h"
+#include "map.h"
+#include "camera.h"
 #include <math.h>
-#include "player.h"
-#include "constants.h"
 
-/* Define map dimensions */
-#define MAP_WIDTH 10
-#define MAP_HEIGHT 10
+void cast_ray(float camera_x, float camera_y, float camera_angle) {
+    // Calculate the ray direction
+    float ray_dir_x = cos(camera_angle * M_PI / 180.0f);
+    float ray_dir_y = sin(camera_angle * M_PI / 180.0f);
 
-/* Define the map (1 = wall, 0 = floor) */
-int map[MAP_HEIGHT][MAP_WIDTH] = {
-    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 1, 1, 1, 1, 1, 1, 0, 1},
-    {1, 0, 1, 0, 0, 0, 0, 1, 0, 1},
-    {1, 0, 1, 0, 1, 1, 0, 1, 0, 1},
-    {1, 0, 1, 0, 1, 1, 0, 1, 0, 1},
-    {1, 0, 1, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 1, 1, 1, 1, 1, 1, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
-};
+    // Cast rays for each column on the screen
+    for (int x = 0; x < 640; x++) {
+        // Calculate the ray origin
+        float ray_origin_x = camera_x;
+        float ray_origin_y = camera_y;
 
-/**
- * draw - Draws the scene using raycasting based on the player's position.
- * @renderer: The SDL renderer.
- * @player: The player's position and angle.
- */
-void draw(SDL_Renderer *renderer, Player player) {
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // Set background to black
-    SDL_RenderClear(renderer);
-
-    for (int x = 0; x < SCREEN_WIDTH; x++) {
-        float cameraX = 2 * x / (float)SCREEN_WIDTH - 1;
-        float rayDirX = player.dirX + player.planeX * cameraX;
-        float rayDirY = player.dirY + player.planeY * cameraX;
-
-        int mapX = (int)player.posX;
-        int mapY = (int)player.posY;
-
-        float sideDistX, sideDistY;
-        float deltaDistX = fabs(rayDirX) > 0.0001 ? fabs(1 / rayDirX) : 1.0;
-        float deltaDistY = fabs(rayDirY) > 0.0001 ? fabs(1 / rayDirY) : 1.0;
-        float perpWallDist;
-
-        int stepX, stepY;
-        int hit = 0;
-        int side;
-
-        if (rayDirX < 0) {
-            stepX = -1;
-            sideDistX = (player.posX - mapX) * deltaDistX;
-        } else {
-            stepX = 1;
-            sideDistX = (mapX + 1.0 - player.posX) * deltaDistX;
-        }
-        if (rayDirY < 0) {
-            stepY = -1;
-            sideDistY = (player.posY - mapY) * deltaDistY;
-        } else {
-            stepY = 1;
-            sideDistY = (mapY + 1.0 - player.posY) * deltaDistY;
-        }
-
-        while (hit == 0) {
-            if (sideDistX < sideDistY) {
-                sideDistX += deltaDistX;
-                mapX += stepX;
-                side = 0;
+        // Calculate the distance to the wall
+        float distance = 0.0f;
+        int hit_wall = 0;
+        while (!hit_wall && distance < 100.0f) {
+            // Check if the ray hits a wall
+            int map_x = (int)ray_origin_x;
+            int map_y = (int)ray_origin_y;
+            if (map_x >= 0 && map_x < MAP_WIDTH && map_y >= 0 && map_y < MAP_HEIGHT && map[map_x][map_y] == 1) {
+                hit_wall = 1;
             } else {
-                sideDistY += deltaDistY;
-                mapY += stepY;
-                side = 1;
-            }
-            if (mapX >= MAP_WIDTH || mapX < 0 || mapY >= MAP_HEIGHT || mapY < 0) {
-                hit = 1; // Exit if out of bounds
-            } else if (map[mapX][mapY] > 0) {
-                hit = 1;
+                // Move the ray forward
+                ray_origin_x += ray_dir_x;
+                ray_origin_y += ray_dir_y;
+                distance += 0.1f;
             }
         }
 
-        if (side == 0) {
-            perpWallDist = (mapX - player.posX + (1 - stepX) / 2.0) / rayDirX;
-        } else {
-            perpWallDist = (mapY - player.posY + (1 - stepY) / 2.0) / rayDirY;
-        }
+        // Calculate the wall height
+        float wall_height = 480.0f / distance;
 
-        int lineHeight = (int)(SCREEN_HEIGHT / perpWallDist);
-        int drawStart = -lineHeight / 2 + SCREEN_HEIGHT / 2;
-        if (drawStart < 0) drawStart = 0;
-        int drawEnd = lineHeight / 2 + SCREEN_HEIGHT / 2;
-        if (drawEnd >= SCREEN_HEIGHT) drawEnd = SCREEN_HEIGHT - 1;
-
-        // Debug prints
-        printf("x: %d, drawStart: %d, drawEnd: %d, perpWallDist: %f, side: %d\n", x, drawStart, drawEnd, perpWallDist, side);
-
-        // Set color based on side
-        if (side == 0) {
-            SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Red for vertical walls
-        } else {
-            SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); // Green for horizontal walls
-        }
-
-        SDL_RenderDrawLine(renderer, x, drawStart, x, drawEnd);
+        // Draw the wall
+        SDL_Rect wall_rect;
+        wall_rect.x = x;
+        wall_rect.y = 240 - wall_height / 2;
+        wall_rect.w = 1;
+        wall_rect.h = wall_height;
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+        SDL_RenderFillRect(renderer, &wall_rect);
     }
-
-    SDL_RenderPresent(renderer);
 }
