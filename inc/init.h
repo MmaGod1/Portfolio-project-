@@ -5,7 +5,7 @@
 #include "player.h"
 
 /* Initializes SDL and creates a window and renderer */
-int init(SDL_Window **window, SDL_Renderer **renderer);
+int init_sdl(SDL_Window **window, SDL_Renderer **renderer);
 
 /* Cleans up SDL resources */
 void cleanup(SDL_Window *window, SDL_Renderer *renderer);
