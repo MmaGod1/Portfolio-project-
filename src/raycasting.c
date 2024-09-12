@@ -1,6 +1,7 @@
 #include <SDL2/SDL.h>
 #include <math.h>
 #include "player.h"
+#include "constants.h"
 
 /* Define map dimensions */
 #define MAP_WIDTH 10
