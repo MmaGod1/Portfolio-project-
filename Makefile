@@ -1,28 +1,22 @@
-# Compiler and flags
+# Variables
 CC = gcc
-CFLAGS = -Wall -Werror -Wextra -pedantic
-LDFLAGS = `sdl2-config --cflags --libs`
+CFLAGS = -Wall -Werror -Wextra -pedantic -Iinc
+LDFLAGS = `sdl2-config --cflags --libs` -lm
 
-# Directories
-SRC_DIR = src
-INC_DIR = inc
+# Targets
+all: my_project
 
-# Files
-SRC_FILES = $(wildcard $(SRC_DIR)/*.c)
-OBJ_FILES = $(SRC_FILES:.c=.o)
-TARGET = my_project
+my_project: src/init.o src/main.o src/raycasting.o
+    $(CC) $(LDFLAGS) -o my_project src/init.o src/main.o src/raycasting.o
 
-# Default target
-all: $(TARGET)
+src/init.o: src/init.c inc/init.h
+    $(CC) $(CFLAGS) -c src/init.c -o src/init.o
 
-# Link the object files to create the executable
-$(TARGET): $(OBJ_FILES)
-	$(CC) $(CFLAGS) -o $@ $(OBJ_FILES) $(LDFLAGS)
+src/main.o: src/main.c inc/init.h
+    $(CC) $(CFLAGS) -c src/main.c -o src/main.o
 
-# Compile source files to object files
-%.o: %.c
-	$(CC) $(CFLAGS) -I$(INC_DIR) -c $< -o $@
+src/raycasting.o: src/raycasting.c inc/player.h
+    $(CC) $(CFLAGS) -c src/raycasting.c -o src/raycasting.o
 
-# Clean up
 clean:
-	rm -f $(OBJ_FILES) $(TARGET)
+    rm -f src/*.o my_project
