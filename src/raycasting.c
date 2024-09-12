@@ -27,50 +27,85 @@ int map[MAP_HEIGHT][MAP_WIDTH] = {
  * @renderer: The SDL renderer.
  * @player: The player's position and angle.
  */
-void draw(SDL_Renderer *renderer, Player player)
-{
-    int x;
+void draw(SDL_Renderer *renderer, Player player) {
+    for (int x = 0; x < SCREEN_WIDTH; x++) {
+        float cameraX = 2 * x / (float)SCREEN_WIDTH - 1;  // X-coordinate in camera space
 
-    /* Clear the screen with sky blue */
-    SDL_SetRenderDrawColor(renderer, 135, 206, 250, 255); /* Sky blue */
-    SDL_RenderClear(renderer);
+        /* Calculate ray position and direction */
+        float rayDirX = player.dirX + player.planeX * cameraX;
+        float rayDirY = player.dirY + player.planeY * cameraX;
 
-    /* Draw the floor and ceiling */
-    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); /* Green for floor */
-    SDL_Rect floorRect = {0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2};
-    SDL_RenderFillRect(renderer, &floorRect);
+        /* Which box of the map we're in */
+        int mapX = (int)player.x;
+        int mapY = (int)player.y;
 
-    SDL_SetRenderDrawColor(renderer, 135, 206, 250, 255); /* Sky blue for ceiling */
-    SDL_Rect ceilingRect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT / 2};
-    SDL_RenderFillRect(renderer, &ceilingRect);
+        /* Length of ray from current position to next x or y-side */
+        float sideDistX;
+        float sideDistY;
 
-    /* Raycasting logic */
-    for (x = 0; x < SCREEN_WIDTH; x++)
-    {
-        float cameraX = 2 * x / (float)SCREEN_WIDTH - 1;
-        float rayDirX = cos(player.angle) + cameraX * cos(player.angle + M_PI_2);
-        float rayDirY = sin(player.angle) + cameraX * sin(player.angle + M_PI_2);
+        /* Length of ray from one x or y-side to next x or y-side */
+        float deltaDistX = fabs(1 / rayDirX);
+        float deltaDistY = fabs(1 / rayDirY);
+        float perpWallDist;
 
-        /* Raycasting calculations */
-        int wallHeight = SCREEN_HEIGHT / 2; /* Example height */
+        /* What direction to step in x or y-direction (either +1 or -1) */
+        int stepX;
+        int stepY;
+        int hit = 0;  // Was there a wall hit?
+        int side;     // Was a NS or EW wall hit?
 
-        /* Determine wall color based on orientation */
-        SDL_Color wallColor;
-        if (rayDirX > rayDirY)
-        {
-            wallColor = (SDL_Color){128, 128, 128, 255}; /* Gray for walls facing EAST/WEST */
+        /* Calculate step and initial sideDist */
+        if (rayDirX < 0) {
+            stepX = -1;
+            sideDistX = (player.x - mapX) * deltaDistX;
+        } else {
+            stepX = 1;
+            sideDistX = (mapX + 1.0 - player.x) * deltaDistX;
         }
-        else
-        {
-            wallColor = (SDL_Color){255, 0, 0, 255}; /* Red for walls facing NORTH/SOUTH */
+        if (rayDirY < 0) {
+            stepY = -1;
+            sideDistY = (player.y - mapY) * deltaDistY;
+        } else {
+            stepY = 1;
+            sideDistY = (mapY + 1.0 - player.y) * deltaDistY;
         }
 
-        /* Draw the wall */
-        SDL_SetRenderDrawColor(renderer, wallColor.r, wallColor.g, wallColor.b, wallColor.a);
-        SDL_Rect wallRect = {x, SCREEN_HEIGHT / 2 - wallHeight / 2, 1, wallHeight};
-        SDL_RenderFillRect(renderer, &wallRect);
+        /* Perform DDA to find wall */
+        while (hit == 0) {
+            // Jump to next map square
+            if (sideDistX < sideDistY) {
+                sideDistX += deltaDistX;
+                mapX += stepX;
+                side = 0;
+            } else {
+                sideDistY += deltaDistY;
+                mapY += stepY;
+                side = 1;
+            }
+            // Check if ray has hit a wall
+            if (worldMap[mapX][mapY] > 0) hit = 1;
+        }
+
+        // Calculate distance projected on camera direction
+        if (side == 0) perpWallDist = (mapX - player.x + (1 - stepX) / 2) / rayDirX;
+        else           perpWallDist = (mapY - player.y + (1 - stepY) / 2) / rayDirY;
+
+        // Calculate height of line to draw on screen
+        int lineHeight = (int)(SCREEN_HEIGHT / perpWallDist);
+
+        // Calculate lowest and highest pixel to fill in current stripe
+        int drawStart = -lineHeight / 2 + SCREEN_HEIGHT / 2;
+        if (drawStart < 0) drawStart = 0;
+        int drawEnd = lineHeight / 2 + SCREEN_HEIGHT / 2;
+        if (drawEnd >= SCREEN_HEIGHT) drawEnd = SCREEN_HEIGHT - 1;
+
+        // Choose wall color
+        SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255); // Default wall color
+
+        // Draw the vertical stripe
+        SDL_RenderDrawLine(renderer, x, drawStart, x, drawEnd);
     }
 
-    /* Present the rendered frame */
+    // Present the renderer
     SDL_RenderPresent(renderer);
 }
