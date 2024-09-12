@@ -6,8 +6,9 @@ SOURCES=main.c map.c camera.c raycasting.c
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=raycasting
 
-all: $(SOURCES) $(EXECUTABLE)
-\t$(EXECUTABLE): $(OBJECTS)
+all: $(EXECUTABLE)
+
+$(EXECUTABLE): $(OBJECTS)
 \t$(CC) $(LDFLAGS) $(OBJECTS) -o $@
 
 .c.o:
