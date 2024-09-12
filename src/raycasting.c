@@ -47,8 +47,8 @@ void draw(SDL_Renderer *renderer, Player player) {
         float sideDistY;
 
         /* Length of ray from one x or y-side to next x or y-side */
-        float deltaDistX = fabs(1 / rayDirX);
-        float deltaDistY = fabs(1 / rayDirY);
+        float deltaDistX = fabs(rayDirX) > 0.0001 ? fabs(1 / rayDirX) : 1.0;
+        float deltaDistY = fabs(rayDirY) > 0.0001 ? fabs(1 / rayDirY) : 1.0;
         float perpWallDist;
 
         /* What direction to step in x or y-direction (either +1 or -1) */
@@ -86,7 +86,11 @@ void draw(SDL_Renderer *renderer, Player player) {
                 side = 1;
             }
             // Check if ray has hit a wall
-            if (map[mapX][mapY] > 0) hit = 1;
+            if (mapX >= MAP_WIDTH || mapX < 0 || mapY >= MAP_HEIGHT || mapY < 0) {
+                hit = 1; // Exit loop if out of bounds
+            } else if (map[mapX][mapY] > 0) {
+                hit = 1;
+            }
         }
 
         // Calculate distance projected on camera direction
