@@ -11,6 +11,12 @@ int main(void) {
         return 1;
     }
 
+    /* Initialize Player */
+    Player player;
+    player.x = 0.0f;    // Set initial x position
+    player.y = 0.0f;    // Set initial y position
+    player.angle = 0.0f; // Set initial angle
+
     /* Main loop */
     int running = 1;
     SDL_Event event;
