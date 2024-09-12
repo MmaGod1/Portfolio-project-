@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -Wall -Werror -Wextra -pedantic -Iinc
-LDFLAGS = `sdl2-config --cflags --libs`
+LDFLAGS = `sdl2-config --cflags --libs` -lm
 TARGET = my_project
 OBJS = src/init.o src/main.o src/raycasting.o
 
