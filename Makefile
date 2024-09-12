@@ -1,6 +1,7 @@
 # Compiler and flags
 CC = gcc
 CFLAGS = -Wall -Werror -Wextra -pedantic
+LDFLAGS = `sdl2-config --cflags --libs`
 
 # Directories
 SRC_DIR = src
@@ -16,7 +17,7 @@ all: $(TARGET)
 
 # Link the object files to create the executable
 $(TARGET): $(OBJ_FILES)
-	$(CC) $(CFLAGS) -o $@ $(OBJ_FILES)
+	$(CC) $(CFLAGS) -o $@ $(OBJ_FILES) $(LDFLAGS)
 
 # Compile source files to object files
 %.o: %.c
