@@ -92,43 +92,6 @@ void drawFloor() {
 }
 
 
-
-void render(Player *player) {
-    SDL_RenderClear(renderer);
-
-    // Draw the sky and floor
-    drawSky();
-    drawFloor();
-
-    // Cast rays across the screen
-    for (int x = 0; x < SCREEN_WIDTH; x++) {
-        float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
-        float distance = castRay(player->x, player->y, rayAngle);
-
-        if (distance > 10.0) distance = 10.0;  // Cap the distance for better visuals
-
-        int wallHeight = (int)(SCREEN_HEIGHT / distance);
-        int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
-        int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
-
-        // Calculate texture X coordinate based on the hit position
-        int textureX = (int)(hit_position_on_wall * TEXTURE_WIDTH);
-
-        // Create source rectangle for the texture
-        SDL_Rect srcRect;
-        srcRect.x = textureX;  // The part of the texture to sample from
-        srcRect.y = 0;         // Start from the top of the texture
-        srcRect.w = 1;         // Width of a vertical slice
-        srcRect.h = TEXTURE_HEIGHT;  // Height of the texture
-
-        // Create destination rectangle for where the texture slice will be drawn
-        SDL_Rect destRect;
-        destRect.x = x;           // Draw one vertical line at this X position
-        destRect.y = wallTop;     // Start drawing from the top of the wall
-        destRect.w = 1;           // Draw only one pixel-wide vertical slice
-        destRect.h = wallHeight;  // Height of the wall slice
-
-        // Draw the wall slice with the texture
 void render(Player *player) {
     SDL_RenderClear(renderer);
 
