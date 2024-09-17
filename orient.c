@@ -7,7 +7,8 @@
 #define SCREEN_HEIGHT 480
 #define MAP_WIDTH 24
 #define MAP_HEIGHT 24
-#define FOV 60  // Field of view
+#define FOV 60  // Field of view in degrees
+#define DEG2RAD(x) ((x) * M_PI / 180.0)
 
 typedef struct {
     double x;
@@ -16,7 +17,29 @@ typedef struct {
 } Player;
 
 int maze_map[MAP_WIDTH][MAP_HEIGHT] = {
-    // Your maze map data
+    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},                       {1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1},
+        {1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1},
+        {1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1},
+        {1, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1},
+        {1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1},
+        {1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1},
+        {1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+        {1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1},
+        {1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1},
+        {1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1},
+        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+        {1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1},
+        {1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1},
+        {1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1},
+        {1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1},
+        {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+        {1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+        {1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1},
+        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+        {1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1},
+        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+        {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
 };
 
 SDL_Window *window = NULL;
@@ -48,14 +71,14 @@ void draw_maze(Player player) {
     double rayAngle;
     double rayDirX, rayDirY;
     double distToWall;
-    int wallHeight;
+    double wallHeight;
     SDL_Color wallColor;
-
+    
     SDL_SetRenderDrawColor(renderer, 135, 206, 235, 255); // Sky color
     SDL_RenderClear(renderer);
 
     for (int i = 0; i < SCREEN_WIDTH; i++) {
-        rayAngle = (player.angle - FOV / 2.0) + (FOV / SCREEN_WIDTH) * i;
+        rayAngle = player.angle - DEG2RAD(FOV / 2) + DEG2RAD(FOV) * i / SCREEN_WIDTH;
         rayDirX = cos(rayAngle);
         rayDirY = sin(rayAngle);
 
@@ -73,7 +96,7 @@ void draw_maze(Player player) {
                 distToWall = 20; // Set distance to max
             } else if (maze_map[mapY][mapX] == 1) {
                 hit = true;
-
+                
                 // Determine wall orientation
                 if (fabs(rayDirY) > fabs(rayDirX)) {
                     wallSide = 0; // North/South
@@ -83,8 +106,9 @@ void draw_maze(Player player) {
             }
         }
 
-        double wallDist = distToWall * cos(player.angle - rayAngle); // Correct for player angle
-        wallHeight = (int)(SCREEN_HEIGHT / wallDist);
+        // Correct the wall distance based on angle
+        double correctedDist = distToWall * cos(player.angle - rayAngle);
+        wallHeight = (SCREEN_HEIGHT / correctedDist);
 
         // Set wall color based on orientation
         if (wallSide == 0) {
@@ -93,9 +117,12 @@ void draw_maze(Player player) {
             wallColor = (SDL_Color){192, 192, 192, 255}; // Light gray for East/West walls
         }
 
-        // Draw wall
+        // Draw the wall
+        int drawStart = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
+        int drawEnd = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
+
         SDL_SetRenderDrawColor(renderer, wallColor.r, wallColor.g, wallColor.b, wallColor.a);
-        SDL_RenderDrawLine(renderer, i, (SCREEN_HEIGHT / 2) - (wallHeight / 2), i, (SCREEN_HEIGHT / 2) + (wallHeight / 2));
+        SDL_RenderDrawLine(renderer, i, drawStart, i, drawEnd);
     }
 
     // Draw the floor (Green color)
@@ -104,19 +131,6 @@ void draw_maze(Player player) {
     SDL_RenderFillRect(renderer, &floorRect);
 
     SDL_RenderPresent(renderer);
-}
-
-void draw_map(void) {
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // Black color for map lines
-    for (int y = 0; y < MAP_HEIGHT; y++) {
-        for (int x = 0; x < MAP_WIDTH; x++) {
-            if (maze_map[y][x] == 1) {
-                SDL_Rect rect = {x * (SCREEN_WIDTH / MAP_WIDTH), y * (SCREEN_HEIGHT / MAP_HEIGHT), SCREEN_WIDTH / MAP_WIDTH, SCREEN_HEIGHT / MAP_HEIGHT};
-                SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // Wall color (black)
-                SDL_RenderFillRect(renderer, &rect);
-            }
-        }
-    }
 }
 
 void handle_input(Player *player, bool *running) {
@@ -152,8 +166,7 @@ int main(void) {
     while (running) {
         handle_input(&player, &running);
         draw_maze(player);
-        draw_map(); // Draw the map on top of the maze
-        SDL_Delay(16);
+        SDL_Delay(16); // ~60 FPS
     }
 
     SDL_DestroyRenderer(renderer);
