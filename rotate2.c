@@ -34,7 +34,7 @@ int map[MAP_WIDTH][MAP_HEIGHT] = {
         {1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1},
         {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
         {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
-};                                          
+};
 typedef struct {
     float x, y;         // Player position
     float angle;        // Player angle (rotation)
@@ -113,29 +113,36 @@ void render(Player *player) {
 }
 
 void handleInput(Player *player, bool *running) {
-    const Uint8 *state = SDL_GetKeyboardState(NULL);
+    SDL_Event event;
 
-    // Quit game when 'q' is pressed
-    if (state[SDL_SCANCODE_Q]) {
-        *running = false;
-    }
+    while (SDL_PollEvent(&event)) {
+        if (event.type == SDL_QUIT) {
+            *running = false;
+        }
 
-    // Rotation (left and right arrow keys)
-    if (state[SDL_SCANCODE_LEFT]) {
-        player->angle -= player->rotSpeed;
-    }
-    if (state[SDL_SCANCODE_RIGHT]) {
-        player->angle += player->rotSpeed;
-    }
-
-    // Movement (forward and backward arrow keys)
-    if (state[SDL_SCANCODE_UP]) {
-        player->x += cos(player->angle) * player->moveSpeed;
-        player->y += sin(player->angle) * player->moveSpeed;
-    }
-    if (state[SDL_SCANCODE_DOWN]) {
-        player->x -= cos(player->angle) * player->moveSpeed;
-        player->y -= sin(player->angle) * player->moveSpeed;
+        if (event.type == SDL_KEYDOWN) {
+            switch (event.key.keysym.sym) {
+                case SDLK_q:  // Quit when 'q' is pressed
+                    *running = false;
+                    break;
+                case SDLK_LEFT:  // Rotate left
+                    player->angle -= player->rotSpeed;
+                    if (player->angle < 0) player->angle += 2 * M_PI;
+                    break;
+                case SDLK_RIGHT:  // Rotate right
+                    player->angle += player->rotSpeed;
+                    if (player->angle > 2 * M_PI) player->angle -= 2 * M_PI;
+                    break;
+                case SDLK_UP:  // Move forward
+                    player->x += cos(player->angle) * player->moveSpeed;
+                    player->y += sin(player->angle) * player->moveSpeed;
+                    break;
+                case SDLK_DOWN:  // Move backward
+                    player->x -= cos(player->angle) * player->moveSpeed;
+                    player->y -= sin(player->angle) * player->moveSpeed;
+                    break;
+            }
+        }
     }
 }
 
@@ -151,13 +158,6 @@ int main(int argc, char* argv[]) {
     // Game loop
     bool running = true;
     while (running) {
-        SDL_Event event;
-        while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) {
-                running = false;
-            }
-        }
-
         handleInput(&player, &running);  // Handle player input
         render(&player);                 // Render the scene
 
