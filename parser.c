@@ -100,22 +100,40 @@ void render(Player *player) {
     drawSky();
     drawFloor();
 
+    // Cast rays across the screen
+    for (int x = 0; x < SCREEN_WIDTH; x++) {
+        float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
+        float distance = castRay(player->x, player->y, rayAngle);
+
+        // Debug output
+        if (distance > 10.0) distance = 10.0;  // Cap the distance for better visuals
+
+        int wallHeight = (int)(SCREEN_HEIGHT / distance);
+        int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
+        int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
+
+        // Draw the vertical line representing the wall slice
+        SDL_SetRenderDrawColor(renderer, 180, 180, 180, 255);  // Light gray
+        SDL_RenderDrawLine(renderer, x, wallTop, x, wallBottom);
+    }
+
     // Draw the map if enabled
     if (showMap) {
         // Map parameters
         int mapStartX = 0;
         int mapStartY = 0;
-        int mapWidth = MAP_DISPLAY_WIDTH;  // Define map width (e.g., 160)
-        int mapHeight = MAP_DISPLAY_HEIGHT; // Define map height (e.g., 120)
+        int mapWidth = 160;  // Width of the map on screen (adjust as needed)
+        int mapHeight = 120; // Height of the map on screen (adjust as needed)
+        int tileSize = TILE_SIZE; // Size of each tile
 
         // Draw the map tiles
         for (int y = 0; y < MAP_HEIGHT; y++) {
             for (int x = 0; x < MAP_WIDTH; x++) {
                 SDL_Rect rect;
-                rect.x = mapStartX + x * TILE_SIZE;  // Position of the tile
-                rect.y = mapStartY + y * TILE_SIZE;  // Position of the tile
-                rect.w = TILE_SIZE;                  // Width of the tile
-                rect.h = TILE_SIZE;                  // Height of the tile
+                rect.x = mapStartX + x * tileSize;  // Position of the tile
+                rect.y = mapStartY + y * tileSize;  // Position of the tile
+                rect.w = tileSize;                  // Width of the tile
+                rect.h = tileSize;                  // Height of the tile
 
                 if (maze_map[x][y] == 1) {
                     // Wall color (e.g., red)
@@ -139,34 +157,17 @@ void render(Player *player) {
         SDL_RenderDrawRect(renderer, &border);
 
         // Draw the player’s line of sight on the map
-        // Example: Draw a line from the player's position to the map's boundary
-        float mapPlayerX = mapStartX + player->x * TILE_SIZE / MAP_WIDTH; // Scale player’s x to map size
-        float mapPlayerY = mapStartY + player->y * TILE_SIZE / MAP_HEIGHT; // Scale player’s y to map size
+        // Example: Draw lines from the player's position to the edges of the map
+        float mapPlayerX = mapStartX + (player->x * mapWidth / MAP_WIDTH); // Scale player’s x to map size
+        float mapPlayerY = mapStartY + (player->y * mapHeight / MAP_HEIGHT); // Scale player’s y to map size
 
         SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);  // Green color for player’s line of sight
         for (int i = 0; i < SCREEN_WIDTH; i++) {
             float rayAngle = player->angle - (FOV / 2) + (FOV * i / SCREEN_WIDTH);
-            float endX = mapPlayerX + cos(rayAngle) * 20;  // Adjust length as needed
-            float endY = mapPlayerY + sin(rayAngle) * 20;  // Adjust length as needed
+            float endX = mapPlayerX + cos(rayAngle) * (MAP_WIDTH / 2);  // Adjust length as needed
+            float endY = mapPlayerY + sin(rayAngle) * (MAP_HEIGHT / 2);  // Adjust length as needed
             SDL_RenderDrawLine(renderer, mapPlayerX, mapPlayerY, endX, endY);
         }
-    }
-
-    // Cast rays across the screen
-    for (int x = 0; x < SCREEN_WIDTH; x++) {
-        float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
-        float distance = castRay(player->x, player->y, rayAngle);
-
-        // Debug output
-        if (distance > 10.0) distance = 10.0;  // Cap the distance for better visuals
-
-        int wallHeight = (int)(SCREEN_HEIGHT / distance);
-        int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
-        int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
-
-        // Draw the vertical line representing the wall slice
-        SDL_SetRenderDrawColor(renderer, 180, 180, 180, 255);  // Light gray
-        SDL_RenderDrawLine(renderer, x, wallTop, x, wallBottom);
     }
 
     SDL_RenderPresent(renderer);
