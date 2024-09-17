@@ -165,8 +165,6 @@ void render(Player *player) {
 
     SDL_RenderPresent(renderer);
 }
-
-
 void handleInput(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
     SDL_Event event;
 
