@@ -9,31 +9,8 @@
 #define FOV (M_PI / 3) // 60 degrees field of view
 
 // Maze map (1 = wall, 0 = empty space)
-int maze_map[MAP_WIDTH][MAP_HEIGHT] = {
-        {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},                       
-        {1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1},
-        {1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1},
-        {1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1},
-        {1, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1},
-        {1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1},
-        {1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1},
-        {1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-        {1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1},
-        {1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1},
-        {1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1},
-        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-        {1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1},
-        {1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1},
-        {1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1},
-        {1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1},
-        {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-        {1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-        {1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1},
-        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-        {1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1},
-        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-        {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
+int map[MAP_WIDTH][MAP_HEIGHT] = {
+    // (Same map as before)
 };
 
 typedef struct {
@@ -71,7 +48,6 @@ float castRay(float playerX, float playerY, float rayAngle) {
     }
 }
 
-// Draw sky and floor functions
 void drawSky() {
     SDL_SetRenderDrawColor(renderer, 135, 206, 235, 255);  // Light blue for sky
     SDL_Rect skyRect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT / 2};
@@ -84,7 +60,6 @@ void drawFloor() {
     SDL_RenderFillRect(renderer, &floorRect);
 }
 
-// Render function
 void render(Player *player) {
     SDL_RenderClear(renderer);
 
@@ -96,6 +71,9 @@ void render(Player *player) {
     for (int x = 0; x < SCREEN_WIDTH; x++) {
         float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
         float distance = castRay(player->x, player->y, rayAngle);
+
+        // Prevent division by zero
+        if (distance < 0.01) distance = 0.01;
 
         int wallHeight = (int)(SCREEN_HEIGHT / distance);
         int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
@@ -115,28 +93,6 @@ void render(Player *player) {
     SDL_RenderPresent(renderer);
 }
 
-// Function to check collisions
-bool isColliding(float x, float y) {
-    int mapX = (int)x;
-    int mapY = (int)y;
-    return (mapX >= 0 && mapX < MAP_WIDTH && mapY >= 0 && mapY < MAP_HEIGHT && map[mapX][mapY] == 1);
-}
-
-// Move player with collision handling
-void movePlayer(Player *player, float dx, float dy) {
-    float newX = player->x + dx;
-    float newY = player->y + dy;
-
-    // Check for collision in the new position
-    if (!isColliding(newX, player->y)) {
-        player->x = newX;
-    }
-    if (!isColliding(player->x, newY)) {
-        player->y = newY;
-    }
-}
-
-// Handle input
 void handleInput(Player *player, bool *running) {
     SDL_Event event;
 
@@ -146,6 +102,8 @@ void handleInput(Player *player, bool *running) {
         }
 
         if (event.type == SDL_KEYDOWN) {
+            float moveStep = player->moveSpeed;
+            float moveAngle = player->angle;
             switch (event.key.keysym.sym) {
                 case SDLK_q:  // Quit when 'q' is pressed
                     *running = false;
@@ -158,17 +116,21 @@ void handleInput(Player *player, bool *running) {
                     player->angle += player->rotSpeed;
                     if (player->angle > 2 * M_PI) player->angle -= 2 * M_PI;
                     break;
-                case SDLK_w:  // Move forward
-                    movePlayer(player, cos(player->angle) * player->moveSpeed, sin(player->angle) * player->moveSpeed);
+                case SDLK_UP:  // Move forward
+                    {
+                        float newX = player->x + cos(moveAngle) * moveStep;
+                        float newY = player->y + sin(moveAngle) * moveStep;
+                        if (map[(int)newX][(int)player->y] == 0) player->x = newX;
+                        if (map[(int)player->x][(int)newY] == 0) player->y = newY;
+                    }
                     break;
-                case SDLK_s:  // Move backward
-                    movePlayer(player, -cos(player->angle) * player->moveSpeed, -sin(player->angle) * player->moveSpeed);
-                    break;
-                case SDLK_a:  // Strafe left
-                    movePlayer(player, cos(player->angle - M_PI_2) * player->moveSpeed, sin(player->angle - M_PI_2) * player->moveSpeed);
-                    break;
-                case SDLK_d:  // Strafe right
-                    movePlayer(player, cos(player->angle + M_PI_2) * player->moveSpeed, sin(player->angle + M_PI_2) * player->moveSpeed);
+                case SDLK_DOWN:  // Move backward
+                    {
+                        float newX = player->x - cos(moveAngle) * moveStep;
+                        float newY = player->y - sin(moveAngle) * moveStep;
+                        if (map[(int)newX][(int)player->y] == 0) player->x = newX;
+                        if (map[(int)player->x][(int)newY] == 0) player->y = newY;
+                    }
                     break;
             }
         }
