@@ -105,16 +105,31 @@ void render(Player *player) {
         float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
         float distance = castRay(player->x, player->y, rayAngle);
 
-        // Debug output
         if (distance > 10.0) distance = 10.0;  // Cap the distance for better visuals
 
         int wallHeight = (int)(SCREEN_HEIGHT / distance);
         int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
         int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
 
-        // Draw the vertical line representing the wall slice
-        SDL_SetRenderDrawColor(renderer, 180, 180, 180, 255);  // Light gray
-        SDL_RenderDrawLine(renderer, x, wallTop, x, wallBottom);
+        // Calculate texture X coordinate based on the hit position
+        int textureX = (int)(hit_position_on_wall * TEXTURE_WIDTH);
+
+        // Create source rectangle for the texture
+        SDL_Rect srcRect;
+        srcRect.x = textureX;  // The part of the texture to sample from
+        srcRect.y = 0;         // Start from the top of the texture
+        srcRect.w = 1;         // Width of a vertical slice
+        srcRect.h = TEXTURE_HEIGHT;  // Height of the texture
+
+        // Create destination rectangle for where the texture slice will be drawn
+        SDL_Rect destRect;
+        destRect.x = x;           // Draw one vertical line at this X position
+        destRect.y = wallTop;     // Start drawing from the top of the wall
+        destRect.w = 1;           // Draw only one pixel-wide vertical slice
+        destRect.h = wallHeight;  // Height of the wall slice
+
+        // Draw the wall slice with the texture
+        SDL_RenderCopy(renderer, wallTexture, &srcRect, &destRect);
     }
 
     // Draw the map if enabled
@@ -165,6 +180,7 @@ void render(Player *player) {
 
     SDL_RenderPresent(renderer);
 }
+
 void handleInput(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
     SDL_Event event;
 
