@@ -64,7 +64,7 @@ float castRay(float playerX, float playerY, float rayAngle) {
             return distance;  // Ray went out of bounds
         }
 
-        if (map[mapX][mapY] == 1) {  // Wall hit
+        if (maze_map[mapX][mapY] == 1) {  // Wall hit
             return distance;
         }
     }
@@ -108,7 +108,7 @@ void render(Player *player) {
     SDL_RenderPresent(renderer);
 }
 
-void handleInput(Player *player, bool *running) {
+void handleInput(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
     SDL_Event event;
 
     while (SDL_PollEvent(&event)) {
@@ -137,9 +137,16 @@ void handleInput(Player *player, bool *running) {
                         float newX = player->x + cos(moveAngle) * moveStep;
                         float newY = player->y + sin(moveAngle) * moveStep;
 
-                        // Check for collisions
-                        if (maze_map[(int)newX][(int)player->y] == 0) player->x = newX;
-                        if (maze_map[(int)player->x][(int)newY] == 0) player->y = newY;
+                        // Ensure the new position is within bounds
+                        if (newX >= 0 && newX < MAP_WIDTH && newY >= 0 && newY < MAP_HEIGHT) {
+                            // Check for collisions with walls
+                            if (maze_map[(int)newX][(int)player->y] == 0 && maze_map[(int)newX][(int)player->y] != 1) {
+                                player->x = newX;
+                            }
+                            if (maze_map[(int)player->x][(int)newY] == 0 && maze_map[(int)player->x][(int)newY] != 1) {
+                                player->y = newY;
+                            }
+                        }
                     }
                     break;
                 case SDLK_s:  // Move backward
@@ -147,9 +154,16 @@ void handleInput(Player *player, bool *running) {
                         float newX = player->x - cos(moveAngle) * moveStep;
                         float newY = player->y - sin(moveAngle) * moveStep;
 
-                        // Check for collisions
-                        if (maze_map[(int)newX][(int)player->y] == 0) player->x = newX;
-                        if (maze_map[(int)player->x][(int)newY] == 0) player->y = newY;
+                        // Ensure the new position is within bounds
+                        if (newX >= 0 && newX < MAP_WIDTH && newY >= 0 && newY < MAP_HEIGHT) {
+                            // Check for collisions with walls
+                            if (maze_map[(int)newX][(int)player->y] == 0 && maze_map[(int)newX][(int)player->y] != 1) {
+                                player->x = newX;
+                            }
+                            if (maze_map[(int)player->x][(int)newY] == 0 && maze_map[(int)player->x][(int)newY] != 1) {
+                                player->y = newY;
+                            }
+                        }
                     }
                     break;
                 case SDLK_a:  // Strafe left
@@ -158,9 +172,16 @@ void handleInput(Player *player, bool *running) {
                         float newX = player->x + cos(strafeAngle) * moveStep;
                         float newY = player->y + sin(strafeAngle) * moveStep;
 
-                        // Check for collisions
-                        if (maze_map[(int)newX][(int)player->y] == 0) player->x = newX;
-                        if (maze_map[(int)player->x][(int)newY] == 0) player->y = newY;
+                        // Ensure the new position is within bounds
+                        if (newX >= 0 && newX < MAP_WIDTH && newY >= 0 && newY < MAP_HEIGHT) {
+                            // Check for collisions with walls
+                            if (maze_map[(int)newX][(int)player->y] == 0 && maze_map[(int)newX][(int)player->y] != 1) {
+                                player->x = newX;
+                            }
+                            if (maze_map[(int)player->x][(int)newY] == 0 && maze_map[(int)player->x][(int)newY] != 1) {
+                                player->y = newY;
+                            }
+                        }
                     }
                     break;
                 case SDLK_d:  // Strafe right
@@ -169,15 +190,26 @@ void handleInput(Player *player, bool *running) {
                         float newX = player->x + cos(strafeAngle) * moveStep;
                         float newY = player->y + sin(strafeAngle) * moveStep;
 
-                        // Check for collisions
-                        if (maze_map[(int)newX][(int)player->y] == 0) player->x = newX;
-                        if (maze_map[(int)player->x][(int)newY] == 0) player->y = newY;
+                        // Ensure the new position is within bounds
+                        if (newX >= 0 && newX < MAP_WIDTH && newY >= 0 && newY < MAP_HEIGHT) {
+                            // Check for collisions with walls
+                            if (maze_map[(int)newX][(int)player->y] == 0 && maze_map[(int)newX][(int)player->y] != 1) {
+                                player->x = newX;
+                            }
+                            if (maze_map[(int)player->x][(int)newY] == 0 && maze_map[(int)player->x][(int)newY] != 1) {
+                                player->y = newY;
+                            }
+                        }
                     }
                     break;
             }
         }
     }
 }
+
+
+#include <stdio.h>
+#include <stdlib.h>
 
 int loadMap(const char *filename, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
     FILE *file = fopen(filename, "r");
@@ -217,8 +249,6 @@ int loadMap(const char *filename, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
     fclose(file);
     return 0;
 }
-
-
 
 int main(int argc, char *argv[]) {
     if (argc != 2) {
