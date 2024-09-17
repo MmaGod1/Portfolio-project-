@@ -7,6 +7,8 @@
 #define MAP_WIDTH 24
 #define MAP_HEIGHT 24
 #define FOV (M_PI / 3) // 60 degrees field of view
+#define WALL_CHAR '#'
+#define EMPTY_CHAR '.'
 
 // Maze map (1 = wall, 0 = empty space)
 int maze_map[MAP_WIDTH][MAP_HEIGHT] = {
@@ -208,8 +210,7 @@ void handleInput(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIG
 }
 
 
-#include <stdio.h>
-#include <stdlib.h>
+
 
 int loadMap(const char *filename, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
     FILE *file = fopen(filename, "r");
