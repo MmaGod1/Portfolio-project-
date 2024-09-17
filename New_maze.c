@@ -16,11 +16,61 @@ typedef struct {
 } Player;
 
 int maze_map[MAP_WIDTH][MAP_HEIGHT] = {
-    // Your maze map data (0 for floor, 1 for wall)
+    // Your maze map data
 };
 
 SDL_Window *window = NULL;
 SDL_Renderer *renderer;
+
+
+See my map
+int maze_map[MAP_WIDTH] [MAP_HEIGHT] = {
+        {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+ 1, 1, 1, 1, 1, 1},
+        {1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0,
+ 0, 0, 0, 0, 0, 1},
+        {1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1,
+ 1, 1, 1, 1, 0, 1},
+        {1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1,
+ 0, 0, 0, 1, 0, 1},
+        {1, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1,
+ 0, 1, 0, 1, 0, 1},
+        {1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0,
+ 0, 0, 0, 0, 0, 1},
+        {1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1,
+ 0, 1, 1, 1, 1, 1},
+        {1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
+ 0, 0, 0, 0, 0, 1},
+        {1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1,
+ 1, 0, 1, 1, 0, 1},
+        {1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1},                                                   {1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1,0, 1, 0, 1, 1, 1},                                                
+{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+ 0, 0, 0, 0, 0, 1},                                                   
+{1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+ 1, 1, 1, 1, 0, 1},                                                  
+{1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+ 0, 0, 0, 1, 0, 1},                                                   
+{1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1,
+ 0, 1, 0, 1, 0, 1},                                                   
+{1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0,
+ 0, 1, 0, 0, 0, 1},                                                   
+{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1,
+ 1, 1, 1, 1, 1, 1},                                                   
+{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+ 0, 0, 0, 0, 0, 1},                                                   
+{1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+ 1, 1, 1, 1, 1, 1},                                                   
+{1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1,
+ 0, 0, 0, 0, 0, 1},                                                  
+{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+ 0, 0, 0, 0, 0, 1},                                                 
+{1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+ 1, 1, 1, 1, 1, 1},                                                  
+{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},                                                   {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
+};
+
+How do I incorporate it
+
 
 int initialize(void) {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -44,13 +94,12 @@ int initialize(void) {
 }
 
 void draw_maze(Player player) {
-    int x, y;
     int mapX, mapY;
     double rayAngle;
     double rayDirX, rayDirY;
-    double wallDist;
+    double distToWall;
     int wallHeight;
-    int color;
+    SDL_Color wallColor = {169, 169, 169, 255}; // Gray for walls
 
     SDL_SetRenderDrawColor(renderer, 135, 206, 235, 255); // Sky color
     SDL_RenderClear(renderer);
@@ -60,7 +109,7 @@ void draw_maze(Player player) {
         rayDirX = cos(rayAngle);
         rayDirY = sin(rayAngle);
 
-        double distToWall = 0;
+        distToWall = 0;
         bool hit = false;
 
         while (!hit && distToWall < 20) {  // Arbitrary max distance
@@ -76,19 +125,18 @@ void draw_maze(Player player) {
             }
         }
 
-        wallDist = distToWall * cos(player.angle - rayAngle); // Correct for player angle
+        double wallDist = distToWall * cos(player.angle - rayAngle); // Correct for player angle
         wallHeight = (int)(SCREEN_HEIGHT / wallDist);
 
-        color = (wallDist < 5) ? 169 : 127; // Change color based on distance (Gray for walls)
-
-        SDL_SetRenderDrawColor(renderer, color, color, color, 255);
+        // Draw wall
+        SDL_SetRenderDrawColor(renderer, wallColor.r, wallColor.g, wallColor.b, wallColor.a);
         SDL_RenderDrawLine(renderer, i, (SCREEN_HEIGHT / 2) - (wallHeight / 2), i, (SCREEN_HEIGHT / 2) + (wallHeight / 2));
     }
 
     // Draw the floor (Green color)
     SDL_SetRenderDrawColor(renderer, 0, 128, 0, 255); // Green color for floor
-    SDL_RenderDrawLine(renderer, 0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2);
-    SDL_RenderFillRect(renderer, &(SDL_Rect){0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2});
+    SDL_Rect floorRect = {0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2};
+    SDL_RenderFillRect(renderer, &floorRect);
 
     SDL_RenderPresent(renderer);
 }
