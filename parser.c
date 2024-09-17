@@ -217,9 +217,11 @@ int loadMap(const char *filename, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
         return -1;
     }
 
+    int ch;  // Declare the variable 'ch' here
+
     for (int y = 0; y < MAP_HEIGHT; y++) {
         for (int x = 0; x < MAP_WIDTH; x++) {
-            int ch = fgetc(file);
+            ch = fgetc(file);
             while (ch == '\r' || ch == '\n') {  // Skip newline and carriage return characters
                 ch = fgetc(file);
             }
@@ -251,6 +253,7 @@ int loadMap(const char *filename, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
     fclose(file);
     return 0;
 }
+
 
 int main(int argc, char* argv[]) {
     // Declare maze_map to store the map data
