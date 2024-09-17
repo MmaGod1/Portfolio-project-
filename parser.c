@@ -91,13 +91,13 @@ void drawFloor() {
 void render(Player *player) {
     SDL_RenderClear(renderer);
 
-    drawSky();
-    drawFloor();
-
     // Draw the map in the top left corner
     int mapStartX = 0;
     int mapStartY = 0;
+    int mapWidth = MAP_DISPLAY_WIDTH;
+    int mapHeight = MAP_DISPLAY_HEIGHT;
 
+    // Draw the map as a guide
     for (int y = 0; y < MAP_HEIGHT; y++) {
         for (int x = 0; x < MAP_WIDTH; x++) {
             SDL_Rect rect;
@@ -117,6 +117,15 @@ void render(Player *player) {
             SDL_RenderFillRect(renderer, &rect);
         }
     }
+
+    // Optionally, draw a border around the map to ensure it's visible
+    SDL_Rect border;
+    border.x = mapStartX;
+    border.y = mapStartY;
+    border.w = mapWidth;
+    border.h = mapHeight;
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);  // Black border
+    SDL_RenderDrawRect(renderer, &border);
 
     // Cast rays across the screen
     for (int x = 0; x < SCREEN_WIDTH; x++) {
