@@ -119,12 +119,11 @@ void render(Player *player) {
 
     // Draw the map if enabled
     if (showMap) {
-        // Map parameters
-        int mapStartX = 0;
-        int mapStartY = 0;
-        int mapWidth = 160;  // Width of the map on screen (adjust as needed)
-        int mapHeight = 120; // Height of the map on screen (adjust as needed)
-        int tileSize = TILE_SIZE; // Size of each tile
+        int mapStartX = 10;    // Position the map in the top-left corner
+        int mapStartY = 10;
+        int mapWidth = 160;    // Width of the map on screen (adjust as needed)
+        int mapHeight = 120;   // Height of the map on screen (adjust as needed)
+        int tileSize = TILE_SIZE; // Size of each tile (you should define TILE_SIZE)
 
         // Draw the map tiles
         for (int y = 0; y < MAP_HEIGHT; y++) {
@@ -147,25 +146,19 @@ void render(Player *player) {
             }
         }
 
-        // Draw a border around the map for clarity
-        SDL_Rect border;
-        border.x = mapStartX;
-        border.y = mapStartY;
-        border.w = mapWidth;
-        border.h = mapHeight;
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);  // Black border
-        SDL_RenderDrawRect(renderer, &border);
+        // Draw the player's position on the map
+        float mapPlayerX = mapStartX + (player->x * mapWidth / MAP_WIDTH);
+        float mapPlayerY = mapStartY + (player->y * mapHeight / MAP_HEIGHT);
+        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);  // Green color for player's position
+        SDL_Rect playerRect = { (int)mapPlayerX - 2, (int)mapPlayerY - 2, 4, 4 };  // Small rectangle to represent the player
+        SDL_RenderFillRect(renderer, &playerRect);
 
-        // Draw the player’s line of sight on the map
-        // Example: Draw lines from the player's position to the edges of the map
-        float mapPlayerX = mapStartX + (player->x * mapWidth / MAP_WIDTH); // Scale player’s x to map size
-        float mapPlayerY = mapStartY + (player->y * mapHeight / MAP_HEIGHT); // Scale player’s y to map size
-
-        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);  // Green color for player’s line of sight
+        // Draw the player's line of sight on the map
+        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);  // Green color for line of sight
         for (int i = 0; i < SCREEN_WIDTH; i++) {
             float rayAngle = player->angle - (FOV / 2) + (FOV * i / SCREEN_WIDTH);
-            float endX = mapPlayerX + cos(rayAngle) * (MAP_WIDTH / 2);  // Adjust length as needed
-            float endY = mapPlayerY + sin(rayAngle) * (MAP_HEIGHT / 2);  // Adjust length as needed
+            float endX = mapPlayerX + cos(rayAngle) * (mapWidth / 2);  // Adjust length as needed
+            float endY = mapPlayerY + sin(rayAngle) * (mapHeight / 2); // Adjust length as needed
             SDL_RenderDrawLine(renderer, mapPlayerX, mapPlayerY, endX, endY);
         }
     }
@@ -190,6 +183,9 @@ void handleInput(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIG
                 case SDLK_q:  // Quit when 'q' is pressed
                     *running = false;
                     break;
+                case SDLK_m:
+                        showMap = !showMap;
+                        break;
                 case SDLK_LEFT:  // Rotate left
                     player->angle -= player->rotSpeed;
                     if (player->angle < 0) player->angle += 2 * M_PI;
@@ -213,9 +209,6 @@ void handleInput(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIG
                                 player->y = newY;
                             }
                         }
-                case SDLK_m:
-                            showMap = !showMap;
-                            break;
                     }
                     break;
                 case SDLK_s:  // Move backward
