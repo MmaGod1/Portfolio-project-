@@ -1,7 +1,6 @@
+#include <SDL2/SDL.h>
 #include <math.h>
 #include <stdbool.h>
-#include <stdlib.h>
-#include <GL/glut.h>  // Assuming you're using GLUT for handling input and graphics
 
 // Player attributes
 float playerX = 1.5f, playerY = 1.5f;  // Starting position
@@ -13,6 +12,7 @@ float rotateSpeed = 0.05f; // Rotation speed
 #define MAP_WIDTH 24
 #define MAP_HEIGHT 24
 
+int maze_map[MAP_WIDTH][MAP_HEIGHT] = {
 int maze_map[MAP_WIDTH][MAP_HEIGHT] = {
         {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},                       
         {1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1},
@@ -52,25 +52,21 @@ bool is_wall(float x, float y) {
     return true; // If out of bounds, treat as a wall
 }
 
-// Movement function
-void handle_movement(char input) {
-    // Calculate direction vectors
+// Handle player movement
+void handle_movement(SDL_Keycode key) {
     float dirX = cos(playerAngle);
     float dirY = sin(playerAngle);
     float perpX = -dirY;  // Perpendicular direction (left)
     float perpY = dirX;   // Perpendicular direction (up)
     
-    // Variables for collision detection
     float newX, newY;
-    float slideX, slideY;
     bool collisionX = false, collisionY = false;
     
-    if (input == 'w') {
+    if (key == SDLK_w) {
         // Move forward
         newX = playerX + dirX * moveSpeed;
         newY = playerY + dirY * moveSpeed;
         
-        // Collision check
         if (!is_wall(newX, playerY)) playerX = newX; // Check movement in X direction
         else collisionX = true;
         if (!is_wall(playerX, newY)) playerY = newY; // Check movement in Y direction
@@ -78,24 +74,23 @@ void handle_movement(char input) {
         
         // Slide along the wall if necessary
         if (collisionX && !collisionY) {
-            slideX = playerX + perpX * moveSpeed;
-            slideY = playerY + perpY * moveSpeed;
-            if (!is_wall(slideX, playerY)) playerX = slideX;
-            if (!is_wall(playerX, slideY)) playerY = slideY;
+            newX = playerX + perpX * moveSpeed;
+            newY = playerY + perpY * moveSpeed;
+            if (!is_wall(newX, playerY)) playerX = newX;
+            if (!is_wall(playerX, newY)) playerY = newY;
         } else if (collisionY && !collisionX) {
-            slideX = playerX + dirX * moveSpeed;
-            slideY = playerY + dirY * moveSpeed;
-            if (!is_wall(playerX, slideY)) playerY = slideY;
-            if (!is_wall(slideX, playerY)) playerX = slideX;
+            newX = playerX + dirX * moveSpeed;
+            newY = playerY + dirY * moveSpeed;
+            if (!is_wall(playerX, newY)) playerY = newY;
+            if (!is_wall(newX, playerY)) playerX = newX;
         }
     }
     
-    if (input == 's') {
+    if (key == SDLK_s) {
         // Move backward
         newX = playerX - dirX * moveSpeed;
         newY = playerY - dirY * moveSpeed;
         
-        // Collision check
         if (!is_wall(newX, playerY)) playerX = newX;
         else collisionX = true;
         if (!is_wall(playerX, newY)) playerY = newY;
@@ -103,24 +98,23 @@ void handle_movement(char input) {
         
         // Slide along the wall if necessary
         if (collisionX && !collisionY) {
-            slideX = playerX - perpX * moveSpeed;
-            slideY = playerY - perpY * moveSpeed;
-            if (!is_wall(slideX, playerY)) playerX = slideX;
-            if (!is_wall(playerX, slideY)) playerY = slideY;
+            newX = playerX - perpX * moveSpeed;
+            newY = playerY - perpY * moveSpeed;
+            if (!is_wall(newX, playerY)) playerX = newX;
+            if (!is_wall(playerX, newY)) playerY = newY;
         } else if (collisionY && !collisionX) {
-            slideX = playerX - dirX * moveSpeed;
-            slideY = playerY - dirY * moveSpeed;
-            if (!is_wall(playerX, slideY)) playerY = slideY;
-            if (!is_wall(slideX, playerY)) playerX = slideX;
+            newX = playerX - dirX * moveSpeed;
+            newY = playerY - dirY * moveSpeed;
+            if (!is_wall(playerX, newY)) playerY = newY;
+            if (!is_wall(newX, playerY)) playerX = newX;
         }
     }
     
-    if (input == 'a') {
+    if (key == SDLK_a) {
         // Strafe left
         newX = playerX + perpX * moveSpeed;
         newY = playerY + perpY * moveSpeed;
         
-        // Collision check
         if (!is_wall(newX, playerY)) playerX = newX;
         else collisionX = true;
         if (!is_wall(playerX, newY)) playerY = newY;
@@ -128,24 +122,23 @@ void handle_movement(char input) {
         
         // Slide along the wall if necessary
         if (collisionX && !collisionY) {
-            slideX = playerX + dirX * moveSpeed;
-            slideY = playerY + dirY * moveSpeed;
-            if (!is_wall(slideX, playerY)) playerX = slideX;
-            if (!is_wall(playerX, slideY)) playerY = slideY;
+            newX = playerX + dirX * moveSpeed;
+            newY = playerY + dirY * moveSpeed;
+            if (!is_wall(newX, playerY)) playerX = newX;
+            if (!is_wall(playerX, newY)) playerY = newY;
         } else if (collisionY && !collisionX) {
-            slideX = playerX + perpX * moveSpeed;
-            slideY = playerY + perpY * moveSpeed;
-            if (!is_wall(playerX, slideY)) playerY = slideY;
-            if (!is_wall(slideX, playerY)) playerX = slideX;
+            newX = playerX + perpX * moveSpeed;
+            newY = playerY + perpY * moveSpeed;
+            if (!is_wall(playerX, newY)) playerY = newY;
+            if (!is_wall(newX, playerY)) playerX = newX;
         }
     }
     
-    if (input == 'd') {
+    if (key == SDLK_d) {
         // Strafe right
         newX = playerX - perpX * moveSpeed;
         newY = playerY - perpY * moveSpeed;
         
-        // Collision check
         if (!is_wall(newX, playerY)) playerX = newX;
         else collisionX = true;
         if (!is_wall(playerX, newY)) playerY = newY;
@@ -153,62 +146,56 @@ void handle_movement(char input) {
         
         // Slide along the wall if necessary
         if (collisionX && !collisionY) {
-            slideX = playerX - dirX * moveSpeed;
-            slideY = playerY - dirY * moveSpeed;
-            if (!is_wall(slideX, playerY)) playerX = slideX;
-            if (!is_wall(playerX, slideY)) playerY = slideY;
+            newX = playerX - dirX * moveSpeed;
+            newY = playerY - dirY * moveSpeed;
+            if (!is_wall(newX, playerY)) playerX = newX;
+            if (!is_wall(playerX, newY)) playerY = newY;
         } else if (collisionY && !collisionX) {
-            slideX = playerX - perpX * moveSpeed;
-            slideY = playerY - perpY * moveSpeed;
-            if (!is_wall(playerX, slideY)) playerY = slideY;
-            if (!is_wall(slideX, playerY)) playerX = slideX;
+            newX = playerX - perpX * moveSpeed;
+            newY = playerY - perpY * moveSpeed;
+            if (!is_wall(playerX, newY)) playerY = newY;
+            if (!is_wall(newX, playerY)) playerX = newX;
         }
     }
-    
-    // Quit on 'q'
-    if (input == 'q') {
+}
+
+void handle_events(SDL_Event *event) {
+    if (event->type == SDL_QUIT) {
         exit(0);
+    }
+    
+    if (event->type == SDL_KEYDOWN) {
+        handle_movement(event->key.keysym.sym);
     }
 }
 
-// Example of integrating the movement into your main loop
-void display() {
-    // Clear screen and set up 3D rendering
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glLoadIdentity();
-    
-    // Set camera position and orientation
-    glTranslatef(-playerX, -playerY, -2.0f); // Move camera to player position
-    glRotatef(-playerAngle * (180.0f / M_PI), 0.0f, 0.0f, 1.0f); // Rotate camera
-    
-    // Draw the maze here
-    
-    glutSwapBuffers();
+// Your main rendering function
+void render() {
+    // Your rendering code here
 }
 
-void keyboard(unsigned char key, int x, int y) {
-    handle_movement(key);
-    glutPostRedisplay();
-}
-
-void init() {
-    glEnable(GL_DEPTH_TEST);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluPerspective(60.0, 1.0, 0.1, 100.0);
-    glMatrixMode(GL_MODELVIEW);
-}
-
-int main(int argc, char** argv) {
-    glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-    glutInitWindowSize(800, 600);
-    glutCreateWindow("Raycasting Game");
+int main(int argc, char *argv[]) {
+    SDL_Init(SDL_INIT_VIDEO);
+    SDL_Window *window = SDL_CreateWindow("Raycasting Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN);
+    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     
-    init();
-    glutDisplayFunc(display);
-    glutKeyboardFunc(keyboard);
+    SDL_Event event;
+    bool running = true;
     
-    glutMainLoop();
+    while (running) {
+        while (SDL_PollEvent(&event)) {
+            handle_events(&event);
+        }
+        
+        render();
+        
+        SDL_RenderPresent(renderer);
+        SDL_Delay(16); // Cap at ~60 FPS
+    }
+    
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
+    
     return 0;
 }
