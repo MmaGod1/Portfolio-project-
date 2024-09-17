@@ -251,57 +251,38 @@ int loadMap(const char *filename, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
     return 0;
 }
 
-int main(int argc, char *argv[]) {
-    if (argc != 2) {
-        fprintf(stderr, "Usage: %s <map file>\n", argv[0]);
-        return EXIT_FAILURE;
+int main(int argc, char* argv[]) {
+    // Declare maze_map to store the map data
+    int maze_map[MAP_WIDTH][MAP_HEIGHT];
+
+    // Load the map from a file (assuming you have a file like "map.txt")
+    if (loadMap("map.txt", maze_map) != 0) {
+        // Handle the error if map loading fails
+        fprintf(stderr, "Failed to load map\n");
+        return 1;
     }
 
-    int maze_map[MAP_WIDTH][MAP_HEIGHT] = {0};
+    // Initialize SDL
+    SDL_Init(SDL_INIT_VIDEO);
+    window = SDL_CreateWindow("Raycasting Demo", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-    if (loadMap(argv[1], maze_map) != 0) {
-        return EXIT_FAILURE;
-    }
+    // Initialize player
+    Player player = { .x = 2.0, .y = 2.0, .angle = 0.0, .moveSpeed = 0.05, .rotSpeed = 0.05 };
 
-    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-        fprintf(stderr, "SDL_Init Error: %s\n", SDL_GetError());
-        return EXIT_FAILURE;
-    }
-
-    SDL_Window *window = SDL_CreateWindow("Maze Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN);
-    if (window == NULL) {
-        fprintf(stderr, "SDL_CreateWindow Error: %s\n", SDL_GetError());
-        SDL_Quit();
-        return EXIT_FAILURE;
-    }
-
-    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    if (renderer == NULL) {
-        fprintf(stderr, "SDL_CreateRenderer Error: %s\n", SDL_GetError());
-        SDL_DestroyWindow(window);
-        SDL_Quit();
-        return EXIT_FAILURE;
-    }
-
-    Player player = {1.5f, 1.5f, 0.0f, 0.1f, 0.05f}; // Example initialization
+    // Game loop
     bool running = true;
-
     while (running) {
-        handleInput(&player, &running, maze_map);
+        handleInput(&player, &running, maze_map);  // Handle player input, pass the maze_map
+        render(&player);  // Render the scene
 
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // Clear screen with black
-        SDL_RenderClear(renderer);
-
-        drawMaze(renderer, maze_map); // Implement this function to render the maze
-
-        SDL_RenderPresent(renderer);
-
-        SDL_Delay(16); // Simple frame rate control
+        SDL_Delay(16);  // Cap the frame rate to ~60 FPS
     }
 
+    // Clean up and quit SDL
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
 
-    return EXIT_SUCCESS;
+    return 0;
 }
