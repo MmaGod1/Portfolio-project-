@@ -78,7 +78,7 @@ int loadTextures(SDL_Renderer *renderer)
     }
 
     // Load floor texture
-    surface = IMG_Load("path_to_floor_texture.png");
+    surface = IMG_Load("./floor.jpg");
     if (!surface) {
         printf("Error loading floor texture: %s\n", IMG_GetError());
         return -1;
