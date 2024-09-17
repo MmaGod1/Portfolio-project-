@@ -90,6 +90,27 @@ void render(Player *player) {
     drawSky();
     drawFloor();
 
+    // Draw the map
+    for (int y = 0; y < MAP_HEIGHT; y++) {
+        for (int x = 0; x < MAP_WIDTH; x++) {
+            SDL_Rect rect;
+            rect.x = x * TILE_SIZE;  // Position of the tile
+            rect.y = y * TILE_SIZE;  // Position of the tile
+            rect.w = TILE_SIZE;      // Width of the tile
+            rect.h = TILE_SIZE;      // Height of the tile
+
+            if (maze_map[x][y] == 1) {
+                // Wall color (e.g., red)
+                SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+            } else {
+                // Empty space color (e.g., white)
+                SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+            }
+
+            SDL_RenderFillRect(renderer, &rect);
+        }
+    }
+
     // Cast rays across the screen
     for (int x = 0; x < SCREEN_WIDTH; x++) {
         float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
@@ -109,6 +130,8 @@ void render(Player *player) {
 
     SDL_RenderPresent(renderer);
 }
+
+
 
 void handleInput(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
     SDL_Event event;
