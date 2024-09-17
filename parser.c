@@ -279,29 +279,49 @@ int loadMap(const char *filename, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
 
 
 int main(int argc, char* argv[]) {
-    // Declare maze_map to store the map data
-    int maze_map[MAP_WIDTH][MAP_HEIGHT];
-
-    // Load the map from a file (assuming you have a file like "map.txt")
-    if (loadMap("map.txt", maze_map) != 0) {
-        // Handle the error if map loading fails
-        fprintf(stderr, "Failed to load map\n");
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s <mapfile>\n", argv[0]);
         return 1;
     }
 
     // Initialize SDL
-    SDL_Init(SDL_INIT_VIDEO);
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        fprintf(stderr, "SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
+        return 1;
+    }
+    
     window = SDL_CreateWindow("Raycasting Demo", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    if (!window) {
+        fprintf(stderr, "Window could not be created! SDL_Error: %s\n", SDL_GetError());
+        SDL_Quit();
+        return 1;
+    }
+    
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    if (!renderer) {
+        fprintf(stderr, "Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+        return 1;
+    }
 
     // Initialize player
     Player player = { .x = 2.0, .y = 2.0, .angle = 0.0, .moveSpeed = 0.05, .rotSpeed = 0.05 };
 
+    // Load the map
+    if (loadMap(argv[1], maze_map) != 0) {
+        fprintf(stderr, "Failed to load map\n");
+        SDL_DestroyRenderer(renderer);
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+        return 1;
+    }
+
     // Game loop
     bool running = true;
     while (running) {
-        handleInput(&player, &running, maze_map);  // Handle player input, pass the maze_map
-        render(&player);  // Render the scene
+        handleInput(&player, &running, maze_map);  // Handle player input
+        render(&player);                 // Render the scene
 
         SDL_Delay(16);  // Cap the frame rate to ~60 FPS
     }
