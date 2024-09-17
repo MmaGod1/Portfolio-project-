@@ -21,7 +21,8 @@ int showMap = 1;  // 1 to show map, 0 to hide map
 SDL_Texture *textureWall;
 #define TEXTURE_WIDTH 64   // Set this to the width of your texture
 #define TEXTURE_HEIGHT 64  // Set this to the height of your texture
-
+SDL_Texture *wallTexture;
+SDL_Texture *floorTexture;
 
 
 // Maze map (1 = wall, 0 = empty space)
