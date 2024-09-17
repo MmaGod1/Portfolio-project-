@@ -7,6 +7,7 @@
 #define MAP_WIDTH 24
 #define MAP_HEIGHT 24
 #define FOV (M_PI / 3) // 60 degrees field of view
+#define TILE_SIZE 32  // Define TILE_SIZE as 32 pixels
 #define WALL_CHAR '#'
 #define EMPTY_CHAR '.'
 
