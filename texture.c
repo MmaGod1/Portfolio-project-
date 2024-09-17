@@ -4,8 +4,8 @@
 #include <SDL2/SDL_image.h>
 
 
-SDL_Window *window;
-SDL_Renderer *renderer;
+SDL_Texture *wallTexture;
+SDL_Texture *floorTexture;
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
 #define MAP_WIDTH 24
@@ -18,11 +18,7 @@ SDL_Renderer *renderer;
 #define TILE_SIZE (MAP_DISPLAY_WIDTH / MAP_WIDTH)
 // Global variable to toggle map display
 int showMap = 1;  // 1 to show map, 0 to hide map
-SDL_Texture *textureWall;
-#define TEXTURE_WIDTH 64   // Set this to the width of your texture
-#define TEXTURE_HEIGHT 64  // Set this to the height of your texture
-SDL_Texture *wallTexture;
-SDL_Texture *floorTexture;
+
 
 
 // Maze map (1 = wall, 0 = empty space)
@@ -60,38 +56,8 @@ typedef struct {
     float rotSpeed;
 } Player;
 
-
-
-int loadTextures(SDL_Renderer *renderer)
-{
-    // Load wall texture
-    SDL_Surface *surface = IMG_Load("./wall.jpg");
-    if (!surface) {
-        printf("Error loading wall texture: %s\n", IMG_GetError());
-        return -1;
-    }
-    wallTexture = SDL_CreateTextureFromSurface(renderer, surface);
-    SDL_FreeSurface(surface);
-    if (!wallTexture) {
-        printf("Error creating wall texture: %s\n", SDL_GetError());
-        return -1;
-    }
-
-    // Load floor texture
-    surface = IMG_Load("./floor.jpg");
-    if (!surface) {
-        printf("Error loading floor texture: %s\n", IMG_GetError());
-        return -1;
-    }
-    floorTexture = SDL_CreateTextureFromSurface(renderer, surface);
-    SDL_FreeSurface(surface);
-    if (!floorTexture) {
-        printf("Error creating floor texture: %s\n", SDL_GetError());
-        return -1;
-    }
-
-    return 0;
-}
+SDL_Window *window;
+SDL_Renderer *renderer;
 
 float castRay(float playerX, float playerY, float rayAngle) {
     float rayX = playerX;
@@ -130,93 +96,96 @@ void drawFloor() {
 }
 
 
+
+void loadTextures() {
+    SDL_Surface *wallSurface = IMG_Load("./wall.jpg");
+    SDL_Surface *floorSurface = IMG_Load("./floor.jpg");
+
+    if (!wallSurface || !floorSurface) {
+        printf("Error loading texture: %s\n", IMG_GetError());
+        exit(1);
+    }
+
+    wallTexture = SDL_CreateTextureFromSurface(renderer, wallSurface);
+    floorTexture = SDL_CreateTextureFromSurface(renderer, floorSurface);
+
+    SDL_FreeSurface(wallSurface);
+    SDL_FreeSurface(floorSurface);
+}
+
+void cleanup() {
+    SDL_DestroyTexture(wallTexture);
+    SDL_DestroyTexture(floorTexture);
+    IMG_Quit();
+    SDL_Quit();
+}
+
 void render(Player *player) {
     SDL_RenderClear(renderer);
 
-    // Draw the sky and floor
+    // Draw the sky
     drawSky();
-    drawFloor();
 
-    // Cast rays across the screen
+    // Draw the floor with texture
+    SDL_Rect floorRect = {0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2};
+    SDL_RenderCopy(renderer, floorTexture, NULL, &floorRect);
+
+    // Cast rays and draw walls with textures
     for (int x = 0; x < SCREEN_WIDTH; x++) {
         float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
         float distance = castRay(player->x, player->y, rayAngle);
 
-        if (distance > 10.0) distance = 10.0;  // Cap the distance for better visuals
+        if (distance > 10.0) distance = 10.0;
 
         int wallHeight = (int)(SCREEN_HEIGHT / distance);
         int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
         int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
 
-        // Calculate texture X coordinate based on the hit position
-        int textureX = (int)(hit_position_on_wall * TEXTURE_WIDTH);
-
-        // Create source rectangle for the texture
-        SDL_Rect srcRect;
-        srcRect.x = textureX;  // The part of the texture to sample from
-        srcRect.y = 0;         // Start from the top of the texture
-        srcRect.w = 1;         // Width of a vertical slice
-        srcRect.h = TEXTURE_HEIGHT;  // Height of the texture
-
-        // Create destination rectangle for where the texture slice will be drawn
-        SDL_Rect destRect;
-        destRect.x = x;           // Draw one vertical line at this X position
-        destRect.y = wallTop;     // Start drawing from the top of the wall
-        destRect.w = 1;           // Draw only one pixel-wide vertical slice
-        destRect.h = wallHeight;  // Height of the wall slice
-
-        // Draw the wall slice with the texture
-        SDL_RenderCopy(renderer, wallTexture, &srcRect, &destRect);
+        // Draw the wall with texture
+        SDL_Rect wallRect = {x, wallTop, 1, wallHeight};
+        SDL_RenderCopy(renderer, wallTexture, NULL, &wallRect);
     }
 
     // Draw the map if enabled
     if (showMap) {
-        int mapStartX = 10;    // Position the map in the top-left corner
+        int mapStartX = 10;
         int mapStartY = 10;
-        int mapWidth = 160;    // Width of the map on screen (adjust as needed)
-        int mapHeight = 120;   // Height of the map on screen (adjust as needed)
-        int tileSize = TILE_SIZE; // Size of each tile (you should define TILE_SIZE)
+        int mapWidth = 160;
+        int mapHeight = 120;
+        int tileSize = TILE_SIZE;
 
-        // Draw the map tiles
         for (int y = 0; y < MAP_HEIGHT; y++) {
             for (int x = 0; x < MAP_WIDTH; x++) {
-                SDL_Rect rect;
-                rect.x = mapStartX + x * tileSize;  // Position of the tile
-                rect.y = mapStartY + y * tileSize;  // Position of the tile
-                rect.w = tileSize;                  // Width of the tile
-                rect.h = tileSize;                  // Height of the tile
+                SDL_Rect rect = {mapStartX + x * tileSize, mapStartY + y * tileSize, tileSize, tileSize};
 
                 if (maze_map[x][y] == 1) {
-                    // Wall color (e.g., red)
                     SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
                 } else {
-                    // Empty space color (e.g., white)
                     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
                 }
-
                 SDL_RenderFillRect(renderer, &rect);
             }
         }
 
-        // Draw the player's position on the map
         float mapPlayerX = mapStartX + (player->x * mapWidth / MAP_WIDTH);
         float mapPlayerY = mapStartY + (player->y * mapHeight / MAP_HEIGHT);
-        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);  // Green color for player's position
-        SDL_Rect playerRect = { (int)mapPlayerX - 2, (int)mapPlayerY - 2, 4, 4 };  // Small rectangle to represent the player
+        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+        SDL_Rect playerRect = {(int)mapPlayerX - 2, (int)mapPlayerY - 2, 4, 4};
         SDL_RenderFillRect(renderer, &playerRect);
 
-        // Draw the player's line of sight on the map
-        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);  // Green color for line of sight
+        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
         for (int i = 0; i < SCREEN_WIDTH; i++) {
             float rayAngle = player->angle - (FOV / 2) + (FOV * i / SCREEN_WIDTH);
-            float endX = mapPlayerX + cos(rayAngle) * (mapWidth / 2);  // Adjust length as needed
-            float endY = mapPlayerY + sin(rayAngle) * (mapHeight / 2); // Adjust length as needed
+            float endX = mapPlayerX + cos(rayAngle) * (mapWidth / 2);
+            float endY = mapPlayerY + sin(rayAngle) * (mapHeight / 2);
             SDL_RenderDrawLine(renderer, mapPlayerX, mapPlayerY, endX, endY);
         }
     }
 
     SDL_RenderPresent(renderer);
 }
+
+
 
 
 void handleInput(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
@@ -378,14 +347,7 @@ int main(int argc, char* argv[]) {
         fprintf(stderr, "SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
         return 1;
     }
-
-    if (!IMG_Init(IMG_INIT_PNG))
-    {
-        printf("SDL_image could not initialize! IMG_Error: %s\n", IMG_GetError());
-        return 1;
-    }
-
-  
+    
     window = SDL_CreateWindow("Raycasting Demo", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     if (!window) {
         fprintf(stderr, "Window could not be created! SDL_Error: %s\n", SDL_GetError());
@@ -398,11 +360,6 @@ int main(int argc, char* argv[]) {
         fprintf(stderr, "Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
         SDL_DestroyWindow(window);
         SDL_Quit();
-        return 1;
-    }
-
-     // Load textures
-    if (loadTextures(renderer) < 0) {
         return 1;
     }
 
@@ -426,6 +383,10 @@ int main(int argc, char* argv[]) {
 
         SDL_Delay(16);  // Cap the frame rate to ~60 FPS
     }
+
+
+     // Clean up textures
+     cleanup();
 
     // Clean up and quit SDL
     SDL_DestroyRenderer(renderer);
