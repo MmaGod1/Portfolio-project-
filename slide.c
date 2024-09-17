@@ -110,47 +110,18 @@ void render(Player *player) {
 
 void handleInput(Player *player, bool *running, int maze[MAZE_WIDTH][MAZE_HEIGHT]) {
     SDL_Event event;
-    const Uint8 *keystate = SDL_GetKeyboardState(NULL);
+void handleInput(Player *player, bool *running) {
+    SDL_Event event;
 
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT) {
             *running = false;
         }
 
-        // Calculate new player position based on key presses
-        float newX = player->x;
-        float newY = player->y;
-
-        if (keystate[SDL_SCANCODE_W]) { // Move forward
-            newX += cos(player->angle) * player->moveSpeed;
-            newY += sin(player->angle) * player->moveSpeed;
-        }
-        if (keystate[SDL_SCANCODE_S]) { // Move backward
-            newX -= cos(player->angle) * player->moveSpeed;
-            newY -= sin(player->angle) * player->moveSpeed;
-        }
-        if (keystate[SDL_SCANCODE_A]) { // Move left
-            newX -= cos(player->angle + M_PI / 2) * player->moveSpeed;
-            newY -= sin(player->angle + M_PI / 2) * player->moveSpeed;
-        }
-        if (keystate[SDL_SCANCODE_D]) { // Move right
-            newX += cos(player->angle + M_PI / 2) * player->moveSpeed;
-            newY += sin(player->angle + M_PI / 2) * player->moveSpeed;
-        }
-
-        // Collision detection
-        int gridX = (int)(newX / TILE_SIZE);
-        int gridY = (int)(newY / TILE_SIZE);
-
-        if (gridX >= 0 && gridX < MAZE_WIDTH && gridY >= 0 && gridY < MAZE_HEIGHT) {
-            if (maze[gridX][gridY] == 0) { // Check if the new position is open
-                player->x = newX;
-                player->y = newY;
-            }
-        }
-
-        // Handle rotation
         if (event.type == SDL_KEYDOWN) {
+            float moveStep = player->moveSpeed;
+            float moveAngle = player->angle;
+
             switch (event.key.keysym.sym) {
                 case SDLK_q:  // Quit when 'q' is pressed
                     *running = false;
@@ -163,10 +134,53 @@ void handleInput(Player *player, bool *running, int maze[MAZE_WIDTH][MAZE_HEIGHT
                     player->angle += player->rotSpeed;
                     if (player->angle > 2 * M_PI) player->angle -= 2 * M_PI;
                     break;
+                case SDLK_w:  // Move forward
+                    {
+                        float newX = player->x + cos(moveAngle) * moveStep;
+                        float newY = player->y + sin(moveAngle) * moveStep;
+
+                        // Check for collisions and adjust position if needed
+                        if (maze_map[(int)newX][(int)player->y] == 0) player->x = newX;
+                        if (maze_map[(int)player->x][(int)newY] == 0) player->y = newY;
+                    }
+                    break;
+                case SDLK_s:  // Move backward
+                    {
+                        float newX = player->x - cos(moveAngle) * moveStep;
+                        float newY = player->y - sin(moveAngle) * moveStep;
+
+                        // Check for collisions and adjust position if needed
+                        if (maze_map[(int)newX][(int)player->y] == 0) player->x = newX;
+                        if (maze_map[(int)player->x][(int)newY] == 0) player->y = newY;
+                    }
+                    break;
+                case SDLK_a:  // Strafe left
+                    {
+                        float strafeAngle = player->angle - M_PI / 2;
+                        float newX = player->x + cos(strafeAngle) * moveStep;
+                        float newY = player->y + sin(strafeAngle) * moveStep;
+
+                        // Check for collisions and adjust position if needed
+                        if (maze_map[(int)newX][(int)player->y] == 0) player->x = newX;
+                        if (maze_map[(int)player->x][(int)newY] == 0) player->y = newY;
+                    }
+                    break;
+                case SDLK_d:  // Strafe right
+                    {
+                        float strafeAngle = player->angle + M_PI / 2;
+                        float newX = player->x + cos(strafeAngle) * moveStep;
+                        float newY = player->y + sin(strafeAngle) * moveStep;
+
+                        // Check for collisions and adjust position if needed
+                        if (maze_map[(int)newX][(int)player->y] == 0) player->x = newX;
+                        if (maze_map[(int)player->x][(int)newY] == 0) player->y = newY;
+                    }
+                    break;
             }
         }
     }
 }
+
 int main(int argc, char* argv[]) {
     // Initialize SDL
     SDL_Init(SDL_INIT_VIDEO);
