@@ -71,6 +71,7 @@ float castRay(float playerX, float playerY, float rayAngle) {
     }
 }
 
+// Draw sky and floor functions
 void drawSky() {
     SDL_SetRenderDrawColor(renderer, 135, 206, 235, 255);  // Light blue for sky
     SDL_Rect skyRect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT / 2};
@@ -83,6 +84,7 @@ void drawFloor() {
     SDL_RenderFillRect(renderer, &floorRect);
 }
 
+// Render function
 void render(Player *player) {
     SDL_RenderClear(renderer);
 
@@ -113,24 +115,28 @@ void render(Player *player) {
     SDL_RenderPresent(renderer);
 }
 
-bool isWall(float x, float y) {
+// Function to check collisions
+bool isColliding(float x, float y) {
     int mapX = (int)x;
     int mapY = (int)y;
-    return mapX >= 0 && mapX < MAP_WIDTH && mapY >= 0 && mapY < MAP_HEIGHT && map[mapX][mapY] == 1;
+    return (mapX >= 0 && mapX < MAP_WIDTH && mapY >= 0 && mapY < MAP_HEIGHT && map[mapX][mapY] == 1);
 }
 
-void movePlayer(Player *player, float deltaX, float deltaY) {
-    float newX = player->x + deltaX;
-    float newY = player->y + deltaY;
+// Move player with collision handling
+void movePlayer(Player *player, float dx, float dy) {
+    float newX = player->x + dx;
+    float newY = player->y + dy;
 
-    if (!isWall(newX, player->y)) {
+    // Check for collision in the new position
+    if (!isColliding(newX, player->y)) {
         player->x = newX;
     }
-    if (!isWall(player->x, newY)) {
+    if (!isColliding(player->x, newY)) {
         player->y = newY;
     }
 }
 
+// Handle input
 void handleInput(Player *player, bool *running) {
     SDL_Event event;
 
