@@ -9,7 +9,7 @@
 #define FOV (M_PI / 3) // 60 degrees field of view
 
 // Maze map (1 = wall, 0 = empty space)
-int maze_map[MAP_WIDTH][MAP_HEIGHT] = {
+int map[MAP_WIDTH][MAP_HEIGHT] = {
         {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},                       
         {1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1},
         {1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1},
@@ -78,7 +78,7 @@ void drawSky() {
 }
 
 void drawFloor() {
-    SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);  // Gray for floor
+    SDL_SetRenderDrawColor(renderer, 34, 139, 34, 255);  // Green for floor (Forest Green)
     SDL_Rect floorRect = {0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2};
     SDL_RenderFillRect(renderer, &floorRect);
 }
