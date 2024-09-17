@@ -108,9 +108,7 @@ void render(Player *player) {
     SDL_RenderPresent(renderer);
 }
 
-void handleInput(Player *player, bool *running, int maze[MAZE_WIDTH][MAZE_HEIGHT]) {
-    SDL_Event event;
-void handleInput(Player *player, bool *running) {
+void handleInput(Player *player, bool *running, int maze[MAP_WIDTH][MAP_HEIGHT]) {
     SDL_Event event;
 
     while (SDL_PollEvent(&event)) {
@@ -139,9 +137,9 @@ void handleInput(Player *player, bool *running) {
                         float newX = player->x + cos(moveAngle) * moveStep;
                         float newY = player->y + sin(moveAngle) * moveStep;
 
-                        // Check for collisions and adjust position if needed
-                        if (maze_map[(int)newX][(int)player->y] == 0) player->x = newX;
-                        if (maze_map[(int)player->x][(int)newY] == 0) player->y = newY;
+                        // Check for collisions
+                        if (maze[(int)newX][(int)player->y] == 0) player->x = newX;
+                        if (maze[(int)player->x][(int)newY] == 0) player->y = newY;
                     }
                     break;
                 case SDLK_s:  // Move backward
@@ -149,9 +147,9 @@ void handleInput(Player *player, bool *running) {
                         float newX = player->x - cos(moveAngle) * moveStep;
                         float newY = player->y - sin(moveAngle) * moveStep;
 
-                        // Check for collisions and adjust position if needed
-                        if (maze_map[(int)newX][(int)player->y] == 0) player->x = newX;
-                        if (maze_map[(int)player->x][(int)newY] == 0) player->y = newY;
+                        // Check for collisions
+                        if (maze[(int)newX][(int)player->y] == 0) player->x = newX;
+                        if (maze[(int)player->x][(int)newY] == 0) player->y = newY;
                     }
                     break;
                 case SDLK_a:  // Strafe left
@@ -160,9 +158,9 @@ void handleInput(Player *player, bool *running) {
                         float newX = player->x + cos(strafeAngle) * moveStep;
                         float newY = player->y + sin(strafeAngle) * moveStep;
 
-                        // Check for collisions and adjust position if needed
-                        if (maze_map[(int)newX][(int)player->y] == 0) player->x = newX;
-                        if (maze_map[(int)player->x][(int)newY] == 0) player->y = newY;
+                        // Check for collisions
+                        if (maze[(int)newX][(int)player->y] == 0) player->x = newX;
+                        if (maze[(int)player->x][(int)newY] == 0) player->y = newY;
                     }
                     break;
                 case SDLK_d:  // Strafe right
@@ -171,15 +169,16 @@ void handleInput(Player *player, bool *running) {
                         float newX = player->x + cos(strafeAngle) * moveStep;
                         float newY = player->y + sin(strafeAngle) * moveStep;
 
-                        // Check for collisions and adjust position if needed
-                        if (maze_map[(int)newX][(int)player->y] == 0) player->x = newX;
-                        if (maze_map[(int)player->x][(int)newY] == 0) player->y = newY;
+                        // Check for collisions
+                        if (maze[(int)newX][(int)player->y] == 0) player->x = newX;
+                        if (maze[(int)player->x][(int)newY] == 0) player->y = newY;
                     }
                     break;
             }
         }
     }
 }
+
 
 int main(int argc, char* argv[]) {
     // Initialize SDL
