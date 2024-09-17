@@ -34,8 +34,7 @@ int map[MAP_WIDTH][MAP_HEIGHT] = {
         {1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1},
         {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
         {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
-};
-
+};                                          #define MAP_HEIGHT 24My_Learnings/SDL2/Portfolio-project-
 typedef struct {
     float x, y;         // Player position
     float angle;        // Player angle (rotation)
@@ -113,8 +112,13 @@ void render(Player *player) {
     SDL_RenderPresent(renderer);
 }
 
-void handleInput(Player *player) {
+void handleInput(Player *player, bool *running) {
     const Uint8 *state = SDL_GetKeyboardState(NULL);
+
+    // Quit game when 'q' is pressed
+    if (state[SDL_SCANCODE_Q]) {
+        *running = false;
+    }
 
     // Rotation (left and right arrow keys)
     if (state[SDL_SCANCODE_LEFT]) {
@@ -154,8 +158,8 @@ int main(int argc, char* argv[]) {
             }
         }
 
-        handleInput(&player);  // Handle player input
-        render(&player);       // Render the scene
+        handleInput(&player, &running);  // Handle player input
+        render(&player);                 // Render the scene
 
         SDL_Delay(16);  // Cap the frame rate to ~60 FPS
     }
