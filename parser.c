@@ -12,6 +12,9 @@
 #define MAP_DISPLAY_WIDTH 200
 #define MAP_DISPLAY_HEIGHT 150
 #define TILE_SIZE (MAP_DISPLAY_WIDTH / MAP_WIDTH)
+// Global variable to toggle map display
+int showMap = 1;  // 1 to show map, 0 to hide map
+
 
 
 // Maze map (1 = wall, 0 = empty space)
@@ -88,48 +91,66 @@ void drawFloor() {
     SDL_RenderFillRect(renderer, &floorRect);
 }
 
+
+
 void render(Player *player) {
     SDL_RenderClear(renderer);
 
-    // Draw the map as a static part of the window
-    int mapStartX = 0;
-    int mapStartY = 0;
-    int mapWidth = MAP_DISPLAY_WIDTH;  // Width of the map area
-    int mapHeight = MAP_DISPLAY_HEIGHT; // Height of the map area
-
-    // Draw the map first
-    for (int y = 0; y < MAP_HEIGHT; y++) {
-        for (int x = 0; x < MAP_WIDTH; x++) {
-            SDL_Rect rect;
-            rect.x = mapStartX + x * TILE_SIZE;  // Position of the tile
-            rect.y = mapStartY + y * TILE_SIZE;  // Position of the tile
-            rect.w = TILE_SIZE;                  // Width of the tile
-            rect.h = TILE_SIZE;                  // Height of the tile
-
-            if (maze_map[x][y] == 1) {
-                // Wall color (e.g., red)
-                SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-            } else {
-                // Empty space color (e.g., white)
-                SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-            }
-
-            SDL_RenderFillRect(renderer, &rect);
-        }
-    }
-
-    // Draw a border around the map for clarity
-    SDL_Rect border;
-    border.x = mapStartX;
-    border.y = mapStartY;
-    border.w = mapWidth;
-    border.h = mapHeight;
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);  // Black border
-    SDL_RenderDrawRect(renderer, &border);
-
-    // Draw the rest of the scene (sky, floor, rays)
+    // Draw the sky and floor
     drawSky();
     drawFloor();
+
+    // Draw the map if enabled
+    if (showMap) {
+        // Map parameters
+        int mapStartX = 0;
+        int mapStartY = 0;
+        int mapWidth = MAP_DISPLAY_WIDTH;  // Define map width (e.g., 160)
+        int mapHeight = MAP_DISPLAY_HEIGHT; // Define map height (e.g., 120)
+
+        // Draw the map tiles
+        for (int y = 0; y < MAP_HEIGHT; y++) {
+            for (int x = 0; x < MAP_WIDTH; x++) {
+                SDL_Rect rect;
+                rect.x = mapStartX + x * TILE_SIZE;  // Position of the tile
+                rect.y = mapStartY + y * TILE_SIZE;  // Position of the tile
+                rect.w = TILE_SIZE;                  // Width of the tile
+                rect.h = TILE_SIZE;                  // Height of the tile
+
+                if (maze_map[x][y] == 1) {
+                    // Wall color (e.g., red)
+                    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+                } else {
+                    // Empty space color (e.g., white)
+                    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+                }
+
+                SDL_RenderFillRect(renderer, &rect);
+            }
+        }
+
+        // Draw a border around the map for clarity
+        SDL_Rect border;
+        border.x = mapStartX;
+        border.y = mapStartY;
+        border.w = mapWidth;
+        border.h = mapHeight;
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);  // Black border
+        SDL_RenderDrawRect(renderer, &border);
+
+        // Draw the player’s line of sight on the map
+        // Example: Draw a line from the player's position to the map's boundary
+        float mapPlayerX = mapStartX + player->x * TILE_SIZE / MAP_WIDTH; // Scale player’s x to map size
+        float mapPlayerY = mapStartY + player->y * TILE_SIZE / MAP_HEIGHT; // Scale player’s y to map size
+
+        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);  // Green color for player’s line of sight
+        for (int i = 0; i < SCREEN_WIDTH; i++) {
+            float rayAngle = player->angle - (FOV / 2) + (FOV * i / SCREEN_WIDTH);
+            float endX = mapPlayerX + cos(rayAngle) * 20;  // Adjust length as needed
+            float endY = mapPlayerY + sin(rayAngle) * 20;  // Adjust length as needed
+            SDL_RenderDrawLine(renderer, mapPlayerX, mapPlayerY, endX, endY);
+        }
+    }
 
     // Cast rays across the screen
     for (int x = 0; x < SCREEN_WIDTH; x++) {
@@ -150,6 +171,7 @@ void render(Player *player) {
 
     SDL_RenderPresent(renderer);
 }
+
 
 void handleInput(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
     SDL_Event event;
@@ -190,6 +212,9 @@ void handleInput(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIG
                                 player->y = newY;
                             }
                         }
+                case SDLK_m:
+                            showMap = !showMap;
+                            break;
                     }
                     break;
                 case SDLK_s:  // Move backward
