@@ -119,6 +119,7 @@ void handleInput(Player *player, bool *running) {
         if (event.type == SDL_KEYDOWN) {
             float moveStep = player->moveSpeed;
             float moveAngle = player->angle;
+
             switch (event.key.keysym.sym) {
                 case SDLK_q:  // Quit when 'q' is pressed
                     *running = false;
@@ -131,20 +132,46 @@ void handleInput(Player *player, bool *running) {
                     player->angle += player->rotSpeed;
                     if (player->angle > 2 * M_PI) player->angle -= 2 * M_PI;
                     break;
-                case SDLK_UP:  // Move forward
+                case SDLK_w:  // Move forward
                     {
                         float newX = player->x + cos(moveAngle) * moveStep;
                         float newY = player->y + sin(moveAngle) * moveStep;
-                        if (map[(int)newX][(int)player->y] == 0) player->x = newX;
-                        if (map[(int)player->x][(int)newY] == 0) player->y = newY;
+
+                        // Check for collisions
+                        if (maze_map[(int)newX][(int)player->y] == 0) player->x = newX;
+                        if (maze_map[(int)player->x][(int)newY] == 0) player->y = newY;
                     }
                     break;
-                case SDLK_DOWN:  // Move backward
+                case SDLK_s:  // Move backward
                     {
                         float newX = player->x - cos(moveAngle) * moveStep;
                         float newY = player->y - sin(moveAngle) * moveStep;
-                        if (map[(int)newX][(int)player->y] == 0) player->x = newX;
-                        if (map[(int)player->x][(int)newY] == 0) player->y = newY;
+
+                        // Check for collisions
+                        if (maze_map[(int)newX][(int)player->y] == 0) player->x = newX;
+                        if (maze_map[(int)player->x][(int)newY] == 0) player->y = newY;
+                    }
+                    break;
+                case SDLK_a:  // Strafe left
+                    {
+                        float strafeAngle = player->angle - M_PI / 2;
+                        float newX = player->x + cos(strafeAngle) * moveStep;
+                        float newY = player->y + sin(strafeAngle) * moveStep;
+
+                        // Check for collisions
+                        if (maze_map[(int)newX][(int)player->y] == 0) player->x = newX;
+                        if (maze_map[(int)player->x][(int)newY] == 0) player->y = newY;
+                    }
+                    break;
+                case SDLK_d:  // Strafe right
+                    {
+                        float strafeAngle = player->angle + M_PI / 2;
+                        float newX = player->x + cos(strafeAngle) * moveStep;
+                        float newY = player->y + sin(strafeAngle) * moveStep;
+
+                        // Check for collisions
+                        if (maze_map[(int)newX][(int)player->y] == 0) player->x = newX;
+                        if (maze_map[(int)player->x][(int)newY] == 0) player->y = newY;
                     }
                     break;
             }
