@@ -138,8 +138,8 @@ void handleInput(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIG
                         float newY = player->y + sin(moveAngle) * moveStep;
 
                         // Check for collisions
-                        if (maze[(int)newX][(int)player->y] == 0) player->x = newX;
-                        if (maze[(int)player->x][(int)newY] == 0) player->y = newY;
+                        if (maze_map[(int)newX][(int)player->y] == 0) player->x = newX;
+                        if (maze_map[(int)player->x][(int)newY] == 0) player->y = newY;
                     }
                     break;
                 case SDLK_s:  // Move backward
@@ -148,8 +148,8 @@ void handleInput(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIG
                         float newY = player->y - sin(moveAngle) * moveStep;
 
                         // Check for collisions
-                        if (maze[(int)newX][(int)player->y] == 0) player->x = newX;
-                        if (maze[(int)player->x][(int)newY] == 0) player->y = newY;
+                        if (maze_map[(int)newX][(int)player->y] == 0) player->x = newX;
+                        if (maze_map[(int)player->x][(int)newY] == 0) player->y = newY;
                     }
                     break;
                 case SDLK_a:  // Strafe left
@@ -159,8 +159,8 @@ void handleInput(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIG
                         float newY = player->y + sin(strafeAngle) * moveStep;
 
                         // Check for collisions
-                        if (maze[(int)newX][(int)player->y] == 0) player->x = newX;
-                        if (maze[(int)player->x][(int)newY] == 0) player->y = newY;
+                        if (maze_map[(int)newX][(int)player->y] == 0) player->x = newX;
+                        if (maze_map[(int)player->x][(int)newY] == 0) player->y = newY;
                     }
                     break;
                 case SDLK_d:  // Strafe right
@@ -170,8 +170,8 @@ void handleInput(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIG
                         float newY = player->y + sin(strafeAngle) * moveStep;
 
                         // Check for collisions
-                        if (maze[(int)newX][(int)player->y] == 0) player->x = newX;
-                        if (maze[(int)player->x][(int)newY] == 0) player->y = newY;
+                        if (maze_map[(int)newX][(int)player->y] == 0) player->x = newX;
+                        if (maze_map[(int)player->x][(int)newY] == 0) player->y = newY;
                     }
                     break;
             }
