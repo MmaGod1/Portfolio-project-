@@ -129,7 +129,28 @@ void render(Player *player) {
         destRect.h = wallHeight;  // Height of the wall slice
 
         // Draw the wall slice with the texture
-        SDL_RenderCopy(renderer, wallTexture, &srcRect, &destRect);
+void render(Player *player) {
+    SDL_RenderClear(renderer);
+
+    // Draw the sky and floor
+    drawSky();
+    drawFloor();
+
+    // Cast rays across the screen
+    for (int x = 0; x < SCREEN_WIDTH; x++) {
+        float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
+        float distance = castRay(player->x, player->y, rayAngle);
+
+        // Debug output
+        if (distance > 10.0) distance = 10.0;  // Cap the distance for better visuals
+
+        int wallHeight = (int)(SCREEN_HEIGHT / distance);
+        int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
+        int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
+
+        // Draw the vertical line representing the wall slice
+        SDL_SetRenderDrawColor(renderer, 180, 180, 180, 255);  // Light gray
+        SDL_RenderDrawLine(renderer, x, wallTop, x, wallBottom);
     }
 
     // Draw the map if enabled
