@@ -46,7 +46,6 @@ typedef struct {
 SDL_Window *window;
 SDL_Renderer *renderer;
 
-// Function to cast a single ray and return the distance to the nearest wall
 float castRay(float playerX, float playerY, float rayAngle) {
     float rayX = playerX;
     float rayY = playerY;
@@ -78,7 +77,7 @@ void drawSky() {
 }
 
 void drawFloor() {
-    SDL_SetRenderDrawColor(renderer, 34, 139, 34, 255);  // Green for floor (Forest Green)
+    SDL_SetRenderDrawColor(renderer, 34, 139, 34, 255);  // Green for floor
     SDL_Rect floorRect = {0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2};
     SDL_RenderFillRect(renderer, &floorRect);
 }
@@ -86,7 +85,6 @@ void drawFloor() {
 void render(Player *player) {
     SDL_RenderClear(renderer);
 
-    // Draw sky and floor
     drawSky();
     drawFloor();
 
@@ -95,21 +93,15 @@ void render(Player *player) {
         float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
         float distance = castRay(player->x, player->y, rayAngle);
 
-        // Prevent division by zero
-        if (distance < 0.01) distance = 0.01;
+        // Debug output
+        if (distance > 10.0) distance = 10.0;  // Cap the distance for better visuals
 
         int wallHeight = (int)(SCREEN_HEIGHT / distance);
         int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
         int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
 
-        // Color walls differently based on the angle (N/S vs E/W walls)
-        if (fabs(cos(rayAngle)) > fabs(sin(rayAngle))) {
-            SDL_SetRenderDrawColor(renderer, 180, 180, 180, 255);  // Lighter gray
-        } else {
-            SDL_SetRenderDrawColor(renderer, 120, 120, 120, 255);  // Darker gray
-        }
-
         // Draw the vertical line representing the wall slice
+        SDL_SetRenderDrawColor(renderer, 180, 180, 180, 255);  // Light gray
         SDL_RenderDrawLine(renderer, x, wallTop, x, wallBottom);
     }
 
