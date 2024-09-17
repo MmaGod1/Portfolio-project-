@@ -13,7 +13,6 @@ float rotateSpeed = 0.05f; // Rotation speed
 #define MAP_HEIGHT 24
 
 int maze_map[MAP_WIDTH][MAP_HEIGHT] = {
-int maze_map[MAP_WIDTH][MAP_HEIGHT] = {
         {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},                       
         {1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1},
         {1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1},
