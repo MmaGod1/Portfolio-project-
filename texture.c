@@ -142,82 +142,41 @@ void render(Player *player) {
         float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
         float distance = castRay(player->x, player->y, rayAngle);
 
-        // Debug output
-        if (distance > 10.0) distance = 10.0;  // Cap the distance for better visuals
+        // Cap the distance for better visuals
+        if (distance > 10.0) distance = 10.0;
 
         int wallHeight = (int)(SCREEN_HEIGHT / distance);
         int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
         int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
 
-        // Calculate texture coordinates and width for wall slice
-        SDL_Rect srcRect;
-        srcRect.x = 0;
-        srcRect.y = 0;
-        srcRect.w = TEXTURE_WIDTH; // Width of the texture
-        srcRect.h = TEXTURE_HEIGHT; // Height of the texture
+        // Select the appropriate texture (e.g., wallTexture) based on the ray hit
+        SDL_Texture* textureToUse = wallTexture;
 
+        // Calculate the X coordinate of the texture slice to render
+        SDL_Rect srcRect;
+        srcRect.x = /* Calculate based on hit position */;
+        srcRect.y = 0;
+        srcRect.w = 1; // Only render a thin slice of the texture
+        srcRect.h = TEXTURE_HEIGHT;
+
+        // Destination rectangle for the wall slice on the screen
         SDL_Rect destRect;
-        destRect.x = x;
+        destRect.x = x; // Current column on the screen
         destRect.y = wallTop;
-        destRect.w = 1; // Width of the slice (1 pixel wide)
+        destRect.w = 1; // Draw one pixel wide vertical line
         destRect.h = wallHeight;
 
-        // Select the appropriate texture based on the ray's distance
-        SDL_Texture* textureToUse = textureWall; // Choose the right texture here
-
-        // Draw the texture slice representing the wall
+        // Render the texture slice for the wall
         SDL_RenderCopy(renderer, textureToUse, &srcRect, &destRect);
     }
 
     // Draw the map if enabled
     if (showMap) {
-        int mapStartX = 10;    // Position the map in the top-left corner
-        int mapStartY = 10;
-        int mapWidth = 160;    // Width of the map on screen (adjust as needed)
-        int mapHeight = 120;   // Height of the map on screen (adjust as needed)
-        int tileSize = TILE_SIZE; // Size of each tile (you should define TILE_SIZE)
-
-        // Draw the map tiles
-        for (int y = 0; y < MAP_HEIGHT; y++) {
-            for (int x = 0; x < MAP_WIDTH; x++) {
-                SDL_Rect rect;
-                rect.x = mapStartX + x * tileSize;  // Position of the tile
-                rect.y = mapStartY + y * tileSize;  // Position of the tile
-                rect.w = tileSize;                  // Width of the tile
-                rect.h = tileSize;                  // Height of the tile
-
-                if (maze_map[x][y] == 1) {
-                    // Wall color (e.g., red)
-                    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-                } else {
-                    // Empty space color (e.g., white)
-                    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-                }
-
-                SDL_RenderFillRect(renderer, &rect);
-            }
-        }
-
-        // Draw the player's position on the map
-        float mapPlayerX = mapStartX + (player->x * mapWidth / MAP_WIDTH);
-        float mapPlayerY = mapStartY + (player->y * mapHeight / MAP_HEIGHT);
-        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);  // Green color for player's position
-        SDL_Rect playerRect = { (int)mapPlayerX - 2, (int)mapPlayerY - 2, 4, 4 };  // Small rectangle to represent the player
-        SDL_RenderFillRect(renderer, &playerRect);
-
-        // Draw the player's line of sight on the map
-        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);  // Green color for line of sight
-        for (int i = 0; i < SCREEN_WIDTH; i++) {
-            float rayAngle = player->angle - (FOV / 2) + (FOV * i / SCREEN_WIDTH);
-            float endX = mapPlayerX + cos(rayAngle) * (mapWidth / 2);  // Adjust length as needed
-            float endY = mapPlayerY + sin(rayAngle) * (mapHeight / 2); // Adjust length as needed
-            SDL_RenderDrawLine(renderer, mapPlayerX, mapPlayerY, endX, endY);
-        }
+        drawMap(player);
     }
 
     SDL_RenderPresent(renderer);
 }
-
 
 
 void handleInput(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
