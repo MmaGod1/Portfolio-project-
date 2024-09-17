@@ -1,6 +1,7 @@
 #include <stdio.h>
-#include "SDL2/SDL.h"
 #include <math.h>
+#include <stdbool.h>
+#include "SDL2/SDL.h"
 
 #define SCREEN_WIDTH 640
 #define SCREEN_HEIGHT 480
@@ -15,7 +16,7 @@ typedef struct {
 } Player;
 
 int maze_map[MAP_WIDTH][MAP_HEIGHT] = {
-    // Your maze map data
+    // Your maze map data (0 for floor, 1 for wall)
 };
 
 SDL_Window *window = NULL;
@@ -78,13 +79,31 @@ void draw_maze(Player player) {
         wallDist = distToWall * cos(player.angle - rayAngle); // Correct for player angle
         wallHeight = (int)(SCREEN_HEIGHT / wallDist);
 
-        color = (wallDist < 5) ? 255 : 127; // Change color based on distance
+        color = (wallDist < 5) ? 169 : 127; // Change color based on distance (Gray for walls)
 
         SDL_SetRenderDrawColor(renderer, color, color, color, 255);
         SDL_RenderDrawLine(renderer, i, (SCREEN_HEIGHT / 2) - (wallHeight / 2), i, (SCREEN_HEIGHT / 2) + (wallHeight / 2));
     }
 
+    // Draw the floor (Green color)
+    SDL_SetRenderDrawColor(renderer, 0, 128, 0, 255); // Green color for floor
+    SDL_RenderDrawLine(renderer, 0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2);
+    SDL_RenderFillRect(renderer, &(SDL_Rect){0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2});
+
     SDL_RenderPresent(renderer);
+}
+
+void draw_map(void) {
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // Black color for map lines
+    for (int y = 0; y < MAP_HEIGHT; y++) {
+        for (int x = 0; x < MAP_WIDTH; x++) {
+            if (maze_map[y][x] == 1) {
+                SDL_Rect rect = {x * (SCREEN_WIDTH / MAP_WIDTH), y * (SCREEN_HEIGHT / MAP_HEIGHT), SCREEN_WIDTH / MAP_WIDTH, SCREEN_HEIGHT / MAP_HEIGHT};
+                SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // Wall color (black)
+                SDL_RenderFillRect(renderer, &rect);
+            }
+        }
+    }
 }
 
 void handle_input(Player *player, bool *running) {
@@ -120,6 +139,7 @@ int main(void) {
     while (running) {
         handle_input(&player, &running);
         draw_maze(player);
+        draw_map(); // Draw the map on top of the maze
         SDL_Delay(16);
     }
 
