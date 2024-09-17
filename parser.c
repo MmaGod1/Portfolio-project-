@@ -10,6 +10,10 @@
 #define TILE_SIZE 32  // Define TILE_SIZE as 32 pixels
 #define WALL_CHAR '#'
 #define EMPTY_CHAR '.'
+#define MAP_DISPLAY_WIDTH 200
+#define MAP_DISPLAY_HEIGHT 150
+
+
 
 // Maze map (1 = wall, 0 = empty space)
 int maze_map[MAP_WIDTH][MAP_HEIGHT] = {
@@ -86,19 +90,27 @@ void drawFloor() {
 }
 
 void render(Player *player) {
+    // Calculate TILE_SIZE based on the map display size
+    int TILE_SIZE = MAP_DISPLAY_WIDTH / MAP_WIDTH;
+    // Ensure the TILE_SIZE is valid (i.e., non-zero)
+    if (TILE_SIZE < 1) TILE_SIZE = 1;
+
     SDL_RenderClear(renderer);
 
     drawSky();
     drawFloor();
 
-    // Draw the map
+    // Draw the map in the top left corner
+    int mapStartX = 0;
+    int mapStartY = 0;
+
     for (int y = 0; y < MAP_HEIGHT; y++) {
         for (int x = 0; x < MAP_WIDTH; x++) {
             SDL_Rect rect;
-            rect.x = x * TILE_SIZE;  // Position of the tile
-            rect.y = y * TILE_SIZE;  // Position of the tile
-            rect.w = TILE_SIZE;      // Width of the tile
-            rect.h = TILE_SIZE;      // Height of the tile
+            rect.x = mapStartX + x * TILE_SIZE;  // Position of the tile
+            rect.y = mapStartY + y * TILE_SIZE;  // Position of the tile
+            rect.w = TILE_SIZE;                  // Width of the tile
+            rect.h = TILE_SIZE;                  // Height of the tile
 
             if (maze_map[x][y] == 1) {
                 // Wall color (e.g., red)
@@ -131,8 +143,6 @@ void render(Player *player) {
 
     SDL_RenderPresent(renderer);
 }
-
-
 
 void handleInput(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
     SDL_Event event;
