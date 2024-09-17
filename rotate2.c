@@ -9,7 +9,7 @@
 #define FOV (M_PI / 3) // 60 degrees field of view
 
 // Maze map (1 = wall, 0 = empty space)
-int map[MAP_WIDTH][MAP_HEIGHT] = {
+int maze_map[MAP_WIDTH][MAP_HEIGHT] = {
         {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},                       
         {1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1},
         {1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1},
@@ -35,6 +35,7 @@ int map[MAP_WIDTH][MAP_HEIGHT] = {
         {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
         {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
 };
+
 typedef struct {
     float x, y;         // Player position
     float angle;        // Player angle (rotation)
@@ -112,6 +113,24 @@ void render(Player *player) {
     SDL_RenderPresent(renderer);
 }
 
+bool isWall(float x, float y) {
+    int mapX = (int)x;
+    int mapY = (int)y;
+    return mapX >= 0 && mapX < MAP_WIDTH && mapY >= 0 && mapY < MAP_HEIGHT && map[mapX][mapY] == 1;
+}
+
+void movePlayer(Player *player, float deltaX, float deltaY) {
+    float newX = player->x + deltaX;
+    float newY = player->y + deltaY;
+
+    if (!isWall(newX, player->y)) {
+        player->x = newX;
+    }
+    if (!isWall(player->x, newY)) {
+        player->y = newY;
+    }
+}
+
 void handleInput(Player *player, bool *running) {
     SDL_Event event;
 
@@ -133,13 +152,17 @@ void handleInput(Player *player, bool *running) {
                     player->angle += player->rotSpeed;
                     if (player->angle > 2 * M_PI) player->angle -= 2 * M_PI;
                     break;
-                case SDLK_UP:  // Move forward
-                    player->x += cos(player->angle) * player->moveSpeed;
-                    player->y += sin(player->angle) * player->moveSpeed;
+                case SDLK_w:  // Move forward
+                    movePlayer(player, cos(player->angle) * player->moveSpeed, sin(player->angle) * player->moveSpeed);
                     break;
-                case SDLK_DOWN:  // Move backward
-                    player->x -= cos(player->angle) * player->moveSpeed;
-                    player->y -= sin(player->angle) * player->moveSpeed;
+                case SDLK_s:  // Move backward
+                    movePlayer(player, -cos(player->angle) * player->moveSpeed, -sin(player->angle) * player->moveSpeed);
+                    break;
+                case SDLK_a:  // Strafe left
+                    movePlayer(player, cos(player->angle - M_PI_2) * player->moveSpeed, sin(player->angle - M_PI_2) * player->moveSpeed);
+                    break;
+                case SDLK_d:  // Strafe right
+                    movePlayer(player, cos(player->angle + M_PI_2) * player->moveSpeed, sin(player->angle + M_PI_2) * player->moveSpeed);
                     break;
             }
         }
