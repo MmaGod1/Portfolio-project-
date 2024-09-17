@@ -18,8 +18,10 @@ SDL_Renderer *renderer;
 #define TILE_SIZE (MAP_DISPLAY_WIDTH / MAP_WIDTH)
 // Global variable to toggle map display
 int showMap = 1;  // 1 to show map, 0 to hide map
-SDL_Texture *wallTexture = NULL;
-SDL_Texture *floorTexture = NULL;
+SDL_Texture *textureWall;
+#define TEXTURE_WIDTH 64   // Set this to the width of your texture
+#define TEXTURE_HEIGHT 64  // Set this to the height of your texture
+
 
 
 // Maze map (1 = wall, 0 = empty space)
