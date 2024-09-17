@@ -210,8 +210,6 @@ void handleInput(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIG
 }
 
 
-
-
 int loadMap(const char *filename, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
     FILE *file = fopen(filename, "r");
     if (!file) {
@@ -222,28 +220,31 @@ int loadMap(const char *filename, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
     for (int y = 0; y < MAP_HEIGHT; y++) {
         for (int x = 0; x < MAP_WIDTH; x++) {
             int ch = fgetc(file);
+            while (ch == '\r' || ch == '\n') {  // Skip newline and carriage return characters
+                ch = fgetc(file);
+            }
+
             if (ch == EOF) {
-                fprintf(stderr, "Error reading file %s\n", filename);
+                fprintf(stderr, "Error reading file %s: unexpected EOF\n", filename);
                 fclose(file);
                 return -1;
             }
 
-            if (ch == WALL_CHAR) {
-                maze_map[x][y] = 1; // Wall
-            } else if (ch == EMPTY_CHAR) {
-                maze_map[x][y] = 0; // Empty space
+            if (ch == '#') {  // Wall character
+                maze_map[x][y] = 1;
+            } else if (ch == '.') {  // Empty space character
+                maze_map[x][y] = 0;
             } else {
-                fprintf(stderr, "Invalid character '%c' in map file\n", ch);
+                fprintf(stderr, "Invalid character '%c' in map file at [%d,%d]\n", ch, x, y);
                 fclose(file);
                 return -1;
             }
         }
 
-        // Ensure we read a newline character at the end of each line
-        if (fgetc(file) != '\n') {
-            fprintf(stderr, "Map file format error\n");
-            fclose(file);
-            return -1;
+        // Skip over remaining characters (newline or carriage return)
+        while ((ch = fgetc(file)) == '\r' || ch == '\n');
+        if (ch != EOF) {
+            ungetc(ch, file);  // Put the last character back if not EOF
         }
     }
 
