@@ -11,7 +11,7 @@
 #define EMPTY_CHAR '.'
 #define MAP_DISPLAY_WIDTH 200
 #define MAP_DISPLAY_HEIGHT 150
-
+#define TILE_SIZE (MAP_DISPLAY_WIDTH / MAP_WIDTH)
 
 
 // Maze map (1 = wall, 0 = empty space)
