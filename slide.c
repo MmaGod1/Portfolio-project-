@@ -108,7 +108,7 @@ void render(Player *player) {
     SDL_RenderPresent(renderer);
 }
 
-void handleInput(Player *player, bool *running, int maze[MAP_WIDTH][MAP_HEIGHT]) {
+void handleInput(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
     SDL_Event event;
 
     while (SDL_PollEvent(&event)) {
@@ -192,7 +192,7 @@ int main(int argc, char* argv[]) {
     // Game loop
     bool running = true;
     while (running) {
-        handleInput(&player, &running);  // Handle player input
+        handleInput(&player, &running, maze_map);  // Handle player input
         render(&player);                 // Render the scene
 
         SDL_Delay(16);  // Cap the frame rate to ~60 FPS
