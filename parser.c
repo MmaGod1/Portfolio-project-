@@ -89,11 +89,6 @@ void drawFloor() {
 }
 
 void render(Player *player) {
-    // Calculate TILE_SIZE based on the map display size
-    int TILE_SIZE = MAP_DISPLAY_WIDTH / MAP_WIDTH;
-    // Ensure the TILE_SIZE is valid (i.e., non-zero)
-    if (TILE_SIZE < 1) TILE_SIZE = 1;
-
     SDL_RenderClear(renderer);
 
     drawSky();
