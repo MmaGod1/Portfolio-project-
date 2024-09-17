@@ -1,6 +1,11 @@
 #include <SDL2/SDL.h>
 #include <math.h>
 #include <stdbool.h>
+#include <stdio.h>
+
+// Screen dimensions
+#define SCREEN_WIDTH 800
+#define SCREEN_HEIGHT 600
 
 // Player attributes
 float playerX = 1.5f, playerY = 1.5f;  // Starting position
@@ -38,7 +43,6 @@ int maze_map[MAP_WIDTH][MAP_HEIGHT] = {
         {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
         {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
 };
-
 // Check collision function
 bool is_wall(float x, float y) {
     int mapX = (int)x;
@@ -59,30 +63,14 @@ void handle_movement(SDL_Keycode key) {
     float perpY = dirX;   // Perpendicular direction (up)
     
     float newX, newY;
-    bool collisionX = false, collisionY = false;
     
     if (key == SDLK_w) {
         // Move forward
         newX = playerX + dirX * moveSpeed;
         newY = playerY + dirY * moveSpeed;
         
-        if (!is_wall(newX, playerY)) playerX = newX; // Check movement in X direction
-        else collisionX = true;
-        if (!is_wall(playerX, newY)) playerY = newY; // Check movement in Y direction
-        else collisionY = true;
-        
-        // Slide along the wall if necessary
-        if (collisionX && !collisionY) {
-            newX = playerX + perpX * moveSpeed;
-            newY = playerY + perpY * moveSpeed;
-            if (!is_wall(newX, playerY)) playerX = newX;
-            if (!is_wall(playerX, newY)) playerY = newY;
-        } else if (collisionY && !collisionX) {
-            newX = playerX + dirX * moveSpeed;
-            newY = playerY + dirY * moveSpeed;
-            if (!is_wall(playerX, newY)) playerY = newY;
-            if (!is_wall(newX, playerY)) playerX = newX;
-        }
+        if (!is_wall(newX, playerY)) playerX = newX;
+        if (!is_wall(playerX, newY)) playerY = newY;
     }
     
     if (key == SDLK_s) {
@@ -91,22 +79,7 @@ void handle_movement(SDL_Keycode key) {
         newY = playerY - dirY * moveSpeed;
         
         if (!is_wall(newX, playerY)) playerX = newX;
-        else collisionX = true;
         if (!is_wall(playerX, newY)) playerY = newY;
-        else collisionY = true;
-        
-        // Slide along the wall if necessary
-        if (collisionX && !collisionY) {
-            newX = playerX - perpX * moveSpeed;
-            newY = playerY - perpY * moveSpeed;
-            if (!is_wall(newX, playerY)) playerX = newX;
-            if (!is_wall(playerX, newY)) playerY = newY;
-        } else if (collisionY && !collisionX) {
-            newX = playerX - dirX * moveSpeed;
-            newY = playerY - dirY * moveSpeed;
-            if (!is_wall(playerX, newY)) playerY = newY;
-            if (!is_wall(newX, playerY)) playerX = newX;
-        }
     }
     
     if (key == SDLK_a) {
@@ -115,22 +88,7 @@ void handle_movement(SDL_Keycode key) {
         newY = playerY + perpY * moveSpeed;
         
         if (!is_wall(newX, playerY)) playerX = newX;
-        else collisionX = true;
         if (!is_wall(playerX, newY)) playerY = newY;
-        else collisionY = true;
-        
-        // Slide along the wall if necessary
-        if (collisionX && !collisionY) {
-            newX = playerX + dirX * moveSpeed;
-            newY = playerY + dirY * moveSpeed;
-            if (!is_wall(newX, playerY)) playerX = newX;
-            if (!is_wall(playerX, newY)) playerY = newY;
-        } else if (collisionY && !collisionX) {
-            newX = playerX + perpX * moveSpeed;
-            newY = playerY + perpY * moveSpeed;
-            if (!is_wall(playerX, newY)) playerY = newY;
-            if (!is_wall(newX, playerY)) playerX = newX;
-        }
     }
     
     if (key == SDLK_d) {
@@ -139,43 +97,48 @@ void handle_movement(SDL_Keycode key) {
         newY = playerY - perpY * moveSpeed;
         
         if (!is_wall(newX, playerY)) playerX = newX;
-        else collisionX = true;
         if (!is_wall(playerX, newY)) playerY = newY;
-        else collisionY = true;
-        
-        // Slide along the wall if necessary
-        if (collisionX && !collisionY) {
-            newX = playerX - dirX * moveSpeed;
-            newY = playerY - dirY * moveSpeed;
-            if (!is_wall(newX, playerY)) playerX = newX;
-            if (!is_wall(playerX, newY)) playerY = newY;
-        } else if (collisionY && !collisionX) {
-            newX = playerX - perpX * moveSpeed;
-            newY = playerY - perpY * moveSpeed;
-            if (!is_wall(playerX, newY)) playerY = newY;
-            if (!is_wall(newX, playerY)) playerX = newX;
+    }
+}
+
+// Handle rotation
+void handle_rotation(SDL_Event *event) {
+    if (event->type == SDL_KEYDOWN) {
+        if (event->key.keysym.sym == SDLK_LEFT) {
+            playerAngle -= rotateSpeed;
+        } else if (event->key.keysym.sym == SDLK_RIGHT) {
+            playerAngle += rotateSpeed;
         }
     }
 }
 
-void handle_events(SDL_Event *event) {
-    if (event->type == SDL_QUIT) {
-        exit(0);
+// Your main rendering function
+void render(SDL_Renderer *renderer) {
+    // Clear the screen
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // Black background
+    SDL_RenderClear(renderer);
+    
+    // Draw player position (for debugging)
+    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Red player position
+    SDL_RenderDrawPoint(renderer, (int)(playerX * 40), (int)(playerY * 40)); // Scale for visibility
+    
+    // Draw maze (for debugging)
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // White walls
+    for (int x = 0; x < MAP_WIDTH; x++) {
+        for (int y = 0; y < MAP_HEIGHT; y++) {
+            if (maze_map[x][y] == 1) {
+                SDL_Rect rect = { x * 40, y * 40, 40, 40 }; // Scale for visibility
+                SDL_RenderFillRect(renderer, &rect);
+            }
+        }
     }
     
-    if (event->type == SDL_KEYDOWN) {
-        handle_movement(event->key.keysym.sym);
-    }
-}
-
-// Your main rendering function
-void render() {
-    // Your rendering code here
+    SDL_RenderPresent(renderer);
 }
 
 int main(int argc, char *argv[]) {
     SDL_Init(SDL_INIT_VIDEO);
-    SDL_Window *window = SDL_CreateWindow("Raycasting Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN);
+    SDL_Window *window = SDL_CreateWindow("Raycasting Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     
     SDL_Event event;
@@ -183,12 +146,14 @@ int main(int argc, char *argv[]) {
     
     while (running) {
         while (SDL_PollEvent(&event)) {
-            handle_events(&event);
+            if (event.type == SDL_QUIT) {
+                running = false;
+            }
+            handle_movement(event.key.keysym.sym);
+            handle_rotation(&event);
         }
         
-        render();
-        
-        SDL_RenderPresent(renderer);
+        render(renderer);
         SDL_Delay(16); // Cap at ~60 FPS
     }
     
