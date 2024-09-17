@@ -59,6 +59,62 @@ typedef struct {
 SDL_Window *window;
 SDL_Renderer *renderer;
 
+
+int init(const char* wallTexturePath, const char* floorTexturePath) {
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        fprintf(stderr, "SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
+        return -1;
+    }
+
+    window = SDL_CreateWindow("Raycasting Demo", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    if (!window) {
+        fprintf(stderr, "Window could not be created! SDL_Error: %s\n", SDL_GetError());
+        SDL_Quit();
+        return -1;
+    }
+
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    if (!renderer) {
+        fprintf(stderr, "Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+        return -1;
+    }
+
+    // Initialize SDL_image
+    if (IMG_Init(IMG_INIT_PNG) == 0) {
+        fprintf(stderr, "SDL_image could not initialize! IMG_Error: %s\n", IMG_GetError());
+        SDL_DestroyRenderer(renderer);
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+        return -1;
+    }
+
+    // Load textures
+    wallTexture = IMG_LoadTexture(renderer, wallTexturePath);
+    if (!wallTexture) {
+        fprintf(stderr, "Failed to load wall texture! IMG_Error: %s\n", IMG_GetError());
+        IMG_Quit();
+        SDL_DestroyRenderer(renderer);
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+        return -1;
+    }
+
+    floorTexture = IMG_LoadTexture(renderer, floorTexturePath);
+    if (!floorTexture) {
+        fprintf(stderr, "Failed to load floor texture! IMG_Error: %s\n", IMG_GetError());
+        SDL_DestroyTexture(wallTexture);
+        IMG_Quit();
+        SDL_DestroyRenderer(renderer);
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+        return -1;
+    }
+
+    return 0;
+}
+
 float castRay(float playerX, float playerY, float rayAngle) {
     float rayX = playerX;
     float rayY = playerY;
@@ -336,88 +392,32 @@ int loadMap(const char *filename, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
 }
 
 
-
 int main(int argc, char* argv[]) {
-    // Initialize SDL
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s <mapfile>\n", argv[0]);
         return 1;
     }
 
-    // Initialize SDL_image
-    if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
-        printf("SDL_image could not initialize! IMG_Error: %s\n", IMG_GetError());
-        SDL_Quit();
+    if (init("./wall.jpg", "./floor.jpg") != 0) {
         return 1;
     }
 
-    // Create window
-    window = SDL_CreateWindow("SDL2 Example",
-                              SDL_WINDOWPOS_UNDEFINED,
-                              SDL_WINDOWPOS_UNDEFINED,
-                              800, 600, SDL_WINDOW_SHOWN);
-    if (window == NULL) {
-        printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
-        IMG_Quit();
-        SDL_Quit();
-        return 1;
-    }
+    Player player = { .x = 2.0, .y = 2.0, .angle = 0.0, .moveSpeed = 0.05, .rotSpeed = 0.05 };
 
-    // Create renderer
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    if (renderer == NULL) {
-        printf("Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
-        SDL_DestroyWindow(window);
-        IMG_Quit();
-        SDL_Quit();
-        return 1;
-    }
-
-    // Load textures
-    wallTexture = IMG_LoadTexture(renderer, "path_to_your_texture/wall_texture.png");
-    if (!wallTexture) {
-        printf("Failed to load wall texture! SDL_image Error: %s\n", IMG_GetError());
+    if (loadMap(argv[1], maze_map) != 0) {
+        fprintf(stderr, "Failed to load map\n");
         cleanup();
         return 1;
     }
 
-    floorTexture = IMG_LoadTexture(renderer, "path_to_your_texture/floor_texture.png");
-    if (!floorTexture) {
-        printf("Failed to load floor texture! SDL_image Error: %s\n", IMG_GetError());
-        cleanup();
-        return 1;
+    bool running = true;
+    while (running) {
+        handleInput(&player, &running, maze_map);
+        render(&player);
+
+        SDL_Delay(16);
     }
 
-    // Define the wall rectangle
-    SDL_Rect wallRect;
-    wallRect.x = 100;  // X position
-    wallRect.y = 100;  // Y position
-    wallRect.w = 64;   // Width of the wall texture
-    wallRect.h = 64;   // Height of the wall texture
-
-    // Main loop flag
-    int quit = 0;
-    SDL_Event e;
-
-    // Main loop
-    while (!quit) {
-        while (SDL_PollEvent(&e) != 0) {
-            if (e.type == SDL_QUIT) {
-                quit = 1;
-            }
-        }
-
-        // Clear the screen
-        SDL_RenderClear(renderer);
-
-        // Render wall texture
-        SDL_RenderCopy(renderer, wallTexture, NULL, &wallRect);
-
-        // Update the screen
-        SDL_RenderPresent(renderer);
-    }
-
-    // Clean up and quit SDL
     cleanup();
     return 0;
 }
