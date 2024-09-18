@@ -14,7 +14,6 @@
 #define TILE_SIZE (MAP_DISPLAY_WIDTH / MAP_WIDTH)
 // Global variable to toggle map display
 int showMap = 1;  // 1 to show map, 0 to hide map
-Player player;
 
 
 // Maze map (1 = wall, 0 = empty space)
@@ -51,6 +50,7 @@ typedef struct {
     float moveSpeed;
     float rotSpeed;
 } Player;
+Player player;
 
 SDL_Window *window;
 SDL_Renderer *renderer;
