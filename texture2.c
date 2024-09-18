@@ -172,8 +172,6 @@ void loadTextures() {
 void cleanup() {
     SDL_DestroyTexture(wallTexture);
     SDL_DestroyTexture(floorTexture);
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
     IMG_Quit();
     SDL_Quit();
 }
@@ -201,7 +199,8 @@ void render(Player *player) {
 
         // Draw the wall with texture
         SDL_Rect wallRect = {x, wallTop, 1, wallHeight};
-        SDL_RenderCopy(renderer, wallTexture, NULL, &wallRect);
+        SDL_Rect textureRect = {0, 0, 1, wallHeight}; // Adjust texture coordinates if needed
+        SDL_RenderCopy(renderer, wallTexture, &textureRect, &wallRect);
     }
 
     // Draw the map if enabled
@@ -245,7 +244,6 @@ void render(Player *player) {
 
 
 
-
 void handleInput(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
     SDL_Event event;
 
@@ -263,8 +261,8 @@ void handleInput(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIG
                     *running = false;
                     break;
                 case SDLK_m:
-                    showMap = !showMap;
-                    break;
+                        showMap = !showMap;
+                        break;
                 case SDLK_LEFT:  // Rotate left
                     player->angle -= player->rotSpeed;
                     if (player->angle < 0) player->angle += 2 * M_PI;
@@ -281,8 +279,10 @@ void handleInput(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIG
                         // Ensure the new position is within bounds
                         if (newX >= 0 && newX < MAP_WIDTH && newY >= 0 && newY < MAP_HEIGHT) {
                             // Check for collisions with walls
-                            if (maze_map[(int)newX][(int)player->y] == 0 && maze_map[(int)newX][(int)newY] == 0) {
+                            if (maze_map[(int)newX][(int)player->y] == 0 && maze_map[(int)newX][(int)player->y] != 1) {
                                 player->x = newX;
+                            }
+                            if (maze_map[(int)player->x][(int)newY] == 0 && maze_map[(int)player->x][(int)newY] != 1) {
                                 player->y = newY;
                             }
                         }
@@ -296,8 +296,46 @@ void handleInput(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIG
                         // Ensure the new position is within bounds
                         if (newX >= 0 && newX < MAP_WIDTH && newY >= 0 && newY < MAP_HEIGHT) {
                             // Check for collisions with walls
-                            if (maze_map[(int)newX][(int)player->y] == 0 && maze_map[(int)newX][(int)newY] == 0) {
+                            if (maze_map[(int)newX][(int)player->y] == 0 && maze_map[(int)newX][(int)player->y] != 1) {
                                 player->x = newX;
+                            }
+                            if (maze_map[(int)player->x][(int)newY] == 0 && maze_map[(int)player->x][(int)newY] != 1) {
+                                player->y = newY;
+                            }
+                        }
+                    }
+                    break;
+                case SDLK_a:  // Strafe left
+                    {
+                        float strafeAngle = player->angle - M_PI / 2;
+                        float newX = player->x + cos(strafeAngle) * moveStep;
+                        float newY = player->y + sin(strafeAngle) * moveStep;
+
+                        // Ensure the new position is within bounds
+                        if (newX >= 0 && newX < MAP_WIDTH && newY >= 0 && newY < MAP_HEIGHT) {
+                            // Check for collisions with walls
+                            if (maze_map[(int)newX][(int)player->y] == 0 && maze_map[(int)newX][(int)player->y] != 1) {
+                                player->x = newX;
+                            }
+                            if (maze_map[(int)player->x][(int)newY] == 0 && maze_map[(int)player->x][(int)newY] != 1) {
+                                player->y = newY;
+                            }
+                        }
+                    }
+                    break;
+                case SDLK_d:  // Strafe right
+                    {
+                        float strafeAngle = player->angle + M_PI / 2;
+                        float newX = player->x + cos(strafeAngle) * moveStep;
+                        float newY = player->y + sin(strafeAngle) * moveStep;
+
+                        // Ensure the new position is within bounds
+                        if (newX >= 0 && newX < MAP_WIDTH && newY >= 0 && newY < MAP_HEIGHT) {
+                            // Check for collisions with walls
+                            if (maze_map[(int)newX][(int)player->y] == 0 && maze_map[(int)newX][(int)player->y] != 1) {
+                                player->x = newX;
+                            }
+                            if (maze_map[(int)player->x][(int)newY] == 0 && maze_map[(int)player->x][(int)newY] != 1) {
                                 player->y = newY;
                             }
                         }
@@ -307,6 +345,7 @@ void handleInput(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIG
         }
     }
 }
+
 
 int loadMap(const char *filename, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
     FILE *file = fopen(filename, "r");
