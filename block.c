@@ -113,11 +113,34 @@ void drawSky() {
     SDL_RenderFillRect(renderer, &skyRect);
 }
 
+void drawMiniMap(Player *player) {
+    // Draw maze map in the corner
+    for (int y = 0; y < MAP_HEIGHT; y++) {
+        for (int x = 0; x < MAP_WIDTH; x++) {
+            if (maze_map[y][x] == 1) {
+                SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);  // Red for walls
+            } else {
+                SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);  // White for empty spaces
+            }
+
+            SDL_Rect tileRect = {x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE};
+            SDL_RenderFillRect(renderer, &tileRect);
+        }
+    }
+
+    // Draw the player on the map
+    SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);  // Blue for player
+    SDL_Rect playerRect = {(int)(player->x * TILE_SIZE), (int)(player->y * TILE_SIZE), TILE_SIZE / 2, TILE_SIZE / 2};
+    SDL_RenderFillRect(renderer, &playerRect);
+}
+
 void drawFloor() {
     SDL_SetRenderDrawColor(renderer, 34, 139, 34, 255);  // Green for floor
     SDL_Rect floorRect = {0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2};
     SDL_RenderFillRect(renderer, &floorRect);
 }
+
+
 
 void render(Player *player) {
     SDL_RenderClear(renderer);
