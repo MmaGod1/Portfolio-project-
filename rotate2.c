@@ -64,7 +64,7 @@ float castRay(float playerX, float playerY, float rayAngle) {
             return distance;  // Ray went out of bounds
         }
 
-        if (map[mapX][mapY] == 1) {  // Wall hit
+        if (maze_map[mapX][mapY] == 1) {  // Wall hit
             return distance;
         }
     }
