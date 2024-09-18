@@ -78,7 +78,7 @@ float castRay(float playerX, float playerY, float rayAngle) {
         }
     }
 }
-}
+
 
 void drawSky() {
     SDL_SetRenderDrawColor(renderer, 135, 206, 235, 255);  // Light blue for sky
