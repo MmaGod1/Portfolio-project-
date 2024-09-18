@@ -145,7 +145,7 @@ void drawFloor() {
 void render(Player *player) {
     SDL_RenderClear(renderer);
 
-    // Draw the sky and floor (if necessary)
+    // Draw the sky and floor
     drawSky();
     drawFloor();
 
@@ -155,11 +155,14 @@ void render(Player *player) {
         float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
         float distance = castRay(player->x, player->y, rayAngle);
 
-        // Correct the fish-eye distortion
-        distance *= cos(rayAngle - player->angle);
+        // Avoid division by zero for very short distances
+        if (distance < 0.1f) distance = 0.1f;
 
-        // Calculate the height of the wall slice based on the distance
-        int wallHeight = (int)(SCREEN_HEIGHT / distance);
+        // Correct the fish-eye distortion
+        float correctedDistance = distance * cos(rayAngle - player->angle);
+
+        // Calculate the height of the wall slice based on the corrected distance
+        int wallHeight = (int)(SCREEN_HEIGHT / correctedDistance);
         int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
         int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
 
@@ -175,6 +178,8 @@ void render(Player *player) {
 
     SDL_RenderPresent(renderer);
 }
+
+
 
 void handleInput(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
     SDL_Event event;
