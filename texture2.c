@@ -82,7 +82,7 @@ int init(const char* wallTexturePath, const char* floorTexturePath) {
     }
 
     // Initialize SDL_image
-    if (IMG_Init(IMG_INIT_PNG) == 0) {
+    if (IMG_Init(IMG_INIT_JPG) == 0) {
         fprintf(stderr, "SDL_image could not initialize! IMG_Error: %s\n", IMG_GetError());
         SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(window);
@@ -152,22 +152,6 @@ void drawFloor() {
 }
 
 
-
-void loadTextures() {
-    SDL_Surface *wallSurface = IMG_Load("./wall.jpg");
-    SDL_Surface *floorSurface = IMG_Load("./floor.jpg");
-
-    if (!wallSurface || !floorSurface) {
-        printf("Error loading texture: %s\n", IMG_GetError());
-        exit(1);
-    }
-
-    wallTexture = SDL_CreateTextureFromSurface(renderer, wallSurface);
-    floorTexture = SDL_CreateTextureFromSurface(renderer, floorSurface);
-
-    SDL_FreeSurface(wallSurface);
-    SDL_FreeSurface(floorSurface);
-}
 
 void cleanup() {
     SDL_DestroyTexture(wallTexture);
