@@ -172,6 +172,9 @@ void render(Player *player) {
     SDL_Rect floorRect = {0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2};
     SDL_RenderCopy(renderer, floorTexture, NULL, &floorRect);
 
+    int textureWidth, textureHeight;
+    SDL_QueryTexture(wallTexture, NULL, NULL, &textureWidth, &textureHeight);
+
     // Cast rays and draw walls with textures
     for (int x = 0; x < SCREEN_WIDTH; x++) {
         float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
@@ -185,7 +188,17 @@ void render(Player *player) {
 
         // Draw the wall with texture
         SDL_Rect wallRect = {x, wallTop, 1, wallHeight};
-        SDL_Rect textureRect = {0, 0, 1, wallHeight}; // Adjust texture coordinates if needed
+        SDL_Rect textureRect = {0, 0, textureWidth, wallHeight}; // Adjust texture coordinates
+
+        // Calculate texture clipping based on wall height
+        if (wallHeight > textureHeight) {
+            textureRect.y = (wallHeight - textureHeight) / 2;
+            textureRect.h = textureHeight;
+        } else {
+            textureRect.y = 0;
+            textureRect.h = wallHeight;
+        }
+
         SDL_RenderCopy(renderer, wallTexture, &textureRect, &wallRect);
     }
 
@@ -223,11 +236,10 @@ void render(Player *player) {
             float endY = mapPlayerY + sin(rayAngle) * (mapHeight / 2);
             SDL_RenderDrawLine(renderer, mapPlayerX, mapPlayerY, endX, endY);
         }
-    }
+}
 
     SDL_RenderPresent(renderer);
 }
-
 
 
 
