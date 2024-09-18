@@ -103,9 +103,9 @@ float castRay(float playerX, float playerY, float rayAngle) {
         distance = (sideDistX < sideDistY) ? (sideDistX - stepX) : (sideDistY - stepY);
     }
 
-    return distance;
+    // Correct for the perpendicular distance
+    return distance / cos(rayAngle - player.angle);
 }
-
 
 void drawSky() {
     SDL_SetRenderDrawColor(renderer, 135, 206, 235, 255);  // Light blue for sky
