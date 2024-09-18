@@ -170,7 +170,7 @@ void render(Player *player) {
 
     // Optionally render the minimap
     if (showMap) {
-        renderMinimap(player);
+        drawMinimap(player);
     }
 
     SDL_RenderPresent(renderer);
