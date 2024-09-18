@@ -145,32 +145,32 @@ void drawFloor() {
 void render(Player *player) {
     SDL_RenderClear(renderer);
 
-    // Draw sky and floor
+    // Draw the sky and floor (if necessary)
     drawSky();
     drawFloor();
 
-    // Cast rays for each vertical slice of the screen
+    // Cast rays and draw the 3D view
     for (int x = 0; x < SCREEN_WIDTH; x++) {
+        // Calculate the angle of the current ray
         float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
         float distance = castRay(player->x, player->y, rayAngle);
 
-        if (distance > 10.0) distance = 10.0;  // Cap the distance for better visuals
+        // Correct the fish-eye distortion
+        distance *= cos(rayAngle - player->angle);
 
+        // Calculate the height of the wall slice based on the distance
         int wallHeight = (int)(SCREEN_HEIGHT / distance);
         int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
         int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
 
-        // Calculate shading based on distance
-        int colorIntensity = (int)(255 / (distance * distance)); // Decrease brightness with distance
-        colorIntensity = (colorIntensity > 255) ? 255 : colorIntensity;
-
-        SDL_SetRenderDrawColor(renderer, colorIntensity, colorIntensity, colorIntensity, 255);
+        // Draw the vertical line representing the wall slice
+        SDL_SetRenderDrawColor(renderer, 180, 180, 180, 255);  // Wall color
         SDL_RenderDrawLine(renderer, x, wallTop, x, wallBottom);
     }
 
-    // Draw map if enabled
+    // Optionally render the minimap
     if (showMap) {
-        drawMiniMap(player);
+        renderMinimap(player);
     }
 
     SDL_RenderPresent(renderer);
