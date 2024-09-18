@@ -14,7 +14,7 @@
 #define TILE_SIZE (MAP_DISPLAY_WIDTH / MAP_WIDTH)
 // Global variable to toggle map display
 int showMap = 1;  // 1 to show map, 0 to hide map
-
+Player player;
 
 
 // Maze map (1 = wall, 0 = empty space)
@@ -56,7 +56,7 @@ SDL_Window *window;
 SDL_Renderer *renderer;
 
 
-float castRay(float playerX, float playerY, float rayAngle) {
+float castRay(float startX, float startY, float rayAngle, Player *player) {
     float rayX = playerX;
     float rayY = playerY;
 
