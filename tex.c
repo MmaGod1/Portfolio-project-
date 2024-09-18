@@ -87,7 +87,7 @@ int init(const char* wallTexturePath, const char* floorTexturePath) {
         return 0;
     }
 
-    if (!IMG_Init(IMG_INIT_PNG)) {
+    if (!IMG_Init(IMG_INIT_JPG)) {
         printf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
         return 0;
     }
@@ -187,8 +187,8 @@ void renderScene(Player *player) {
 }
 
 int main(int argc, char *argv[]) {
-    const char* wallTexturePath = "path_to_wall_texture.png";
-    const char* floorTexturePath = "path_to_floor_texture.png";
+    const char* wallTexturePath = "./wall.jpg";
+    const char* floorTexturePath = "./floor.jpg";
 
     if (!init(wallTexturePath, floorTexturePath)) {
         printf("Failed to initialize!\n");
