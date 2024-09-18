@@ -201,7 +201,8 @@ void render(Player *player) {
 
         // Draw the wall with texture
         SDL_Rect wallRect = {x, wallTop, 1, wallHeight};
-        SDL_RenderCopy(renderer, wallTexture, NULL, &wallRect);
+        SDL_Rect textureRect = {0, 0, 1, wallHeight}; // Adjust texture coordinates if needed
+        SDL_RenderCopy(renderer, wallTexture, &textureRect, &wallRect);
     }
 
     // Draw the map if enabled
