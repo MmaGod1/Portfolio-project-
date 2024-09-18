@@ -16,6 +16,7 @@
 int showMap = 1;  // 1 to show map, 0 to hide map
 
 
+
 // Maze map (1 = wall, 0 = empty space)
 int maze_map[MAP_WIDTH][MAP_HEIGHT] = {
         {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},                       
@@ -50,88 +51,39 @@ typedef struct {
     float moveSpeed;
     float rotSpeed;
 } Player;
-Player player;
 
 SDL_Window *window;
 SDL_Renderer *renderer;
 
-
-float castRay(float startX, float startY, float rayAngle, Player *player) {
+float castRay(float playerX, float playerY, float rayAngle) {
     float rayX = playerX;
     float rayY = playerY;
-
-    float rayDirX = cos(rayAngle);
-    float rayDirY = sin(rayAngle);
-
-    // Step increments based on the ray's direction
-    float stepX = (rayDirX == 0) ? 1e30 : fabs(1 / rayDirX);
-    float stepY = (rayDirY == 0) ? 1e30 : fabs(1 / rayDirY);
-
-    int mapX = (int)playerX;
-    int mapY = (int)playerY;
-
+    float stepSize = 0.1;  // Slightly larger step size for better accuracy
     float distance = 0.0;
-    bool hit = false;
 
-    // Increments along the grid
-    int stepXDir = (rayDirX < 0) ? -1 : 1;
-    int stepYDir = (rayDirY < 0) ? -1 : 1;
+    while (true) {
+        rayX += cos(rayAngle) * stepSize;
+        rayY += sin(rayAngle) * stepSize;
+        distance += stepSize;
 
-    float sideDistX = (rayDirX < 0) ? (playerX - mapX) * stepX : (mapX + 1.0 - playerX) * stepX;
-    float sideDistY = (rayDirY < 0) ? (playerY - mapY) * stepY : (mapY + 1.0 - playerY) * stepY;
+        int mapX = (int)rayX;
+        int mapY = (int)rayY;
 
-    while (!hit) {
-        // Walk to the next grid boundary
-        if (sideDistX < sideDistY) {
-            sideDistX += stepX;
-            mapX += stepXDir;
-        } else {
-            sideDistY += stepY;
-            mapY += stepYDir;
-        }
-
-        // Check for wall collision
         if (mapX < 0 || mapX >= MAP_WIDTH || mapY < 0 || mapY >= MAP_HEIGHT) {
-            return distance; // Out of bounds
+            return distance;  // Ray went out of bounds
         }
 
-        if (maze_map[mapX][mapY] == 1) {
-            hit = true;
+        if (maze_map[mapX][mapY] == 1) {  // Wall hit
+            return distance;
         }
-
-        // Distance to the current grid boundary
-        distance = (sideDistX < sideDistY) ? (sideDistX - stepX) : (sideDistY - stepY);
     }
-
-    // Correct for the perpendicular distance
-    return distance / cos(rayAngle - player.angle);
+}
 }
 
 void drawSky() {
     SDL_SetRenderDrawColor(renderer, 135, 206, 235, 255);  // Light blue for sky
     SDL_Rect skyRect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT / 2};
     SDL_RenderFillRect(renderer, &skyRect);
-}
-
-void drawMiniMap(Player *player) {
-    // Draw maze map in the corner
-    for (int y = 0; y < MAP_HEIGHT; y++) {
-        for (int x = 0; x < MAP_WIDTH; x++) {
-            if (maze_map[y][x] == 1) {
-                SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);  // Red for walls
-            } else {
-                SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);  // White for empty spaces
-            }
-
-            SDL_Rect tileRect = {x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE};
-            SDL_RenderFillRect(renderer, &tileRect);
-        }
-    }
-
-    // Draw the player on the map
-    SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);  // Blue for player
-    SDL_Rect playerRect = {(int)(player->x * TILE_SIZE), (int)(player->y * TILE_SIZE), TILE_SIZE / 2, TILE_SIZE / 2};
-    SDL_RenderFillRect(renderer, &playerRect);
 }
 
 void drawFloor() {
@@ -141,7 +93,6 @@ void drawFloor() {
 }
 
 
-
 void render(Player *player) {
     SDL_RenderClear(renderer);
 
@@ -149,37 +100,71 @@ void render(Player *player) {
     drawSky();
     drawFloor();
 
-    // Cast rays and draw the 3D view
+    // Cast rays across the screen
     for (int x = 0; x < SCREEN_WIDTH; x++) {
-        // Calculate the angle of the current ray
         float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
         float distance = castRay(player->x, player->y, rayAngle);
 
-        // Avoid division by zero for very short distances
-        if (distance < 0.1f) distance = 0.1f;
+        // Debug output
+        if (distance > 10.0) distance = 10.0;  // Cap the distance for better visuals
 
-        // Correct the fish-eye distortion
-        float correctedDistance = distance * cos(rayAngle - player->angle);
-
-        // Calculate the height of the wall slice based on the corrected distance
-        int wallHeight = (int)(SCREEN_HEIGHT / correctedDistance);
+        int wallHeight = (int)(SCREEN_HEIGHT / distance);
         int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
         int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
 
         // Draw the vertical line representing the wall slice
-        SDL_SetRenderDrawColor(renderer, 180, 180, 180, 255);  // Wall color
+        SDL_SetRenderDrawColor(renderer, 180, 180, 180, 255);  // Light gray
         SDL_RenderDrawLine(renderer, x, wallTop, x, wallBottom);
     }
 
-    // Optionally render the minimap
+    // Draw the map if enabled
     if (showMap) {
-        drawMiniMap(player);
+        int mapStartX = 10;    // Position the map in the top-left corner
+        int mapStartY = 10;
+        int mapWidth = 160;    // Width of the map on screen (adjust as needed)
+        int mapHeight = 120;   // Height of the map on screen (adjust as needed)
+        int tileSize = TILE_SIZE; // Size of each tile (you should define TILE_SIZE)
+
+        // Draw the map tiles
+        for (int y = 0; y < MAP_HEIGHT; y++) {
+            for (int x = 0; x < MAP_WIDTH; x++) {
+                SDL_Rect rect;
+                rect.x = mapStartX + x * tileSize;  // Position of the tile
+                rect.y = mapStartY + y * tileSize;  // Position of the tile
+                rect.w = tileSize;                  // Width of the tile
+                rect.h = tileSize;                  // Height of the tile
+
+                if (maze_map[x][y] == 1) {
+                    // Wall color (e.g., red)
+                    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+                } else {
+                    // Empty space color (e.g., white)
+                    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+                }
+
+                SDL_RenderFillRect(renderer, &rect);
+            }
+        }
+
+        // Draw the player's position on the map
+        float mapPlayerX = mapStartX + (player->x * mapWidth / MAP_WIDTH);
+        float mapPlayerY = mapStartY + (player->y * mapHeight / MAP_HEIGHT);
+        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);  // Green color for player's position
+        SDL_Rect playerRect = { (int)mapPlayerX - 2, (int)mapPlayerY - 2, 4, 4 };  // Small rectangle to represent the player
+        SDL_RenderFillRect(renderer, &playerRect);
+
+        // Draw the player's line of sight on the map
+        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);  // Green color for line of sight
+        for (int i = 0; i < SCREEN_WIDTH; i++) {
+            float rayAngle = player->angle - (FOV / 2) + (FOV * i / SCREEN_WIDTH);
+            float endX = mapPlayerX + cos(rayAngle) * (mapWidth / 2);  // Adjust length as needed
+            float endY = mapPlayerY + sin(rayAngle) * (mapHeight / 2); // Adjust length as needed
+            SDL_RenderDrawLine(renderer, mapPlayerX, mapPlayerY, endX, endY);
+        }
     }
 
     SDL_RenderPresent(renderer);
 }
-
-
 
 void handleInput(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
     SDL_Event event;
