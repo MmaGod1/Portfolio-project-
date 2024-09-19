@@ -56,51 +56,47 @@ SDL_Window *window;
 SDL_Renderer *renderer;
 
 float castRay(float playerX, float playerY, float rayAngle) {
-    // Initialize the starting points of the ray
     float rayX = playerX;
     float rayY = playerY;
-
-    // Initialize the distances
     float distance = 0.0;
 
-    // Calculate the intersections with the nearest gridlines
-    float xIntercept = floor(rayX);
-    float yIntercept = floor(rayY);
+    // Check horizontal intersections
+    float xStep = cos(rayAngle) > 0 ? 1.0 : -1.0;
+    float yStep = sin(rayAngle) > 0 ? 1.0 : -1.0;
+    float tanAngle = tan(rayAngle);
+    
+    // Calculate horizontal distance
+    float horizontalDist = INFINITY;
+    float yIntercept = floor(rayY) + (sin(rayAngle) > 0 ? 1.0 : 0.0);
+    float xIntercept = rayX + (yIntercept - rayY) * tanAngle;
 
-    // Vectors for moving to the next gridline
-    float xStep = cos(rayAngle) > 0 ? 1 : -1;
-    float yStep = sin(rayAngle) > 0 ? 1 : -1;
-
-    // Horizontal and vertical distances
-    float horizontalDist, verticalDist;
-
-    // Calculate the horizontal distance
-    if (sin(rayAngle) != 0) {
-        float yDist = (yIntercept + (sin(rayAngle) > 0 ? 1 : 0) - rayY) / sin(rayAngle);
-        float xDist = (yDist * cos(rayAngle));
-        horizontalDist = yDist * sqrt(cos(rayAngle) * cos(rayAngle) + sin(rayAngle) * sin(rayAngle));
-    } else {
-        horizontalDist = INFINITY;
+    while (xIntercept >= 0 && xIntercept < MAP_WIDTH && yIntercept >= 0 && yIntercept < MAP_HEIGHT) {
+        if (maze_map[(int)xIntercept][(int)yIntercept] == 1) {
+            horizontalDist = sqrt((rayX - xIntercept) * (rayX - xIntercept) + (rayY - yIntercept) * (rayY - yIntercept));
+            break;
+        }
+        yIntercept += yStep;
+        xIntercept += tanAngle * xStep;
     }
 
-    // Calculate the vertical distance
-    if (cos(rayAngle) != 0) {
-        float xDist = (xIntercept + (cos(rayAngle) > 0 ? 1 : 0) - rayX) / cos(rayAngle);
-        float yDist = (xDist * sin(rayAngle));
-        verticalDist = xDist * sqrt(cos(rayAngle) * cos(rayAngle) + sin(rayAngle) * sin(rayAngle));
-    } else {
-        verticalDist = INFINITY;
+    // Calculate vertical distance
+    float verticalDist = INFINITY;
+    float xIntercept2 = floor(rayX) + (cos(rayAngle) > 0 ? 1.0 : 0.0);
+    float yIntercept2 = rayY + (xIntercept2 - rayX) / tanAngle;
+
+    while (xIntercept2 >= 0 && xIntercept2 < MAP_WIDTH && yIntercept2 >= 0 && yIntercept2 < MAP_HEIGHT) {
+        if (maze_map[(int)xIntercept2][(int)yIntercept2] == 1) {
+            verticalDist = sqrt((rayX - xIntercept2) * (rayX - xIntercept2) + (rayY - yIntercept2) * (rayY - yIntercept2));
+            break;
+        }
+        xIntercept2 += xStep;
+        yIntercept2 += (1.0 / tanAngle) * yStep;
     }
 
-    // Determine which distance is closer
-    if (horizontalDist < verticalDist) {
-        distance = horizontalDist;
-    } else {
-        distance = verticalDist;
-    }
-
-    return distance;
+    // Return the shortest distance
+    return fmin(horizontalDist, verticalDist);
 }
+
 
 
 void drawSky() {
@@ -128,9 +124,10 @@ void render(Player *player) {
         float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
         float distance = castRay(player->x, player->y, rayAngle);
 
-        // Debug output
-        if (distance > 10.0) distance = 10.0;  // Cap the distance for better visuals
+        // Cap the distance for better visuals
+        if (distance > 10.0) distance = 10.0;
 
+        // Calculate wall height and position
         int wallHeight = (int)(SCREEN_HEIGHT / distance);
         int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
         int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
@@ -158,11 +155,9 @@ void render(Player *player) {
                 rect.h = tileSize;                  // Height of the tile
 
                 if (maze_map[x][y] == 1) {
-                    // Wall color (e.g., red)
-                    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+                    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Wall color (e.g., red)
                 } else {
-                    // Empty space color (e.g., white)
-                    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+                    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // Empty space color (e.g., white)
                 }
 
                 SDL_RenderFillRect(renderer, &rect);
@@ -188,6 +183,8 @@ void render(Player *player) {
 
     SDL_RenderPresent(renderer);
 }
+
+
 
 void handleInput(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
     SDL_Event event;
