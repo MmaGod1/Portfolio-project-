@@ -245,23 +245,24 @@ void handleInput(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIG
                     }
                     break;
                 case SDLK_d:  // Strafe right
-                    {
-                        float strafeAngle = player->angle + M_PI / 2;
-                        float newX = player->x + cos(strafeAngle) * moveStep;
-                        float newY = player->y + sin(strafeAngle) * moveStep;
-
-                        // Ensure the new position is within bounds
-                        if (newX >= 0 && newX < MAP_WIDTH && newY >= 0 && newY < MAP_HEIGHT) {
-                            // Check for collisions with walls
-                            if (maze_map[(int)newX][(int)player->y] == 0 && maze_map[(int)newX][(int)player->y] != 1) {
-                                player->x = newX;
-                            }
-                            if (maze_map[(int)player->x][(int)newY] == 0 && maze_map[(int)player->x][(int)newY] != 1) {
-                                player->y = newY;
-                            }
+                        {
+                                float strafeAngle = player->angle + M_PI / 2;      
+                                float newX = player->x + cos(strafeAngle) * moveStep;       
+                                float newY = player->y + sin(strafeAngle) * moveStep;
+       
+                                // Ensure the new position is within bounds        
+                                if (newX >= 0 && newX < MAP_WIDTH && newY >= 0 && newY < MAP_HEIGHT) {      
+                                        // Check for collisions with walls
+                                        if (maze_map[(int)newX][(int)player->y] == 0) {              
+                                               player->x = newX;      
+                                        }          
+                                        if (maze_map[(int)player->x][(int)newY] == 0) {             
+                                                player->y = newY;
+                                        }      
+                             }
                         }
-                    }
-                    break;
+ 
+                        break;
             }
         }
     }
