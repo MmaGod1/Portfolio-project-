@@ -92,6 +92,8 @@ void drawFloor() {
 }
 
 
+
+
 void render(Player *player) {
     SDL_RenderClear(renderer);
 
@@ -104,10 +106,14 @@ void render(Player *player) {
         float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
         float distance = castRay(player->x, player->y, rayAngle);
 
-        // Debug output
-        if (distance > 10.0) distance = 10.0;  // Cap the distance for better visuals
+        // Cap the distance for better visuals
+        if (distance > 10.0) distance = 10.0;
 
-        int wallHeight = (int)(SCREEN_HEIGHT / distance);
+        // Correct distance for wall height calculation
+        float correctedDistance = distance * cos(rayAngle - player->angle);
+
+        // Calculate wall height and position
+        int wallHeight = (int)(SCREEN_HEIGHT / correctedDistance);
         int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
         int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
 
@@ -134,11 +140,9 @@ void render(Player *player) {
                 rect.h = tileSize;                  // Height of the tile
 
                 if (maze_map[x][y] == 1) {
-                    // Wall color (e.g., red)
-                    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+                    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Wall color (e.g., red)
                 } else {
-                    // Empty space color (e.g., white)
-                    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+                    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // Empty space color (e.g., white)
                 }
 
                 SDL_RenderFillRect(renderer, &rect);
@@ -164,6 +168,9 @@ void render(Player *player) {
 
     SDL_RenderPresent(renderer);
 }
+
+
+
 
 void handleInput(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
     SDL_Event event;
