@@ -117,6 +117,11 @@ void render(Player *player) {
         int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
         int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
 
+        // Ensure wall heights are non-negative
+        if (wallHeight < 0) wallHeight = 0;
+        if (wallTop < 0) wallTop = 0;
+        if (wallBottom >= SCREEN_HEIGHT) wallBottom = SCREEN_HEIGHT - 1;
+
         // Draw the vertical line representing the wall slice
         SDL_SetRenderDrawColor(renderer, 180, 180, 180, 255);  // Light gray
         SDL_RenderDrawLine(renderer, x, wallTop, x, wallBottom);
