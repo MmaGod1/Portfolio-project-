@@ -64,6 +64,8 @@ float castRay(float playerX, float playerY, float rayAngle) {
     while (rayAngle < 0) rayAngle += 2 * M_PI;
     while (rayAngle >= 2 * M_PI) rayAngle -= 2 * M_PI;
 
+    printf("Casting ray at angle: %f\n", rayAngle); // Debug print
+
     // Horizontal raycasting
     float xStep = cos(rayAngle) > 0 ? 1.0 : -1.0;
     float yStep = sin(rayAngle) > 0 ? 1.0 : -1.0;
@@ -76,6 +78,7 @@ float castRay(float playerX, float playerY, float rayAngle) {
     while (xIntercept >= 0 && xIntercept < MAP_WIDTH && yIntercept >= 0 && yIntercept < MAP_HEIGHT) {
         if (maze_map[(int)xIntercept][(int)yIntercept] == 1) {
             horizontalDist = sqrt(pow(rayX - xIntercept, 2) + pow(rayY - yIntercept, 2));
+            printf("Horizontal hit at: (%f, %f) Distance: %f\n", xIntercept, yIntercept, horizontalDist); // Debug print
             break;
         }
         yIntercept += yStep;
@@ -90,6 +93,7 @@ float castRay(float playerX, float playerY, float rayAngle) {
     while (xIntercept2 >= 0 && xIntercept2 < MAP_WIDTH && yIntercept2 >= 0 && yIntercept2 < MAP_HEIGHT) {
         if (maze_map[(int)xIntercept2][(int)yIntercept2] == 1) {
             verticalDist = sqrt(pow(rayX - xIntercept2, 2) + pow(rayY - yIntercept2, 2));
+            printf("Vertical hit at: (%f, %f) Distance: %f\n", xIntercept2, yIntercept2, verticalDist); // Debug print
             break;
         }
         xIntercept2 += xStep;
@@ -97,9 +101,10 @@ float castRay(float playerX, float playerY, float rayAngle) {
     }
 
     // Return the shortest distance
-    return fmin(horizontalDist, verticalDist);
+    float finalDist = fmin(horizontalDist, verticalDist);
+    printf("Final Distance: %f\n", finalDist); // Debug print
+    return finalDist;
 }
-
 
 
 void drawSky() {
@@ -138,6 +143,8 @@ void render(Player *player) {
         int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
         int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
 
+        printf("Wall at x=%d: Height=%d, Top=%d, Bottom=%d\n", x, wallHeight, wallTop, wallBottom); // Debug print
+
         // Ensure wall heights are non-negative
         if (wallHeight < 0) wallHeight = 0;
         if (wallTop < 0) wallTop = 0;
@@ -150,46 +157,13 @@ void render(Player *player) {
 
     // Draw the map if enabled
     if (showMap) {
-        int mapStartX = 10;    // Position the map in the top-left corner
-        int mapStartY = 10;
-        int mapWidth = 160;    // Width of the map on screen (adjust as needed)
-        int mapHeight = 120;   // Height of the map on screen (adjust as needed)
-        int tileSize = TILE_SIZE; // Size of each tile (you should define TILE_SIZE)
+        // Map drawing logic
+        // ...
 
-        // Draw the map tiles
-        for (int y = 0; y < MAP_HEIGHT; y++) {
-            for (int x = 0; x < MAP_WIDTH; x++) {
-                SDL_Rect rect;
-                rect.x = mapStartX + x * tileSize;  // Position of the tile
-                rect.y = mapStartY + y * tileSize;  // Position of the tile
-                rect.w = tileSize;                  // Width of the tile
-                rect.h = tileSize;                  // Height of the tile
-
-                if (maze_map[x][y] == 1) {
-                    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Wall color (e.g., red)
-                } else {
-                    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // Empty space color (e.g., white)
-                }
-
-                SDL_RenderFillRect(renderer, &rect);
-            }
-        }
-
-        // Draw the player's position on the map
+        // Print player map position for debugging
         float mapPlayerX = mapStartX + (player->x * mapWidth / MAP_WIDTH);
         float mapPlayerY = mapStartY + (player->y * mapHeight / MAP_HEIGHT);
-        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);  // Green color for player's position
-        SDL_Rect playerRect = { (int)mapPlayerX - 2, (int)mapPlayerY - 2, 4, 4 };  // Small rectangle to represent the player
-        SDL_RenderFillRect(renderer, &playerRect);
-
-        // Draw the player's line of sight on the map
-        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);  // Green color for line of sight
-        for (int i = 0; i < SCREEN_WIDTH; i++) {
-            float rayAngle = player->angle - (FOV / 2) + (FOV * i / SCREEN_WIDTH);
-            float endX = mapPlayerX + cos(rayAngle) * (mapWidth / 2);  // Adjust length as needed
-            float endY = mapPlayerY + sin(rayAngle) * (mapHeight / 2); // Adjust length as needed
-            SDL_RenderDrawLine(renderer, mapPlayerX, mapPlayerY, endX, endY);
-        }
+        printf("Player on map at: (%f, %f)\n", mapPlayerX, mapPlayerY);
     }
 
     SDL_RenderPresent(renderer);
@@ -241,6 +215,7 @@ void handleInput(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIG
                             player->y = newY;
                         }
                     }
+                    printf("Moved player to: (%f, %f)\n", player->x, player->y); // Debug print
                 }
                     break;
                 case SDLK_a:  // Strafe left
@@ -260,6 +235,7 @@ void handleInput(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIG
                             player->y = newY;
                         }
                     }
+                    printf("Strafed player to: (%f, %f)\n", player->x, player->y); // Debug print
                 }
                     break;
             }
@@ -275,43 +251,36 @@ int loadMap(const char *filename, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
         return -1;
     }
 
-    int ch;  // Declare the variable 'ch' here
+    int ch;
+    int x = 0, y = 0;
 
-    for (int y = 0; y < MAP_HEIGHT; y++) {
-        for (int x = 0; x < MAP_WIDTH; x++) {
-            ch = fgetc(file);
-            while (ch == '\r' || ch == '\n') {  // Skip newline and carriage return characters
-                ch = fgetc(file);
+    while ((ch = fgetc(file)) != EOF) {
+        if (ch == '\r' || ch == '\n') {
+            // Skip line breaks
+            if (x > 0) {
+                y++;
+                x = 0;
             }
-
-            if (ch == EOF) {
-                fprintf(stderr, "Error reading file %s: unexpected EOF\n", filename);
-                fclose(file);
-                return -1;
+        } else if (ch >= '0' && ch <= '9') {
+            // Convert character to integer and store in maze_map
+            maze_map[x][y] = ch - '0';
+            x++;
+            if (x >= MAP_WIDTH) {
+                fprintf(stderr, "Warning: Line exceeds map width\n");
+                break;
             }
-
-            if (ch == '#') {  // Wall character
-                maze_map[x][y] = 1;
-            } else if (ch == '.') {  // Empty space character
-                maze_map[x][y] = 0;
-            } else {
-                fprintf(stderr, "Invalid character '%c' in map file at [%d,%d]\n", ch, x, y);
-                fclose(file);
-                return -1;
-            }
+        } else {
+            fprintf(stderr, "Warning: Unexpected character '%c' in map file\n", ch);
         }
+    }
 
-        // Skip over remaining characters (newline or carriage return)
-        while ((ch = fgetc(file)) == '\r' || ch == '\n');
-        if (ch != EOF) {
-            ungetc(ch, file);  // Put the last character back if not EOF
-        }
+    if (y >= MAP_HEIGHT) {
+        fprintf(stderr, "Warning: Map file exceeds map height\n");
     }
 
     fclose(file);
     return 0;
 }
-
 
 int main(int argc, char* argv[]) {
     if (argc != 2) {
