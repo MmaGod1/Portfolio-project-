@@ -2,8 +2,8 @@
 #include <math.h>
 #include <stdbool.h>
 
-#define SCREEN_WIDTH 800
-#define SCREEN_HEIGHT 600
+#define SCREEN_WIDTH 1024
+#define SCREEN_HEIGHT 768
 #define MAP_WIDTH 24
 #define MAP_HEIGHT 24
 #define FOV (M_PI / 3) // 60 degrees field of view
