@@ -127,10 +127,18 @@ void render(Player *player) {
         // Cap the distance for better visuals
         if (distance > 10.0) distance = 10.0;
 
+        // Correct distance for wall height calculation
+        float correctedDistance = distance * cos(rayAngle - player->angle);
+
         // Calculate wall height and position
-        int wallHeight = (int)(SCREEN_HEIGHT / (distance * cos(rayAngle - player->angle)));
+        int wallHeight = (int)(SCREEN_HEIGHT / correctedDistance);
         int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
         int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
+
+        // Ensure wall heights are non-negative
+        if (wallHeight < 0) wallHeight = 0;
+        if (wallTop < 0) wallTop = 0;
+        if (wallBottom >= SCREEN_HEIGHT) wallBottom = SCREEN_HEIGHT - 1;
 
         // Draw the vertical line representing the wall slice
         SDL_SetRenderDrawColor(renderer, 180, 180, 180, 255);  // Light gray
