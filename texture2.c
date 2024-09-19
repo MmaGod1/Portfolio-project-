@@ -128,7 +128,7 @@ void render(Player *player) {
         if (distance > 10.0) distance = 10.0;
 
         // Calculate wall height and position
-        int wallHeight = (int)(SCREEN_HEIGHT / distance);
+        int wallHeight = (int)(SCREEN_HEIGHT / (distance * cos(rayAngle - player->angle)));
         int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
         int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
 
