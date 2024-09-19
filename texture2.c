@@ -58,15 +58,18 @@ SDL_Renderer *renderer;
 float castRay(float playerX, float playerY, float rayAngle) {
     float rayX = playerX;
     float rayY = playerY;
-    float distance = 0.0;
+    float distance = INFINITY;
 
-    // Check horizontal intersections
+    // Normalize the angle
+    while (rayAngle < 0) rayAngle += 2 * M_PI;
+    while (rayAngle >= 2 * M_PI) rayAngle -= 2 * M_PI;
+
+    // Horizontal raycasting
     float xStep = cos(rayAngle) > 0 ? 1.0 : -1.0;
     float yStep = sin(rayAngle) > 0 ? 1.0 : -1.0;
     float tanAngle = tan(rayAngle);
-    
-    // Calculate horizontal distance
     float horizontalDist = INFINITY;
+    
     float yIntercept = floor(rayY) + (sin(rayAngle) > 0 ? 1.0 : 0.0);
     float xIntercept = rayX + (yIntercept - rayY) * tanAngle;
 
@@ -79,7 +82,7 @@ float castRay(float playerX, float playerY, float rayAngle) {
         xIntercept += tanAngle * xStep;
     }
 
-    // Calculate vertical distance
+    // Vertical raycasting
     float verticalDist = INFINITY;
     float xIntercept2 = floor(rayX) + (cos(rayAngle) > 0 ? 1.0 : 0.0);
     float yIntercept2 = rayY + (xIntercept2 - rayX) / tanAngle;
