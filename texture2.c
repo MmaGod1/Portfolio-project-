@@ -14,10 +14,6 @@
 #define TILE_SIZE (MAP_DISPLAY_WIDTH / MAP_WIDTH)
 // Global variable to toggle map display
 int showMap = 1;  // 1 to show map, 0 to hide map
-SDL_Texture* wallTextures[4];  // Array for wall textures
-SDL_Texture* floorTexture;     // Floor texture
-SDL_Texture* ceilingTexture;   // Ceiling texture
-
 
 
 
@@ -50,78 +46,101 @@ int maze_map[MAP_WIDTH][MAP_HEIGHT] = {
 };
 
 typedef struct {
-    float distance;
-    int textureIndex;  // Index for the texture (wall)
-} RayResult;
+    float x, y;         // Player position
+    float angle;        // Player angle (rotation)
+    float moveSpeed;
+    float rotSpeed;
+} Player;
 
-RayResult castRay(float playerX, float playerY, float rayAngle) {
+SDL_Window *window;
+SDL_Renderer *renderer;
+
+float castRay(float playerX, float playerY, float rayAngle) {
+    // Initialize the starting points of the ray
     float rayX = playerX;
     float rayY = playerY;
-    float stepSize = 0.05;
+
+    // Initialize the distances
     float distance = 0.0;
-    int textureIndex = 0;
 
-    while (true) {
-        rayX += cos(rayAngle) * stepSize;
-        rayY += sin(rayAngle) * stepSize;
-        distance += stepSize;
+    // Calculate the intersections with the nearest gridlines
+    float xIntercept = floor(rayX);
+    float yIntercept = floor(rayY);
 
-        int mapX = (int)rayX;
-        int mapY = (int)rayY;
+    // Vectors for moving to the next gridline
+    float xStep = cos(rayAngle) > 0 ? 1 : -1;
+    float yStep = sin(rayAngle) > 0 ? 1 : -1;
 
-        if (mapX < 0 || mapX >= MAP_WIDTH || mapY < 0 || mapY >= MAP_HEIGHT) {
-            return (RayResult){distance, textureIndex};
-        }
+    // Horizontal and vertical distances
+    float horizontalDist, verticalDist;
 
-        if (maze_map[mapX][mapY] == 1) {  // Wall hit
-            textureIndex = (mapX + mapY) % 4;  // Cycle through 4 textures
-            return (RayResult){distance, textureIndex};
-        }
+    // Calculate the horizontal distance
+    if (sin(rayAngle) != 0) {
+        float yDist = (yIntercept + (sin(rayAngle) > 0 ? 1 : 0) - rayY) / sin(rayAngle);
+        float xDist = (yDist * cos(rayAngle));
+        horizontalDist = yDist * sqrt(cos(rayAngle) * cos(rayAngle) + sin(rayAngle) * sin(rayAngle));
+    } else {
+        horizontalDist = INFINITY;
     }
-}
 
+    // Calculate the vertical distance
+    if (cos(rayAngle) != 0) {
+        float xDist = (xIntercept + (cos(rayAngle) > 0 ? 1 : 0) - rayX) / cos(rayAngle);
+        float yDist = (xDist * sin(rayAngle));
+        verticalDist = xDist * sqrt(cos(rayAngle) * cos(rayAngle) + sin(rayAngle) * sin(rayAngle));
+    } else {
+        verticalDist = INFINITY;
+    }
+
+    // Determine which distance is closer
+    if (horizontalDist < verticalDist) {
+        distance = horizontalDist;
+    } else {
+        distance = verticalDist;
+    }
+
+    return distance;
+}
 
 
 void drawSky() {
+    SDL_SetRenderDrawColor(renderer, 135, 206, 235, 255);  // Light blue for sky
     SDL_Rect skyRect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT / 2};
-    SDL_RenderCopy(renderer, ceilingTexture, NULL, &skyRect);
+    SDL_RenderFillRect(renderer, &skyRect);
 }
 
 void drawFloor() {
+    SDL_SetRenderDrawColor(renderer, 34, 139, 34, 255);  // Green for floor
     SDL_Rect floorRect = {0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2};
-    SDL_RenderCopy(renderer, floorTexture, NULL, &floorRect);
+    SDL_RenderFillRect(renderer, &floorRect);
 }
 
 
 void render(Player *player) {
     SDL_RenderClear(renderer);
 
-    // Draw sky and floor textures
-    SDL_Rect ceilingRect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT / 2};
-    SDL_Rect floorRect = {0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2};
-    SDL_RenderCopy(renderer, ceilingTexture, NULL, &ceilingRect);
-    SDL_RenderCopy(renderer, floorTexture, NULL, &floorRect);
+    // Draw the sky and floor
+    drawSky();
+    drawFloor();
 
     // Cast rays across the screen
     for (int x = 0; x < SCREEN_WIDTH; x++) {
         float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
-        RayResult rayResult = castRay(player->x, player->y, rayAngle);
+        float distance = castRay(player->x, player->y, rayAngle);
 
-        // Cap the distance for better visuals (optional)
-        if (rayResult.distance > 10.0f) rayResult.distance = 10.0f;
+        // Debug output
+        if (distance > 10.0) distance = 10.0;  // Cap the distance for better visuals
 
-        // Calculate the height and position of the wall slice
-        int wallHeight = (int)(SCREEN_HEIGHT / rayResult.distance);
+        int wallHeight = (int)(SCREEN_HEIGHT / distance);
         int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
         int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
 
-        // Render the wall slice with the correct texture
-        SDL_Rect wallRect = {x, wallTop, 1, wallHeight};
-        SDL_Rect textureRect = {0, 0, 64, 64};  // Assuming texture size 64x64
-        SDL_RenderCopy(renderer, wallTextures[rayResult.textureIndex], &textureRect, &wallRect);
+        // Draw the vertical line representing the wall slice
+        SDL_SetRenderDrawColor(renderer, 180, 180, 180, 255);  // Light gray
+        SDL_RenderDrawLine(renderer, x, wallTop, x, wallBottom);
     }
 
-    // Map rendering (if enabled)
+    // Draw the map if enabled
     if (showMap) {
         int mapStartX = 10;    // Position the map in the top-left corner
         int mapStartY = 10;
@@ -153,13 +172,13 @@ void render(Player *player) {
         // Draw the player's position on the map
         float mapPlayerX = mapStartX + (player->x * mapWidth / MAP_WIDTH);
         float mapPlayerY = mapStartY + (player->y * mapHeight / MAP_HEIGHT);
-        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);  // Green for player's position
-        SDL_Rect playerRect = { (int)mapPlayerX - 2, (int)mapPlayerY - 2, 4, 4 };
+        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);  // Green color for player's position
+        SDL_Rect playerRect = { (int)mapPlayerX - 2, (int)mapPlayerY - 2, 4, 4 };  // Small rectangle to represent the player
         SDL_RenderFillRect(renderer, &playerRect);
 
         // Draw the player's line of sight on the map
-        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);  // Green for line of sight
-        for (int i = 0; i < SCREEN_WIDTH; i += 10) {  // Reduce line density by incrementing by 10
+        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);  // Green color for line of sight
+        for (int i = 0; i < SCREEN_WIDTH; i++) {
             float rayAngle = player->angle - (FOV / 2) + (FOV * i / SCREEN_WIDTH);
             float endX = mapPlayerX + cos(rayAngle) * (mapWidth / 2);  // Adjust length as needed
             float endY = mapPlayerY + sin(rayAngle) * (mapHeight / 2); // Adjust length as needed
@@ -169,8 +188,6 @@ void render(Player *player) {
 
     SDL_RenderPresent(renderer);
 }
-
-
 
 void handleInput(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
     SDL_Event event;
@@ -252,23 +269,24 @@ void handleInput(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIG
                     }
                     break;
                 case SDLK_d:  // Strafe right
-                    {
-                        float strafeAngle = player->angle + M_PI / 2;
-                        float newX = player->x + cos(strafeAngle) * moveStep;
-                        float newY = player->y + sin(strafeAngle) * moveStep;
-
-                        // Ensure the new position is within bounds
-                        if (newX >= 0 && newX < MAP_WIDTH && newY >= 0 && newY < MAP_HEIGHT) {
-                            // Check for collisions with walls
-                            if (maze_map[(int)newX][(int)player->y] == 0 && maze_map[(int)newX][(int)player->y] != 1) {
-                                player->x = newX;
-                            }
-                            if (maze_map[(int)player->x][(int)newY] == 0 && maze_map[(int)player->x][(int)newY] != 1) {
-                                player->y = newY;
-                            }
+                        {
+                                float strafeAngle = player->angle + M_PI / 2;      
+                                float newX = player->x + cos(strafeAngle) * moveStep;       
+                                float newY = player->y + sin(strafeAngle) * moveStep;
+       
+                                // Ensure the new position is within bounds        
+                                if (newX >= 0 && newX < MAP_WIDTH && newY >= 0 && newY < MAP_HEIGHT) {      
+                                        // Check for collisions with walls
+                                        if (maze_map[(int)newX][(int)player->y] == 0) {              
+                                               player->x = newX;      
+                                        }          
+                                        if (maze_map[(int)player->x][(int)newY] == 0) {             
+                                                player->y = newY;
+                                        }      
+                             }
                         }
-                    }
-                    break;
+ 
+                        break;
             }
         }
     }
@@ -347,32 +365,6 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    // Load wall textures
-    wallTextures[0] = loadTexture("wall1.bmp");
-    wallTextures[1] = loadTexture("wall2.bmp");
-    wallTextures[2] = loadTexture("wall3.bmp");
-    wallTextures[3] = loadTexture("wall4.bmp");
-    floorTexture = loadTexture("floor.bmp");
-    ceilingTexture = loadTexture("ceiling.bmp");
-
-    // Check if textures loaded correctly
-    for (int i = 0; i < 4; i++) {
-        if (!wallTextures[i]) {
-            fprintf(stderr, "Failed to load wall texture %d\n", i + 1);
-            SDL_DestroyRenderer(renderer);
-            SDL_DestroyWindow(window);
-            SDL_Quit();
-            return 1;
-        }
-    }
-    if (!floorTexture || !ceilingTexture) {
-        fprintf(stderr, "Failed to load floor or ceiling texture\n");
-        SDL_DestroyRenderer(renderer);
-        SDL_DestroyWindow(window);
-        SDL_Quit();
-        return 1;
-    }
-
     // Initialize player
     Player player = { .x = 2.0, .y = 2.0, .angle = 0.0, .moveSpeed = 0.05, .rotSpeed = 0.05 };
 
@@ -395,14 +387,6 @@ int main(int argc, char* argv[]) {
     }
 
     // Clean up and quit SDL
-    for (int i = 0; i < 4; i++) {
-        if (wallTextures[i]) {
-            SDL_DestroyTexture(wallTextures[i]);
-        }
-    }
-    SDL_DestroyTexture(floorTexture);
-    SDL_DestroyTexture(ceilingTexture);
-
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
