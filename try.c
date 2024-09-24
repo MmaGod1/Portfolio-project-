@@ -230,15 +230,10 @@ void render(Player *player) {
     SDL_SetRenderDrawColor(renderer, 135, 206, 235, 255); // Sky blue
     SDL_RenderClear(renderer);
     
-    // Initialize the floor rectangle
-    SDL_Rect floorRect;
-    floorRect.x = 0;                      // X position
-    floorRect.y = SCREEN_HEIGHT / 2;      // Y position (halfway down the screen)
-    floorRect.w = SCREEN_WIDTH;            // Full screen width
-    floorRect.h = SCREEN_HEIGHT / 2;       // Bottom half height
-
-    // Draw floor texture
-    SDL_RenderCopy(renderer, floorTexture, NULL, &floorRect);
+    // Draw the mini-map first, if showing
+    if (showMap) {
+        drawMiniMap(player, showMap);
+    }
 
     int mapXHit, mapYHit, sideHit;
 
@@ -259,25 +254,26 @@ void render(Player *player) {
 
         // Determine wall texture based on map hit
         int wallType = maze_map[mapXHit][mapYHit] - 1; // Assuming 1-based index in maze_map
+        if (wallType < 0 || wallType >= WALL_TYPES) {
+            wallType = 0; // Default to the first texture if out of bounds
+        }
         SDL_Texture *currentTexture = wallTextures[wallType];
 
         // Calculate texture X coordinate
         float wallHitX = (sideHit == 0) ? player->y + correctedDistance * sin(rayAngle) : player->x + correctedDistance * cos(rayAngle);
-            wallHitX -= floor(wallHitX); // Normalize
-            int texX = (int)(wallHitX * 64); // Assuming texture width of 64
+        wallHitX -= floor(wallHitX); // Normalize
+        int texX = (int)(wallHitX * 64); // Assuming texture width of 64
         if (sideHit == 0 && rayAngle > M_PI) texX = 64 - texX;
         if (sideHit == 1 && (rayAngle < M_PI / 2 || rayAngle > 3 * M_PI / 2)) texX = 64 - texX;
 
         // Render wall slice
-        SDL_Rect srcRect = { texX, 0, 1, 64 };
-        SDL_Rect destRect = { x, wallTop, 1, wallHeight };
+        SDL_Rect srcRect = { texX, 0, 1, 64 }; // Texture coordinates
+        SDL_Rect destRect = { x, wallTop, 1, wallHeight }; // Screen coordinates
         SDL_RenderCopy(renderer, currentTexture, &srcRect, &destRect);
     }
 
-    // Draw the mini-map after the walls
-    if (showMap) {
-        drawMiniMap(player, showMap);
-    }
+    // Draw the floor after the walls
+    drawFloor();
 
     // Present the final render
     SDL_RenderPresent(renderer);
