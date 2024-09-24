@@ -19,10 +19,10 @@ int showMap = 1;  // 1 to show map, 0 to hide map
 
 
 #define WALL_TYPES 4     // Number of different wall types
-#define FLOOR_TYPES 4     // Number of different floor types
 
 SDL_Texture *wallTextures[WALL_TYPES];
-SDL_Texture *floorTextures[FLOOR_TYPES];
+SDL_Texture* floorTexture = NULL; // Single floor texture
+
 
 
 // Maze map (1 = wall, 0 = empty space)
@@ -65,6 +65,7 @@ SDL_Renderer *renderer;
 
 
 
+
 int loadTextures() {
     // Load wall textures
     wallTextures[0] = IMG_LoadTexture(renderer, "./wall1.jpg");
@@ -73,21 +74,25 @@ int loadTextures() {
     wallTextures[3] = IMG_LoadTexture(renderer, "./wall4.jpg");
 
     // Load a single floor texture
-    floorTextures[0] = IMG_LoadTexture(renderer, "./floor3.1.jpg");
+    floorTexture = IMG_LoadTexture(renderer, "./floor3.1.jpg");
 
-    // Check for texture loading errors
+    // Check for wall texture loading errors
     for (int i = 0; i < 4; ++i) {
         if (!wallTextures[i]) {
+            printf("Error loading wall texture %d\n", i);
             return -1; // Error loading wall textures
         }
     }
 
-    if (!floorTextures[0]) {
+    // Check for floor texture loading error
+    if (!floorTexture) {
+        printf("Error loading floor texture\n");
         return -1; // Error loading floor texture
     }
 
     return 0; // Success
 }
+
 
 
 float castRay(float playerX, float playerY, float rayAngle, int *mapXHit, int *mapYHit, int *sideHit) {
