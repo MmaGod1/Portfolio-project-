@@ -172,7 +172,7 @@ void drawSky() {
 
 void drawFloor() {
     SDL_Rect floorRect = {0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2};
-    SDL_RenderCopy(renderer, floorTextures, NULL, &floorRect);  // Always use floorTextures[0]
+    SDL_RenderCopy(renderer, floorTexture, NULL, &floorRect);  // Always use floorTextures[0]
 }
 
 
