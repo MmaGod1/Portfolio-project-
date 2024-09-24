@@ -29,7 +29,7 @@ SDL_Texture *floorTextures[FLOOR_TYPES];
 int maze_map[MAP_WIDTH][MAP_HEIGHT] = {
         {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},                       
         {1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1},
-        {1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1},
+        {1, 0, 1, 2, 3, 4, 0, 1, 0, 2, 2, 3, 1, 4, 0, 2, 0, 1, 3, 1, 4, 1, 0, 1},
         {1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1},
         {1, 0, 1, 0, 0, 2, 2, 2, 2, 2, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1},
         {1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1},
@@ -73,7 +73,7 @@ int loadTextures() {
     wallTextures[3] = IMG_LoadTexture(renderer, "./wall4.jpg");
 
     // Load a single floor texture
-    floorTextures[0] = IMG_LoadTexture(renderer, "./floor3.jpg");
+    floorTextures[0] = IMG_LoadTexture(renderer, "./floor3.1.jpg");
 
     // Check for texture loading errors
     for (int i = 0; i < 4; ++i) {
