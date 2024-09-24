@@ -219,54 +219,43 @@ void drawMiniMap(Player *player, bool showMap) {
 
 void render(Player *player) {
     SDL_RenderClear(renderer);
-
-    // Draw the sky (assuming drawSky is implemented elsewhere)
     drawSky();
 
-    // Draw the floor with a random texture
-    int floorTextureIndex = rand() % FLOOR_TYPES;  // Randomly select a floor texture
-    SDL_Rect floorRect = {0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2};  // Assuming floor takes up the bottom half of the screen
+    // Randomly select a floor texture
+    int floorTextureIndex = rand() % FLOOR_TYPES;  
+    SDL_Rect floorRect = {0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2};  
     SDL_RenderCopy(renderer, floorTextures[floorTextureIndex], NULL, &floorRect);
 
-    // Cast rays across the screen
     for (int x = 0; x < SCREEN_WIDTH; x++) {
-    float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
-    float distance = castRay(player->x, player->y, rayAngle);
+        float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
+        float distance = castRay(player->x, player->y, rayAngle);
 
-    // Cap the distance for better visuals
-    if (distance > 10.0) distance = 10.0;
+        // Cap the distance for better visuals
+        if (distance > 10.0) distance = 10.0;
 
-    // Correct distance for wall height calculation
-    float correctedDistance = distance * cos(rayAngle - player->angle);
+        // Correct distance for wall height calculation
+        float correctedDistance = distance * cos(rayAngle - player->angle);
+        int wallHeight = (int)(SCREEN_HEIGHT / correctedDistance);
+        int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
+        int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
 
-    // Calculate wall height and position
-    int wallHeight = (int)(SCREEN_HEIGHT / correctedDistance);
-    int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
-    int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
+        if (wallHeight < 0) wallHeight = 0;
+        if (wallTop < 0) wallTop = 0;
+        if (wallBottom >= SCREEN_HEIGHT) wallBottom = SCREEN_HEIGHT - 1;
 
-    // Ensure wall heights are non-negative
-    if (wallHeight < 0) wallHeight = 0;
-    if (wallTop < 0) wallTop = 0;
-    if (wallBottom >= SCREEN_HEIGHT) wallBottom = SCREEN_HEIGHT - 1;
+        int wallTextureIndex = x % WALL_TYPES;  // Cycle through wall textures
+        
+        // Calculate texture coordinate based on the wall hit
+        int textureWidth = 64;  // Ensure this matches your texture dimensions
+        int texX = (int)(x * textureWidth / SCREEN_WIDTH) % textureWidth; 
 
-    // Choose a wall texture based on some condition (e.g., wall type, x-coordinate, or map position)
-    int wallTextureIndex = x % WALL_TYPES;  // Example logic: cycle through wall textures
-    
-    // Calculate the texture coordinate on the x-axis (assuming the texture width is 64px)
-    int textureWidth = 64;  // Assuming the texture is 64x64
-    int texX = (int)(x % textureWidth); // Choose the correct x texture coordinate
+        SDL_Rect srcRect = {texX, 0, 1, textureWidth}; // Correctly set the height to full
+        SDL_Rect wallRect = {x, wallTop, 1, wallHeight}; 
 
-    // Define the source rectangle for the texture (select vertical part of texture)
-    SDL_Rect srcRect = { texX, 0, 1, textureWidth };  // 1 pixel wide and full height of texture
+        // Render the wall texture
+        SDL_RenderCopy(renderer, wallTextures[wallTextureIndex], &srcRect, &wallRect);
+    }
 
-    // Define the destination rectangle for rendering (wall height in screen space)
-    SDL_Rect wallRect = { x, wallTop, 1, wallHeight };  // 1 pixel wide for each column
-
-    // Render the selected wall texture
-    SDL_RenderCopy(renderer, wallTextures[wallTextureIndex], &srcRect, &wallRect);
-}
-
-    // Draw the map if enabled (no changes needed here)
     if (showMap) {
         drawMiniMap(player, showMap);
     }
