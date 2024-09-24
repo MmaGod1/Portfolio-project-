@@ -73,7 +73,7 @@ int loadTextures() {
     wallTextures[3] = IMG_LoadTexture(renderer, "./wall4.jpg");
 
     // Load a single floor texture
-    floorTextures[0] = IMG_LoadTexture(renderer, "./floor.jpg");
+    floorTextures[0] = IMG_LoadTexture(renderer, "./floor3.jpg");
 
     // Check for texture loading errors
     for (int i = 0; i < 4; ++i) {
