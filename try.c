@@ -18,7 +18,7 @@
 int showMap = 1;  // 1 to show map, 0 to hide map
 
 
-#define WALL_TYPES 4     // Number of different wall types
+#define WALL_TYPES 3     // Number of different wall types
 #define FLOOR_TYPES 4     // Number of different floor types
 
 SDL_Texture *wallTextures[WALL_TYPES];
@@ -67,10 +67,10 @@ SDL_Renderer *renderer;
 
 int loadTextures() {
     // Load wall textures
-    wallTextures[0] = IMG_LoadTexture(renderer, "./wall1.jpg");
+    wallTextures[0] = IMG_LoadTexture(renderer, "./wall4.jpg");
     wallTextures[1] = IMG_LoadTexture(renderer, "./wall2.jpg");
     wallTextures[2] = IMG_LoadTexture(renderer, "./wall3.jpg");
-        wallTextures[3] = IMG_LoadTexture(renderer, "./wall4.jpg");
+        wallTextures[4] = IMG_LoadTexture(renderer, "./wall4.jpg");
 
     // Load floor textures
     for (int i = 0; i < FLOOR_TYPES; ++i) {
