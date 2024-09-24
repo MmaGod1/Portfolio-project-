@@ -227,6 +227,8 @@ void drawMiniMap(Player *player, bool showMap) {
 
 
 void render(Player *player) {
+    // Clear the renderer with a clear color (optional, can be changed as needed)
+    SDL_SetRenderDrawColor(renderer, 135, 206, 235, 255); // Sky blue color
     SDL_RenderClear(renderer);
     
     // Initialize the floor rectangle
@@ -273,10 +275,12 @@ void render(Player *player) {
         SDL_RenderCopy(renderer, currentTexture, &srcRect, &destRect);
     }
 
+    // Draw the mini-map after the walls to prevent overlap
     if (showMap) {
         drawMiniMap(player, showMap);
     }
 
+    // Present the rendered frame
     SDL_RenderPresent(renderer);
 }
 
