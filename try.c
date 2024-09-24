@@ -127,7 +127,6 @@ float castRay(float playerX, float playerY, float rayAngle) {
     bool hit = false;
     int side; // was the wall hit on the X or Y side?
     while (!hit) {
-        // Jump to next map square, either in x-direction or y-direction
         if (sideDistX < sideDistY) {
             sideDistX += deltaDistX;
             mapX += stepX;
@@ -138,18 +137,16 @@ float castRay(float playerX, float playerY, float rayAngle) {
             side = 1;
         }
 
-        // Check if ray has hit a wall
-        if (mapX >= 0 && mapX < MAP_WIDTH && mapY >= 0 && mapY < MAP_HEIGHT && maze_map[mapX][mapY] == 1) {
+        if (mapX >= 0 && mapX < MAP_WIDTH && mapY >= 0 && mapY < MAP_HEIGHT && maze_map[mapX][mapY] > 0) {
             hit = true;
+            *mapXHit = mapX;
+            *mapYHit = mapY;
+            *sideHit = side;
         }
     }
 
-    // Calculate the distance to the point of impact
-    float perpWallDist;
-    if (side == 0)
-        perpWallDist = (mapX - playerX + (1 - stepX) / 2) / rayDirX;
-    else
-        perpWallDist = (mapY - playerY + (1 - stepY) / 2) / rayDirY;
+    // Calculate distance to the hit
+    float perpWallDist = (side == 0) ? (mapX - playerX + (1 - stepX) / 2) / rayDirX : (mapY - playerY + (1 - stepY) / 2) / rayDirY;
 
     return perpWallDist;
 }
@@ -221,39 +218,47 @@ void render(Player *player) {
     SDL_RenderClear(renderer);
     drawSky();
 
-    // Randomly select a floor texture
-    int floorTextureIndex = rand() % FLOOR_TYPES;  
-    SDL_Rect floorRect = {0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2};  
-    SDL_RenderCopy(renderer, floorTextures[floorTextureIndex], NULL, &floorRect);
+    int mapXHit, mapYHit, sideHit;
 
+    // Loop over each vertical screen line
     for (int x = 0; x < SCREEN_WIDTH; x++) {
         float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
-        float distance = castRay(player->x, player->y, rayAngle);
+        float distance = castRay(player->x, player->y, rayAngle, &mapXHit, &mapYHit, &sideHit);
 
-        // Cap the distance for better visuals
-        if (distance > 10.0) distance = 10.0;
-
-        // Correct distance for wall height calculation
+        // Correct the fisheye effect
         float correctedDistance = distance * cos(rayAngle - player->angle);
+
+        // Calculate the height of the wall to be drawn
         int wallHeight = (int)(SCREEN_HEIGHT / correctedDistance);
         int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
         int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
 
-        if (wallHeight < 0) wallHeight = 0;
         if (wallTop < 0) wallTop = 0;
         if (wallBottom >= SCREEN_HEIGHT) wallBottom = SCREEN_HEIGHT - 1;
 
-        int wallTextureIndex = x % WALL_TYPES;  // Cycle through wall textures
-        
-        // Calculate texture coordinate based on the wall hit
-        int textureWidth = 64;  // Ensure this matches your texture dimensions
-        int texX = (int)(x * textureWidth / SCREEN_WIDTH) % textureWidth; 
+        // Get the correct wall texture from the map data
+        int wallType = maze_map[mapXHit][mapYHit] - 1;  // Assuming wall types start from 1
+        SDL_Texture *currentTexture = wallTextures[wallType];
 
-        SDL_Rect srcRect = {texX, 0, 1, textureWidth}; // Correctly set the height to full
-        SDL_Rect wallRect = {x, wallTop, 1, wallHeight}; 
+        // Calculate texture X coordinate
+        float wallHitX;
+        if (sideHit == 0) {
+            wallHitX = player->y + correctedDistance * sin(rayAngle);
+        } else {
+            wallHitX = player->x + correctedDistance * cos(rayAngle);
+        }
+        wallHitX -= floor(wallHitX);
 
-        // Render the wall texture
-        SDL_RenderCopy(renderer, wallTextures[wallTextureIndex], &srcRect, &wallRect);
+        int texX = (int)(wallHitX * 64);  // Assuming texture is 64x64
+        if (sideHit == 0 && rayAngle > M_PI) texX = 64 - texX;  // Flip texture for certain sides
+        if (sideHit == 1 && rayAngle < (M_PI / 2) || rayAngle > (3 * M_PI / 2)) texX = 64 - texX;
+
+        // Define the source rectangle from the texture
+        SDL_Rect srcRect = {texX, 0, 1, 64};
+        SDL_Rect destRect = {x, wallTop, 1, wallHeight};
+
+        // Render the wall slice
+        SDL_RenderCopy(renderer, currentTexture, &srcRect, &destRect);
     }
 
     if (showMap) {
@@ -262,7 +267,6 @@ void render(Player *player) {
 
     SDL_RenderPresent(renderer);
 }
-
 
 
 
