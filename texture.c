@@ -65,7 +65,7 @@ SDL_Window *window;
 SDL_Renderer *renderer;
 
 
-void loadTextures() {
+void loadTexture() {
     // Load your textures (ensure the paths are correct)
     wallTexture = IMG_LoadTexture(renderer, "wall.jpg");
     floorTexture = IMG_LoadTexture(renderer, "floor.jpg");
