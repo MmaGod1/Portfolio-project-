@@ -166,9 +166,11 @@ void drawSky() {
 }
 
 void drawFloor() {
+    int floorTextureIndex = rand() % FLOOR_TYPES;  // Randomly select a floor texture
     SDL_Rect floorRect = {0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2};
-    SDL_RenderCopy(renderer, floorTextures, NULL, &floorRect);
+    SDL_RenderCopy(renderer, floorTextures[floorTextureIndex], NULL, &floorRect);
 }
+
 
 void drawMiniMap(Player *player, bool showMap) {
     if (!showMap) return;
