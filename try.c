@@ -507,6 +507,8 @@ int main(int argc, char* argv[]) {
     // Game loop
     bool running = true;
     while (running) {
+            handleInput(&player, &running, maze_map); // Ensure handleInput is called
+
         const Uint8 *keyState = SDL_GetKeyboardState(NULL); // Get the current state of the keyboard
         updatePlayerPosition(&player, keyState); // Update player position based on input
         render(&player); // Render the scene
