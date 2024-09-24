@@ -1,7 +1,8 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include <math.h>
 #include <stdbool.h>
-#include <SDL2/SDL_image.h>
+
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
@@ -16,8 +17,8 @@
 // Global variable to toggle map display
 int showMap = 1;  // 1 to show map, 0 to hide map
 
-SDL_Texture* wallTexture;
-SDL_Texture* floorTexture;
+SDL_Texture *wallTexture;
+SDL_Texture *floorTexture;
 
 // Maze map (1 = wall, 0 = empty space)
 int maze_map[MAP_WIDTH][MAP_HEIGHT] = {
