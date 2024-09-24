@@ -152,12 +152,10 @@ void drawFloor() {
 }
 
 
-
-
 void render(Player *player, SDL_Texture* wallTexture, SDL_Texture* floorTexture) {
     SDL_RenderClear(renderer);
 
-    // Draw the sky and floor
+    // Draw the sky
     drawSky();
 
     // Cast rays across the screen
@@ -183,9 +181,11 @@ void render(Player *player, SDL_Texture* wallTexture, SDL_Texture* floorTexture)
         // Draw the wall using the texture
         SDL_Rect wallRect = { x, wallTop, 1, wallHeight }; // 1 pixel wide, full wall height
         SDL_RenderCopy(renderer, wallTexture, NULL, &wallRect); // Use the wall texture
+    }
 
-        // Draw the floor using the texture
-        SDL_Rect floorRect = { x, wallBottom, 1, SCREEN_HEIGHT - wallBottom }; // Remaining height for floor
+    // Draw the floor using the texture
+    for (int x = 0; x < SCREEN_WIDTH; x++) {
+        SDL_Rect floorRect = { x, SCREEN_HEIGHT / 2, 1, SCREEN_HEIGHT / 2 }; // 1 pixel wide, half screen height
         SDL_RenderCopy(renderer, floorTexture, NULL, &floorRect); // Use the floor texture
     }
 
