@@ -59,14 +59,14 @@ typedef struct {
 SDL_Window *window;
 SDL_Renderer *renderer;
 
+
 SDL_Texture* loadTexture(const char* filePath) {
-    SDL_Surface* surface = SDL_LoadBMP(filePath);
-    if (!surface) {
-        printf("Error loading image: %s\n", SDL_GetError());
+    // Load the image using SDL_image
+    SDL_Texture* texture = IMG_LoadTexture(renderer, filePath);
+    if (!texture) {
+        printf("Error loading image: %s\n", IMG_GetError());
         return NULL;
     }
-    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
-    SDL_FreeSurface(surface);
     return texture;
 }
 
@@ -159,7 +159,6 @@ void render(Player *player) {
 
     // Draw the sky and floor
     drawSky();
-    drawFloor();
 
     // Cast rays across the screen
     for (int x = 0; x < SCREEN_WIDTH; x++) {
@@ -182,7 +181,12 @@ void render(Player *player) {
         if (wallBottom >= SCREEN_HEIGHT) wallBottom = SCREEN_HEIGHT - 1;
 
         // Draw the wall using the texture
-        drawWall(x, wallTop, wallBottom);  // Call the function to draw the wall texture
+        SDL_Rect wallRect = { x, wallTop, 1, wallHeight }; // 1 pixel wide, full wall height
+        SDL_RenderCopy(renderer, wallTexture, NULL, &wallRect); // Use the wall texture
+
+        // Draw the floor using the texture
+        SDL_Rect floorRect = { x, wallBottom, 1, SCREEN_HEIGHT - wallBottom }; // Remaining height for floor
+        SDL_RenderCopy(renderer, floorTexture, NULL, &floorRect); // Use the floor texture
     }
 
     // Draw the map if enabled
@@ -231,6 +235,7 @@ void render(Player *player) {
 
     SDL_RenderPresent(renderer);
 }
+
 
 
 void handleInput(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
@@ -438,7 +443,7 @@ int main(int argc, char* argv[]) {
     bool running = true;
     while (running) {
         handleInput(&player, &running, maze_map);  // Handle player input
-        render(&player);                 // Render the scene
+        render(&player, wallTexture, floorTexture); // Pass textures to render function
 
         SDL_Delay(16);  // Cap the frame rate to ~60 FPS
     }
