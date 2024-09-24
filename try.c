@@ -172,7 +172,7 @@ void drawSky() {
 
 void drawFloor() {
     SDL_Rect floorRect = {0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2};
-    SDL_RenderCopy(renderer, floorTextures[0], NULL, &floorRect);  // Always use floorTextures[0]
+    SDL_RenderCopy(renderer, floorTextures, NULL, &floorRect);  // Always use floorTextures[0]
 }
 
 
@@ -486,9 +486,7 @@ int main(int argc, char* argv[]) {
     for (int i = 0; i < WALL_TYPES; i++) {
         SDL_DestroyTexture(wallTextures[i]);
     }
-    for (int i = 0; i < FLOOR_TYPES; i++) {
-        SDL_DestroyTexture(floorTextures[i]);
-    }
+    SDL_DestroyTexture(floorTexture);
 
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
