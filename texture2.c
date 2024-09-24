@@ -14,7 +14,7 @@
 #define TILE_SIZE (MAP_DISPLAY_WIDTH / MAP_WIDTH)
 // Global variable to toggle map display
 int showMap = 1;  // 1 to show map, 0 to hide map
-#define TILE_SIZE (MAP_DISPLAY_WIDTH / MAP_WIDTH)
+
 
 
 // Maze map (1 = wall, 0 = empty space)
@@ -56,54 +56,67 @@ SDL_Window *window;
 SDL_Renderer *renderer;
 
 float castRay(float playerX, float playerY, float rayAngle) {
-    float rayX = playerX;
-    float rayY = playerY;
-    float distance = INFINITY;
+    // Ray direction
+    float rayDirX = cos(rayAngle);
+    float rayDirY = sin(rayAngle);
 
-    // Normalize the angle
-    while (rayAngle < 0) rayAngle += 2 * M_PI;
-    while (rayAngle >= 2 * M_PI) rayAngle -= 2 * M_PI;
+    // Which box of the map we're in
+    int mapX = (int)playerX;
+    int mapY = (int)playerY;
 
-    printf("Casting ray at angle: %f\n", rayAngle); // Debug print
+    // Length of ray from one x or y side to next x or y side
+    float deltaDistX = fabs(1 / rayDirX);
+    float deltaDistY = fabs(1 / rayDirY);
 
-    // Horizontal raycasting
-    float xStep = cos(rayAngle) > 0 ? 1.0 : -1.0;
-    float yStep = sin(rayAngle) > 0 ? 1.0 : -1.0;
-    float tanAngle = tan(rayAngle);
-    float horizontalDist = INFINITY;
-    
-    float yIntercept = floor(rayY) + (sin(rayAngle) > 0 ? 1.0 : 0.0);
-    float xIntercept = rayX + (yIntercept - rayY) * tanAngle;
+    // What direction to step in (+1 or -1)
+    int stepX, stepY;
+    float sideDistX, sideDistY;
 
-    while (xIntercept >= 0 && xIntercept < MAP_WIDTH && yIntercept >= 0 && yIntercept < MAP_HEIGHT) {
-        if (maze_map[(int)xIntercept][(int)yIntercept] == 1) {
-            horizontalDist = sqrt(pow(rayX - xIntercept, 2) + pow(rayY - yIntercept, 2));
-            printf("Horizontal hit at: (%f, %f) Distance: %f\n", xIntercept, yIntercept, horizontalDist); // Debug print
-            break;
-        }
-        yIntercept += yStep;
-        xIntercept += tanAngle * xStep;
+    // Calculate step and initial sideDist
+    if (rayDirX < 0) {
+        stepX = -1;
+        sideDistX = (playerX - mapX) * deltaDistX;
+    } else {
+        stepX = 1;
+        sideDistX = (mapX + 1.0 - playerX) * deltaDistX;
+    }
+    if (rayDirY < 0) {
+        stepY = -1;
+        sideDistY = (playerY - mapY) * deltaDistY;
+    } else {
+        stepY = 1;
+        sideDistY = (mapY + 1.0 - playerY) * deltaDistY;
     }
 
-    // Vertical raycasting
-    float verticalDist = INFINITY;
-    float xIntercept2 = floor(rayX) + (cos(rayAngle) > 0 ? 1.0 : 0.0);
-    float yIntercept2 = rayY + (xIntercept2 - rayX) / tanAngle;
-
-    while (xIntercept2 >= 0 && xIntercept2 < MAP_WIDTH && yIntercept2 >= 0 && yIntercept2 < MAP_HEIGHT) {
-        if (maze_map[(int)xIntercept2][(int)yIntercept2] == 1) {
-            verticalDist = sqrt(pow(rayX - xIntercept2, 2) + pow(rayY - yIntercept2, 2));
-            printf("Vertical hit at: (%f, %f) Distance: %f\n", xIntercept2, yIntercept2, verticalDist); // Debug print
-            break;
+    // Perform DDA
+    bool hit = false;
+    int side; // was the wall hit on the X or Y side?
+    while (!hit) {
+        // Jump to next map square, either in x-direction or y-direction
+        if (sideDistX < sideDistY) {
+            sideDistX += deltaDistX;
+            mapX += stepX;
+            side = 0;
+        } else {
+            sideDistY += deltaDistY;
+            mapY += stepY;
+            side = 1;
         }
-        xIntercept2 += xStep;
-        yIntercept2 += (1.0 / tanAngle) * yStep;
+
+        // Check if ray has hit a wall
+        if (mapX >= 0 && mapX < MAP_WIDTH && mapY >= 0 && mapY < MAP_HEIGHT && maze_map[mapX][mapY] == 1) {
+            hit = true;
+        }
     }
 
-    // Return the shortest distance
-    float finalDist = fmin(horizontalDist, verticalDist);
-    printf("Final Distance: %f\n", finalDist); // Debug print
-    return finalDist;
+    // Calculate the distance to the point of impact
+    float perpWallDist;
+    if (side == 0)
+        perpWallDist = (mapX - playerX + (1 - stepX) / 2) / rayDirX;
+    else
+        perpWallDist = (mapY - playerY + (1 - stepY) / 2) / rayDirY;
+
+    return perpWallDist;
 }
 
 
@@ -118,6 +131,8 @@ void drawFloor() {
     SDL_Rect floorRect = {0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2};
     SDL_RenderFillRect(renderer, &floorRect);
 }
+
+
 
 
 void render(Player *player) {
@@ -201,6 +216,8 @@ void render(Player *player) {
 }
 
 
+
+
 void handleInput(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
     SDL_Event event;
 
@@ -218,8 +235,8 @@ void handleInput(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIG
                     *running = false;
                     break;
                 case SDLK_m:
-                    showMap = !showMap;
-                    break;
+                        showMap = !showMap;
+                        break;
                 case SDLK_LEFT:  // Rotate left
                     player->angle -= player->rotSpeed;
                     if (player->angle < 0) player->angle += 2 * M_PI;
@@ -229,45 +246,76 @@ void handleInput(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIG
                     if (player->angle > 2 * M_PI) player->angle -= 2 * M_PI;
                     break;
                 case SDLK_w:  // Move forward
-                case SDLK_s:  // Move backward
-                {
-                    float direction = (event.key.keysym.sym == SDLK_w) ? 1.0 : -1.0;
-                    float newX = player->x + cos(moveAngle) * moveStep * direction;
-                    float newY = player->y + sin(moveAngle) * moveStep * direction;
+                    {
+                        float newX = player->x + cos(moveAngle) * moveStep;
+                        float newY = player->y + sin(moveAngle) * moveStep;
 
-                    // Check if the new position is within bounds
-                    if (newX >= 0 && newX < MAP_WIDTH && newY >= 0 && newY < MAP_HEIGHT) {
-                        // Check for collisions
-                        if (maze_map[(int)newX][(int)player->y] == 0) {
-                            player->x = newX;
-                        }
-                        if (maze_map[(int)player->x][(int)newY] == 0) {
-                            player->y = newY;
+                        // Ensure the new position is within bounds
+                        if (newX >= 0 && newX < MAP_WIDTH && newY >= 0 && newY < MAP_HEIGHT) {
+                            // Check for collisions with walls
+                            if (maze_map[(int)newX][(int)player->y] == 0 && maze_map[(int)newX][(int)player->y] != 1) {
+                                player->x = newX;
+                            }
+                            if (maze_map[(int)player->x][(int)newY] == 0 && maze_map[(int)player->x][(int)newY] != 1) {
+                                player->y = newY;
+                            }
                         }
                     }
-                    printf("Moved player to: (%f, %f)\n", player->x, player->y); // Debug print
-                }
+                    break;
+                case SDLK_s:  // Move backward
+                    {
+                        float newX = player->x - cos(moveAngle) * moveStep;
+                        float newY = player->y - sin(moveAngle) * moveStep;
+
+                        // Ensure the new position is within bounds
+                        if (newX >= 0 && newX < MAP_WIDTH && newY >= 0 && newY < MAP_HEIGHT) {
+                            // Check for collisions with walls
+                            if (maze_map[(int)newX][(int)player->y] == 0 && maze_map[(int)newX][(int)player->y] != 1) {
+                                player->x = newX;
+                            }
+                            if (maze_map[(int)player->x][(int)newY] == 0 && maze_map[(int)player->x][(int)newY] != 1) {
+                                player->y = newY;
+                            }
+                        }
+                    }
                     break;
                 case SDLK_a:  // Strafe left
-                case SDLK_d:  // Strafe right
-                {
-                    float strafeAngle = (event.key.keysym.sym == SDLK_a) ? player->angle - M_PI / 2 : player->angle + M_PI / 2;
-                    float newX = player->x + cos(strafeAngle) * moveStep;
-                    float newY = player->y + sin(strafeAngle) * moveStep;
+                    {
+                        float strafeAngle = player->angle - M_PI / 2;
+                        float newX = player->x + cos(strafeAngle) * moveStep;
+                        float newY = player->y + sin(strafeAngle) * moveStep;
 
-                    // Check if the new position is within bounds
-                    if (newX >= 0 && newX < MAP_WIDTH && newY >= 0 && newY < MAP_HEIGHT) {
-                        // Check for collisions
-                        if (maze_map[(int)newX][(int)player->y] == 0) {
-                            player->x = newX;
-                        }
-                        if (maze_map[(int)player->x][(int)newY] == 0) {
-                            player->y = newY;
+                        // Ensure the new position is within bounds
+                        if (newX >= 0 && newX < MAP_WIDTH && newY >= 0 && newY < MAP_HEIGHT) {
+                            // Check for collisions with walls
+                            if (maze_map[(int)newX][(int)player->y] == 0 && maze_map[(int)newX][(int)player->y] != 1) {
+                                player->x = newX;
+                            }
+                            if (maze_map[(int)player->x][(int)newY] == 0 && maze_map[(int)player->x][(int)newY] != 1) {
+                                player->y = newY;
+                            }
                         }
                     }
-                    printf("Strafed player to: (%f, %f)\n", player->x, player->y); // Debug print
-                }
                     break;
+                case SDLK_d:  // Strafe right
+                        {
+                                float strafeAngle = player->angle + M_PI / 2;      
+                                float newX = player->x + cos(strafeAngle) * moveStep;       
+                                float newY = player->y + sin(strafeAngle) * moveStep;
+       
+                                // Ensure the new position is within bounds        
+                                if (newX >= 0 && newX < MAP_WIDTH && newY >= 0 && newY < MAP_HEIGHT) {      
+                                        // Check for collisions with walls
+                                        if (maze_map[(int)newX][(int)player->y] == 0) {              
+                                               player->x = newX;      
+                                        }          
+                                        if (maze_map[(int)player->x][(int)newY] == 0) {             
+                                                player->y = newY;
+                                        }      
+                             }
+                        }
+ 
+                        break;
             }
         }
     }
@@ -281,36 +329,43 @@ int loadMap(const char *filename, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
         return -1;
     }
 
-    int ch;
-    int x = 0, y = 0;
+    int ch;  // Declare the variable 'ch' here
 
-    while ((ch = fgetc(file)) != EOF) {
-        if (ch == '\r' || ch == '\n') {
-            // Skip line breaks
-            if (x > 0) {
-                y++;
-                x = 0;
+    for (int y = 0; y < MAP_HEIGHT; y++) {
+        for (int x = 0; x < MAP_WIDTH; x++) {
+            ch = fgetc(file);
+            while (ch == '\r' || ch == '\n') {  // Skip newline and carriage return characters
+                ch = fgetc(file);
             }
-        } else if (ch >= '0' && ch <= '9') {
-            // Convert character to integer and store in maze_map
-            maze_map[x][y] = ch - '0';
-            x++;
-            if (x >= MAP_WIDTH) {
-                fprintf(stderr, "Warning: Line exceeds map width\n");
-                break;
+
+            if (ch == EOF) {
+                fprintf(stderr, "Error reading file %s: unexpected EOF\n", filename);
+                fclose(file);
+                return -1;
             }
-        } else {
-            fprintf(stderr, "Warning: Unexpected character '%c' in map file\n", ch);
+
+            if (ch == '#') {  // Wall character
+                maze_map[x][y] = 1;
+            } else if (ch == '.') {  // Empty space character
+                maze_map[x][y] = 0;
+            } else {
+                fprintf(stderr, "Invalid character '%c' in map file at [%d,%d]\n", ch, x, y);
+                fclose(file);
+                return -1;
+            }
         }
-    }
 
-    if (y >= MAP_HEIGHT) {
-        fprintf(stderr, "Warning: Map file exceeds map height\n");
+        // Skip over remaining characters (newline or carriage return)
+        while ((ch = fgetc(file)) == '\r' || ch == '\n');
+        if (ch != EOF) {
+            ungetc(ch, file);  // Put the last character back if not EOF
+        }
     }
 
     fclose(file);
     return 0;
 }
+
 
 int main(int argc, char* argv[]) {
     if (argc != 2) {
