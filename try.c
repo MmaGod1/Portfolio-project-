@@ -75,7 +75,7 @@ int loadTextures() {
     // Load floor textures
     for (int i = 0; i < FLOOR_TYPES; ++i) {
         char filepath[30];
-        snprintf(filepath, sizeof(filepath), "./floor%d.png", i + 1); // Adjust the file naming as needed
+        snprintf(filepath, sizeof(filepath), "./floor%d.jpg", i + 1); // Adjust the file naming as needed
         floorTextures[i] = IMG_LoadTexture(renderer, filepath);
     }
 
