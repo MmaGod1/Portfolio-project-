@@ -67,29 +67,25 @@ SDL_Renderer *renderer;
 
 int loadTextures() {
     // Load wall textures
-    wallTextures[0] = IMG_LoadTexture(renderer, "./wall3.jpg");
+    wallTextures[0] = IMG_LoadTexture(renderer, "./wall1.jpg");
     wallTextures[1] = IMG_LoadTexture(renderer, "./wall2.jpg");
     wallTextures[2] = IMG_LoadTexture(renderer, "./wall3.jpg");
-        wallTextures[3] = IMG_LoadTexture(renderer, "./wall4.jpg");
+    wallTextures[3] = IMG_LoadTexture(renderer, "./wall4.jpg");
 
-    // Load floor textures
-    for (int i = 0; i < FLOOR_TYPES; ++i) {
-        char filepath[30];
-        snprintf(filepath, sizeof(filepath), "./floor%d.jpg", i + 1); // Adjust the file naming as needed
-        floorTextures[i] = IMG_LoadTexture(renderer, filepath);
-    }
+    // Load a single floor texture
+    floorTextures[0] = IMG_LoadTexture(renderer, "./floor.jpg");
 
     // Check for texture loading errors
-    if (!wallTextures[0] || !wallTextures[1] || !wallTextures[2] || !wallTextures[3]) {
-        return -1; // Error loading wall textures
-    }
-
-    for (int i = 0; i < FLOOR_TYPES; ++i) {
-        if (!floorTextures[i]) {
-            return -1; // Error loading floor textures
+    for (int i = 0; i < 4; ++i) {
+        if (!wallTextures[i]) {
+            return -1; // Error loading wall textures
         }
     }
-    
+
+    if (!floorTextures[0]) {
+        return -1; // Error loading floor texture
+    }
+
     return 0; // Success
 }
 
@@ -166,9 +162,8 @@ void drawSky() {
 }
 
 void drawFloor() {
-    int floorTextureIndex = rand() % FLOOR_TYPES;  // Randomly select a floor texture
     SDL_Rect floorRect = {0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2};
-    SDL_RenderCopy(renderer, floorTextures[floorTextureIndex], NULL, &floorRect);
+    SDL_RenderCopy(renderer, floorTextures[0], NULL, &floorRect);  // Always use floorTextures[0]
 }
 
 
@@ -235,32 +230,41 @@ void render(Player *player) {
 
     // Cast rays across the screen
     for (int x = 0; x < SCREEN_WIDTH; x++) {
-        float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
-        float distance = castRay(player->x, player->y, rayAngle);
+    float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
+    float distance = castRay(player->x, player->y, rayAngle);
 
-        // Cap the distance for better visuals
-        if (distance > 10.0) distance = 10.0;
+    // Cap the distance for better visuals
+    if (distance > 10.0) distance = 10.0;
 
-        // Correct distance for wall height calculation
-        float correctedDistance = distance * cos(rayAngle - player->angle);
+    // Correct distance for wall height calculation
+    float correctedDistance = distance * cos(rayAngle - player->angle);
 
-        // Calculate wall height and position
-        int wallHeight = (int)(SCREEN_HEIGHT / correctedDistance);
-        int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
-        int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
+    // Calculate wall height and position
+    int wallHeight = (int)(SCREEN_HEIGHT / correctedDistance);
+    int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
+    int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
 
-        // Ensure wall heights are non-negative
-        if (wallHeight < 0) wallHeight = 0;
-        if (wallTop < 0) wallTop = 0;
-        if (wallBottom >= SCREEN_HEIGHT) wallBottom = SCREEN_HEIGHT - 1;
+    // Ensure wall heights are non-negative
+    if (wallHeight < 0) wallHeight = 0;
+    if (wallTop < 0) wallTop = 0;
+    if (wallBottom >= SCREEN_HEIGHT) wallBottom = SCREEN_HEIGHT - 1;
 
-        // Choose a wall texture based on some condition (e.g., wall type, x-coordinate, or map position)
-        int wallTextureIndex = x % WALL_TYPES;  // Example logic: cycle through wall textures
-        SDL_Rect wallRect = { x, wallTop, 1, wallHeight };  // 1 pixel wide for each column
+    // Choose a wall texture based on some condition (e.g., wall type, x-coordinate, or map position)
+    int wallTextureIndex = x % WALL_TYPES;  // Example logic: cycle through wall textures
+    
+    // Calculate the texture coordinate on the x-axis (assuming the texture width is 64px)
+    int textureWidth = 64;  // Assuming the texture is 64x64
+    int texX = (int)(x % textureWidth); // Choose the correct x texture coordinate
 
-        // Render the selected wall texture
-        SDL_RenderCopy(renderer, wallTextures[wallTextureIndex], NULL, &wallRect);
-    }
+    // Define the source rectangle for the texture (select vertical part of texture)
+    SDL_Rect srcRect = { texX, 0, 1, textureWidth };  // 1 pixel wide and full height of texture
+
+    // Define the destination rectangle for rendering (wall height in screen space)
+    SDL_Rect wallRect = { x, wallTop, 1, wallHeight };  // 1 pixel wide for each column
+
+    // Render the selected wall texture
+    SDL_RenderCopy(renderer, wallTextures[wallTextureIndex], &srcRect, &wallRect);
+}
 
     // Draw the map if enabled (no changes needed here)
     if (showMap) {
