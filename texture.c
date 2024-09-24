@@ -142,13 +142,19 @@ void drawSky() {
 }
 
 void drawWall(int x, int wallTop, int wallBottom) {
-    SDL_Rect wallRect = {x, wallTop, 1, wallBottom - wallTop}; // 1 pixel wide
-    SDL_RenderCopy(renderer, wallTexture, NULL, &wallRect);
+    int wallHeight = wallBottom - wallTop;
+    SDL_Rect wallRect = {x, wallTop, 1, wallHeight}; // 1 pixel wide for raycasting
+    SDL_Rect srcRect = {0, 0, wallTextureWidth, wallHeight}; // Adjust srcRect as needed
+    SDL_RenderCopy(renderer, wallTexture, &srcRect, &wallRect);
 }
 
 void drawFloor() {
-    SDL_Rect floorRect = {0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2};
-    SDL_RenderCopy(renderer, floorTexture, NULL, &floorRect);
+    // Tile the floor texture across the screen width
+    SDL_Rect srcRect = {0, 0, floorTextureWidth, floorTextureHeight}; // Full texture dimensions
+    for (int x = 0; x < SCREEN_WIDTH; x += floorTextureWidth) {
+        SDL_Rect floorRect = {x, SCREEN_HEIGHT / 2, floorTextureWidth, SCREEN_HEIGHT / 2}; // Use full width of the texture
+        SDL_RenderCopy(renderer, floorTexture, &srcRect, &floorRect);
+    }
 }
 
 
@@ -200,7 +206,7 @@ void drawMiniMap(Player *player, bool showMap) {
 
 
 
-void render(Player *player, SDL_Texture* wallTexture, SDL_Texture* floorTexture) {
+void render(Player *player) {
     SDL_RenderClear(renderer);
 
     // Draw the sky
@@ -227,16 +233,11 @@ void render(Player *player, SDL_Texture* wallTexture, SDL_Texture* floorTexture)
         if (wallBottom >= SCREEN_HEIGHT) wallBottom = SCREEN_HEIGHT - 1;
 
         // Draw the wall using the texture
-        SDL_Rect wallRect = { x, wallTop, 1, wallHeight }; // 1 pixel wide, full wall height
-        SDL_RenderCopy(renderer, wallTexture, NULL, &wallRect); // Use the wall texture
+        drawWall(x, wallTop, wallBottom);
     }
 
-    // Draw the floor using the texture, tiling it across the screen
-    for (int x = 0; x < SCREEN_WIDTH; x++) {
-        SDL_Rect floorRect = { x, SCREEN_HEIGHT / 2, 1, SCREEN_HEIGHT / 2 }; // 1 pixel wide, half screen height
-        // Scale the floor texture to fit the floorRect
-        SDL_RenderCopy(renderer, floorTexture, NULL, &floorRect); // Use the floor texture
-    }
+    // Draw the floor using the updated function
+    drawFloor();
 
     // Draw the map if enabled
     if (showMap) {
@@ -245,7 +246,6 @@ void render(Player *player, SDL_Texture* wallTexture, SDL_Texture* floorTexture)
 
     SDL_RenderPresent(renderer);
 }
-
 
 
 void handleInput(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
