@@ -90,7 +90,7 @@ int loadTextures() {
 }
 
 
-float castRay(float playerX, float playerY, float rayAngle) {
+float castRay(float playerX, float playerY, float rayAngle, int *mapXHit, int *mapYHit, int *sideHit) {
     // Ray direction
     float rayDirX = cos(rayAngle);
     float rayDirY = sin(rayAngle);
@@ -126,6 +126,10 @@ float castRay(float playerX, float playerY, float rayAngle) {
     // Perform DDA
     bool hit = false;
     int side; // was the wall hit on the X or Y side?
+    
+    // (Other raycasting variables like rayDirX, rayDirY, deltaDistX, etc.)
+
+    // Perform DDA (Digital Differential Analysis)
     while (!hit) {
         if (sideDistX < sideDistY) {
             sideDistX += deltaDistX;
@@ -145,11 +149,14 @@ float castRay(float playerX, float playerY, float rayAngle) {
         }
     }
 
-    // Calculate distance to the hit
-    float perpWallDist = (side == 0) ? (mapX - playerX + (1 - stepX) / 2) / rayDirX : (mapY - playerY + (1 - stepY) / 2) / rayDirY;
+    // Calculate distance to the wall
+    float perpWallDist = (side == 0) ?
+        (mapX - playerX + (1 - stepX) / 2) / rayDirX :
+        (mapY - playerY + (1 - stepY) / 2) / rayDirY;
 
     return perpWallDist;
 }
+
 
 
 void drawSky() {
@@ -225,39 +232,30 @@ void render(Player *player) {
         float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
         float distance = castRay(player->x, player->y, rayAngle, &mapXHit, &mapYHit, &sideHit);
 
-        // Correct the fisheye effect
+        // Correct fisheye and calculate wall height
         float correctedDistance = distance * cos(rayAngle - player->angle);
-
-        // Calculate the height of the wall to be drawn
         int wallHeight = (int)(SCREEN_HEIGHT / correctedDistance);
         int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
         int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
 
+        // Adjust to screen boundaries
         if (wallTop < 0) wallTop = 0;
         if (wallBottom >= SCREEN_HEIGHT) wallBottom = SCREEN_HEIGHT - 1;
 
-        // Get the correct wall texture from the map data
-        int wallType = maze_map[mapXHit][mapYHit] - 1;  // Assuming wall types start from 1
+        // Get wall texture
+        int wallType = maze_map[mapXHit][mapYHit] - 1;
         SDL_Texture *currentTexture = wallTextures[wallType];
 
         // Calculate texture X coordinate
-        float wallHitX;
-        if (sideHit == 0) {
-            wallHitX = player->y + correctedDistance * sin(rayAngle);
-        } else {
-            wallHitX = player->x + correctedDistance * cos(rayAngle);
-        }
+        float wallHitX = (sideHit == 0) ? player->y + correctedDistance * sin(rayAngle) : player->x + correctedDistance * cos(rayAngle);
         wallHitX -= floor(wallHitX);
-
-        int texX = (int)(wallHitX * 64);  // Assuming texture is 64x64
-        if (sideHit == 0 && rayAngle > M_PI) texX = 64 - texX;  // Flip texture for certain sides
-        if (sideHit == 1 && rayAngle < (M_PI / 2) || rayAngle > (3 * M_PI / 2)) texX = 64 - texX;
-
-        // Define the source rectangle from the texture
-        SDL_Rect srcRect = {texX, 0, 1, 64};
-        SDL_Rect destRect = {x, wallTop, 1, wallHeight};
+        int texX = (int)(wallHitX * 64);
+        if (sideHit == 0 && rayAngle > M_PI) texX = 64 - texX;
+        if (sideHit == 1 && (rayAngle < M_PI / 2 || rayAngle > 3 * M_PI / 2)) texX = 64 - texX;
 
         // Render the wall slice
+        SDL_Rect srcRect = { texX, 0, 1, 64 };
+        SDL_Rect destRect = { x, wallTop, 1, wallHeight };
         SDL_RenderCopy(renderer, currentTexture, &srcRect, &destRect);
     }
 
@@ -267,6 +265,7 @@ void render(Player *player) {
 
     SDL_RenderPresent(renderer);
 }
+
 
 
 
