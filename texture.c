@@ -437,14 +437,12 @@ int main(int argc, char* argv[]) {
 
     // Load textures
     SDL_Texture* wallTexture = loadTexture("wall.jpg");
-    SDL_Texture* floorTexture = loadTexture("floor.jpg");
-    if (!wallTexture || !floorTexture) {
-        fprintf(stderr, "Failed to load textures\n");
-        SDL_DestroyRenderer(renderer);
-        SDL_DestroyWindow(window);
-        SDL_Quit();
-        return 1;
-    }
+        SDL_Texture* floorTexture = loadTexture("floor.jpg");
+
+if (!wallTexture || !floorTexture) {
+    printf("Error loading textures!\n");
+    return -1;
+}
 
     // Initialize player
     Player player = { .x = 2.0, .y = 2.0, .angle = 0.0, .moveSpeed = 0.05, .rotSpeed = 0.05 };
