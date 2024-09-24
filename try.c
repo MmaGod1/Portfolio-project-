@@ -59,14 +59,6 @@ SDL_Window *window;
 SDL_Renderer *renderer;
 
 
-if (!wallTexture || !floorTexture) {
-    fprintf(stderr, "Failed to load textures! SDL_image Error: %s\n", IMG_GetError());
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
-    return 1;
-}
-
 
 float castRay(float playerX, float playerY, float rayAngle) {
     // Ray direction
@@ -231,9 +223,7 @@ for (int x = 0; x < SCREEN_WIDTH; x++) {
 }
 
 
-// Load textures
-wallTexture = IMG_LoadTexture(renderer, "wall.jpg");
-floorTexture = IMG_LoadTexture(renderer, "floor.jpg");
+
 
 void handleInput(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
     SDL_Event event;
