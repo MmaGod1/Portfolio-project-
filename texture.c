@@ -154,7 +154,7 @@ void drawFloor() {
 
 
 
-void render(Player *player) {
+void render(Player *player, SDL_Texture* wallTexture, SDL_Texture* floorTexture) {
     SDL_RenderClear(renderer);
 
     // Draw the sky and floor
