@@ -17,8 +17,8 @@
 // Global variable to toggle map display
 int showMap = 1;  // 1 to show map, 0 to hide map
 
-SDL_Texture *wallTexture;
-SDL_Texture *floorTexture;
+SDL_Texture *wallTexture = NULL;
+SDL_Texture *floorTexture = NULL;
 
 // Maze map (1 = wall, 0 = empty space)
 int maze_map[MAP_WIDTH][MAP_HEIGHT] = {
