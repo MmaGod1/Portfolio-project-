@@ -67,7 +67,7 @@ SDL_Renderer *renderer;
 
 int loadTextures() {
     // Load wall textures
-    wallTextures[0] = IMG_LoadTexture(renderer, "./wall4.jpg");
+    wallTextures[0] = IMG_LoadTexture(renderer, "./wall3.jpg");
     wallTextures[1] = IMG_LoadTexture(renderer, "./wall2.jpg");
     wallTextures[2] = IMG_LoadTexture(renderer, "./wall3.jpg");
         wallTextures[3] = IMG_LoadTexture(renderer, "./wall4.jpg");
