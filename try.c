@@ -228,7 +228,12 @@ void drawMiniMap(Player *player, bool showMap) {
 
 void render(Player *player) {
     SDL_RenderClear(renderer);
+    
+    // Draw the sky
     drawSky();
+
+    // Draw the floor texture
+    SDL_RenderCopy(renderer, floorTexture, NULL, &floorRect); // Make sure floorRect is defined and correct
 
     int mapXHit, mapYHit, sideHit;
 
@@ -264,10 +269,12 @@ void render(Player *player) {
         SDL_RenderCopy(renderer, currentTexture, &srcRect, &destRect);
     }
 
+    // Draw the minimap if it's visible
     if (showMap) {
         drawMiniMap(player, showMap);
     }
 
+    // Present the rendered frame
     SDL_RenderPresent(renderer);
 }
 
