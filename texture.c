@@ -15,6 +15,11 @@
 #define TILE_SIZE (MAP_DISPLAY_WIDTH / MAP_WIDTH)
 // Global variable to toggle map display
 int showMap = 1;  // 1 to show map, 0 to hide map
+
+int wallTextureWidth, wallTextureHeight;
+int floorTextureWidth, floorTextureHeight;
+
+// Declare your texture pointers
 SDL_Texture* wallTexture;
 SDL_Texture* floorTexture;
 
@@ -60,14 +65,14 @@ SDL_Window *window;
 SDL_Renderer *renderer;
 
 
-SDL_Texture* loadTexture(const char* filePath) {
-    // Load the image using SDL_image
-    SDL_Texture* texture = IMG_LoadTexture(renderer, filePath);
-    if (!texture) {
-        printf("Error loading image: %s\n", IMG_GetError());
-        return NULL;
-    }
-    return texture;
+void loadTextures() {
+    // Load your textures (ensure the paths are correct)
+    wallTexture = IMG_LoadTexture(renderer, "wall.jpg");
+    floorTexture = IMG_LoadTexture(renderer, "floor.jpg");
+
+    // Query the texture sizes
+    SDL_QueryTexture(wallTexture, NULL, NULL, &wallTextureWidth, &wallTextureHeight);
+    SDL_QueryTexture(floorTexture, NULL, NULL, &floorTextureWidth, &floorTextureHeight);
 }
 
 float castRay(float playerX, float playerY, float rayAngle) {
@@ -149,7 +154,6 @@ void drawWall(int x, int wallTop, int wallBottom) {
 }
 
 void drawFloor() {
-    // Tile the floor texture across the screen width
     SDL_Rect srcRect = {0, 0, floorTextureWidth, floorTextureHeight}; // Full texture dimensions
     for (int x = 0; x < SCREEN_WIDTH; x += floorTextureWidth) {
         SDL_Rect floorRect = {x, SCREEN_HEIGHT / 2, floorTextureWidth, SCREEN_HEIGHT / 2}; // Use full width of the texture
@@ -246,6 +250,7 @@ void render(Player *player) {
 
     SDL_RenderPresent(renderer);
 }
+
 
 
 void handleInput(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
