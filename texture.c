@@ -1,7 +1,7 @@
 #include <SDL2/SDL.h>
 #include <math.h>
 #include <stdbool.h>
-#include <SDL_image.h>
+#include <SDL2/SDL_image.h>
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
