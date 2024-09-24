@@ -18,7 +18,7 @@
 int showMap = 1;  // 1 to show map, 0 to hide map
 
 
-#define WALL_TYPES 3     // Number of different wall types
+#define WALL_TYPES 4     // Number of different wall types
 #define FLOOR_TYPES 4     // Number of different floor types
 
 SDL_Texture *wallTextures[WALL_TYPES];
