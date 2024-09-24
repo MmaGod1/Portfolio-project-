@@ -240,7 +240,7 @@ void render(Player *player, SDL_Texture* wallTexture, SDL_Texture* floorTexture)
 
     // Draw the map if enabled
     if (showMap) {
-        drawMiniMap(&player, showMap);  // Call a separate function for drawing the map
+        drawMiniMap(player, showMap);  // Call a separate function for drawing the map
     }
 
     SDL_RenderPresent(renderer);
