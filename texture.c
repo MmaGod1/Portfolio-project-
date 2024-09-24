@@ -458,7 +458,7 @@ int main(int argc, char* argv[]) {
     bool running = true;
     while (running) {
         handleInput(&player, &running, maze_map);  // Handle player input
-        render(&player, wallTexture, floorTexture); // Pass textures to render function
+        render(&player); // Call render without passing textures
 
         SDL_Delay(16);  // Cap the frame rate to ~60 FPS
     }
