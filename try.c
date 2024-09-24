@@ -17,8 +17,13 @@
 // Global variable to toggle map display
 int showMap = 1;  // 1 to show map, 0 to hide map
 
-SDL_Texture *wallTexture = NULL;
-SDL_Texture *floorTexture = NULL;
+
+#define WALL_TYPES 3      // Number of different wall types
+#define FLOOR_TYPES 4     // Number of different floor types
+
+SDL_Texture *wallTextures[WALL_TYPES];
+SDL_Texture *floorTextures[FLOOR_TYPES];
+
 
 // Maze map (1 = wall, 0 = empty space)
 int maze_map[MAP_WIDTH][MAP_HEIGHT] = {
@@ -26,24 +31,24 @@ int maze_map[MAP_WIDTH][MAP_HEIGHT] = {
         {1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1},
         {1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1},
         {1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1},
-        {1, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1},
+        {1, 0, 1, 0, 0, 2, 2, 2, 2, 2, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1},
         {1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1},
-        {1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1},
+        {1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1},
         {1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-        {1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1},
+        {1, 0, 3, 3, 3, 3, 0, 2, 2, 2, 2, 2, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1},
         {1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1},
-        {1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1},
+        {1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 4, 4, 4, 4, 4, 0, 1, 0, 1, 0, 1, 1, 1},
         {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-        {1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1},
+        {1, 0, 4, 4, 4, 4, 3, 3, 3, 2, 2, 2, 4, 3, 2, 3, 4, 3, 2, 2, 3, 4, 0, 1},
         {1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1},
         {1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1},
         {1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1},
-        {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+        {1, 4, 4, 4, 4, 4, 4, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 4, 3, 2, 3, 4, 0, 1},
         {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-        {1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+        {1, 4, 3, 2, 1, 2, 3, 4, 3, 2, 0, 4, 0, 2, 3, 4, 3, 2, 3, 1, 2, 3, 4, 1},
         {1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1},
         {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-        {1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1},
+        {1, 1, 1, 0, 1, 1, 1, 0, 3, 3, 3, 3, 2, 2, 2, 3, 1, 1, 0, 1, 4, 1, 1, 1},
         {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
         {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
 };
@@ -58,6 +63,35 @@ typedef struct {
 SDL_Window *window;
 SDL_Renderer *renderer;
 
+
+
+int loadTextures() {
+    // Load wall textures
+    wallTextures[0] = IMG_LoadTexture(renderer, "./wall1.jpg");
+    wallTextures[1] = IMG_LoadTexture(renderer, "./wall2.jpg");
+    wallTextures[2] = IMG_LoadTexture(renderer, "./wall3.jpg");
+        wallTextures[3] = IMG_LoadTexture(renderer, "./wall4.jpg");
+
+    // Load floor textures
+    for (int i = 0; i < FLOOR_TYPES; ++i) {
+        char filepath[30];
+        snprintf(filepath, sizeof(filepath), "./floor%d.png", i + 1); // Adjust the file naming as needed
+        floorTextures[i] = IMG_LoadTexture(renderer, filepath);
+    }
+
+    // Check for texture loading errors
+    if (!wallTextures[0] || !wallTextures[1] || !wallTextures[2] || !wallTextures[3]) {
+        return -1; // Error loading wall textures
+    }
+
+    for (int i = 0; i < FLOOR_TYPES; ++i) {
+        if (!floorTextures[i]) {
+            return -1; // Error loading floor textures
+        }
+    }
+    
+    return 0; // Success
+}
 
 
 float castRay(float playerX, float playerY, float rayAngle) {
@@ -136,6 +170,51 @@ void drawFloor() {
     SDL_RenderCopy(renderer, floorTexture, NULL, &floorRect);
 }
 
+void drawMiniMap(Player *player, bool showMap) {
+    if (!showMap) return;
+
+    int mapStartX = 10;    // Position the map in the top-left corner
+    int mapStartY = 10;
+    int mapWidth = 160;    // Width of the map on screen (adjust as needed)
+    int mapHeight = 120;   // Height of the map on screen (adjust as needed)
+    int tileSize = TILE_SIZE; // Size of each tile (you should define TILE_SIZE)
+
+    // Draw the map tiles
+    for (int y = 0; y < MAP_HEIGHT; y++) {
+        for (int x = 0; x < MAP_WIDTH; x++) {
+            SDL_Rect rect;
+            rect.x = mapStartX + x * tileSize;  // Position of the tile
+            rect.y = mapStartY + y * tileSize;  // Position of the tile
+            rect.w = tileSize;                  // Width of the tile
+            rect.h = tileSize;                  // Height of the tile
+
+            if (maze_map[x][y] == 1) {
+                SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Wall color (e.g., red)
+            } else {
+                SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // Empty space color (e.g., white)
+            }
+
+            SDL_RenderFillRect(renderer, &rect);
+        }
+    }
+
+    // Draw the player's position on the map
+    float mapPlayerX = mapStartX + (player->x * mapWidth / MAP_WIDTH);
+    float mapPlayerY = mapStartY + (player->y * mapHeight / MAP_HEIGHT);
+    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);  // Green color for player's position
+    SDL_Rect playerRect = { (int)mapPlayerX - 2, (int)mapPlayerY - 2, 4, 4 };  // Small rectangle to represent the player
+    SDL_RenderFillRect(renderer, &playerRect);
+
+    // Draw the player's line of sight on the map
+    SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);  // Blue color for line of sight
+    for (int i = 0; i < SCREEN_WIDTH; i++) {
+        float rayAngle = player->angle - (FOV / 2) + (FOV * i / SCREEN_WIDTH);
+        float endX = mapPlayerX + cos(rayAngle) * (mapWidth / 4);  // Adjust length for rays (shorter)
+        float endY = mapPlayerY + sin(rayAngle) * (mapHeight / 4); // Adjust length for rays (shorter)
+        SDL_RenderDrawLine(renderer, mapPlayerX, mapPlayerY, endX, endY);
+    }
+}
+
 
 
 
@@ -144,83 +223,51 @@ void drawFloor() {
 void render(Player *player) {
     SDL_RenderClear(renderer);
 
-    // Draw the sky and floor
+    // Draw the sky (assuming drawSky is implemented elsewhere)
     drawSky();
-    drawFloor();
+
+    // Draw the floor with a random texture
+    int floorTextureIndex = rand() % FLOOR_TYPES;  // Randomly select a floor texture
+    SDL_Rect floorRect = {0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2};  // Assuming floor takes up the bottom half of the screen
+    SDL_RenderCopy(renderer, floorTextures[floorTextureIndex], NULL, &floorRect);
 
     // Cast rays across the screen
-    // Replace the existing code for drawing walls with texture rendering
-for (int x = 0; x < SCREEN_WIDTH; x++) {
-    float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
-    float distance = castRay(player->x, player->y, rayAngle);
+    for (int x = 0; x < SCREEN_WIDTH; x++) {
+        float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
+        float distance = castRay(player->x, player->y, rayAngle);
 
-    // Cap the distance for better visuals
-    if (distance > 10.0) distance = 10.0;
+        // Cap the distance for better visuals
+        if (distance > 10.0) distance = 10.0;
 
-    // Correct distance for wall height calculation
-    float correctedDistance = distance * cos(rayAngle - player->angle);
+        // Correct distance for wall height calculation
+        float correctedDistance = distance * cos(rayAngle - player->angle);
 
-    // Calculate wall height and position
-    int wallHeight = (int)(SCREEN_HEIGHT / correctedDistance);
-    int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
-    int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
+        // Calculate wall height and position
+        int wallHeight = (int)(SCREEN_HEIGHT / correctedDistance);
+        int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
+        int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
 
-    // Ensure wall heights are non-negative
-    if (wallHeight < 0) wallHeight = 0;
-    if (wallTop < 0) wallTop = 0;
-    if (wallBottom >= SCREEN_HEIGHT) wallBottom = SCREEN_HEIGHT - 1;
+        // Ensure wall heights are non-negative
+        if (wallHeight < 0) wallHeight = 0;
+        if (wallTop < 0) wallTop = 0;
+        if (wallBottom >= SCREEN_HEIGHT) wallBottom = SCREEN_HEIGHT - 1;
 
-    // Draw the wall texture
-    SDL_Rect wallRect = { x, wallTop, 1, wallHeight }; // 1 pixel wide for each column
-    SDL_RenderCopy(renderer, wallTexture, NULL, &wallRect);
-}
+        // Choose a wall texture based on some condition (e.g., wall type, x-coordinate, or map position)
+        int wallTextureIndex = x % WALL_TYPES;  // Example logic: cycle through wall textures
+        SDL_Rect wallRect = { x, wallTop, 1, wallHeight };  // 1 pixel wide for each column
 
-    // Draw the map if enabled
+        // Render the selected wall texture
+        SDL_RenderCopy(renderer, wallTextures[wallTextureIndex], NULL, &wallRect);
+    }
+
+    // Draw the map if enabled (no changes needed here)
     if (showMap) {
-        int mapStartX = 10;    // Position the map in the top-left corner
-        int mapStartY = 10;
-        int mapWidth = 160;    // Width of the map on screen (adjust as needed)
-        int mapHeight = 120;   // Height of the map on screen (adjust as needed)
-        int tileSize = TILE_SIZE; // Size of each tile (you should define TILE_SIZE)
-
-        // Draw the map tiles
-        for (int y = 0; y < MAP_HEIGHT; y++) {
-            for (int x = 0; x < MAP_WIDTH; x++) {
-                SDL_Rect rect;
-                rect.x = mapStartX + x * tileSize;  // Position of the tile
-                rect.y = mapStartY + y * tileSize;  // Position of the tile
-                rect.w = tileSize;                  // Width of the tile
-                rect.h = tileSize;                  // Height of the tile
-
-                if (maze_map[x][y] == 1) {
-                    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Wall color (e.g., red)
-                } else {
-                    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // Empty space color (e.g., white)
-                }
-
-                SDL_RenderFillRect(renderer, &rect);
-            }
-        }
-
-        // Draw the player's position on the map
-        float mapPlayerX = mapStartX + (player->x * mapWidth / MAP_WIDTH);
-        float mapPlayerY = mapStartY + (player->y * mapHeight / MAP_HEIGHT);
-        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);  // Green color for player's position
-        SDL_Rect playerRect = { (int)mapPlayerX - 2, (int)mapPlayerY - 2, 4, 4 };  // Small rectangle to represent the player
-        SDL_RenderFillRect(renderer, &playerRect);
-
-        // Draw the player's line of sight on the map
-        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);  // Green color for line of sight
-        for (int i = 0; i < SCREEN_WIDTH; i++) {
-            float rayAngle = player->angle - (FOV / 2) + (FOV * i / SCREEN_WIDTH);
-            float endX = mapPlayerX + cos(rayAngle) * (mapWidth / 2);  // Adjust length as needed
-            float endY = mapPlayerY + sin(rayAngle) * (mapHeight / 2); // Adjust length as needed
-            SDL_RenderDrawLine(renderer, mapPlayerX, mapPlayerY, endX, endY);
-        }
+        drawMiniMap(player, showMap);
     }
 
     SDL_RenderPresent(renderer);
 }
+
 
 
 
@@ -413,12 +460,8 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-
-  // Load textures
-    wallTexture = IMG_LoadTexture(renderer, "wall.jpg");
-    floorTexture = IMG_LoadTexture(renderer, "floor.jpg");
-
-    if (!wallTexture || !floorTexture) {
+    // Load textures (replace manual texture loading with loadTextures function)
+    if (loadTextures() != 0) {
         fprintf(stderr, "Failed to load textures! SDL_image Error: %s\n", IMG_GetError());
         SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(window);
@@ -426,20 +469,24 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-
     // Game loop
     bool running = true;
     while (running) {
         handleInput(&player, &running, maze_map);  // Handle player input
-        render(&player);                 // Render the scene
+        render(&player);                           // Render the scene
 
         SDL_Delay(16);  // Cap the frame rate to ~60 FPS
     }
 
     // Clean up and quit SDL
-  // Clean up textures
-SDL_DestroyTexture(wallTexture);
-SDL_DestroyTexture(floorTexture);
+    // Clean up textures
+    for (int i = 0; i < WALL_TYPES; i++) {
+        SDL_DestroyTexture(wallTextures[i]);
+    }
+    for (int i = 0; i < FLOOR_TYPES; i++) {
+        SDL_DestroyTexture(floorTextures[i]);
+    }
+
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
