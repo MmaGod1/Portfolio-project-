@@ -225,10 +225,9 @@ void drawMiniMap(Player *player, bool showMap) {
 
 
 
-
 void render(Player *player) {
-    // Clear the renderer with a clear color (optional, can be changed as needed)
-    SDL_SetRenderDrawColor(renderer, 135, 206, 235, 255); // Sky blue color
+    // Clear the renderer
+    SDL_SetRenderDrawColor(renderer, 135, 206, 235, 255); // Sky blue
     SDL_RenderClear(renderer);
     
     // Initialize the floor rectangle
@@ -248,43 +247,60 @@ void render(Player *player) {
         float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
         float distance = castRay(player->x, player->y, rayAngle, &mapXHit, &mapYHit, &sideHit);
 
-        // Correct fisheye and calculate wall height
+        // Correct fisheye effect
         float correctedDistance = distance * cos(rayAngle - player->angle);
         int wallHeight = (int)(SCREEN_HEIGHT / correctedDistance);
         int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
         int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
 
-        // Adjust to screen boundaries
+        // Ensure within screen bounds
         if (wallTop < 0) wallTop = 0;
         if (wallBottom >= SCREEN_HEIGHT) wallBottom = SCREEN_HEIGHT - 1;
 
-        // Get wall texture
-        int wallType = maze_map[mapXHit][mapYHit] - 1;
+        // Determine wall texture based on map hit
+        int wallType = maze_map[mapXHit][mapYHit] - 1; // Assuming 1-based index in maze_map
         SDL_Texture *currentTexture = wallTextures[wallType];
 
         // Calculate texture X coordinate
         float wallHitX = (sideHit == 0) ? player->y + correctedDistance * sin(rayAngle) : player->x + correctedDistance * cos(rayAngle);
-        wallHitX -= floor(wallHitX);
-        int texX = (int)(wallHitX * 64);
+        wallHitX -= floor(wallHitX); // Normalize
+        int texX = (int)(wallHitX * 64); // Assuming texture width of 64
         if (sideHit == 0 && rayAngle > M_PI) texX = 64 - texX;
         if (sideHit == 1 && (rayAngle < M_PI / 2 || rayAngle > 3 * M_PI / 2)) texX = 64 - texX;
 
-        // Render the wall slice
+        // Render wall slice
         SDL_Rect srcRect = { texX, 0, 1, 64 };
         SDL_Rect destRect = { x, wallTop, 1, wallHeight };
         SDL_RenderCopy(renderer, currentTexture, &srcRect, &destRect);
     }
 
-    // Draw the mini-map after the walls to prevent overlap
+    // Draw the mini-map after the walls
     if (showMap) {
         drawMiniMap(player, showMap);
     }
 
-    // Present the rendered frame
+    // Present the final render
     SDL_RenderPresent(renderer);
 }
 
 
+void updatePlayerPosition(Player *player, const Uint8 *keyState) {
+    float speed = 0.1f; // Adjust as necessary
+    if (keyState[SDL_SCANCODE_W]) {
+        player->x += cos(player->angle) * speed;
+        player->y += sin(player->angle) * speed;
+    }
+    if (keyState[SDL_SCANCODE_S]) {
+        player->x -= cos(player->angle) * speed;
+        player->y -= sin(player->angle) * speed;
+    }
+    if (keyState[SDL_SCANCODE_A]) {
+        player->angle -= 0.1f; // Turn left
+    }
+    if (keyState[SDL_SCANCODE_D]) {
+        player->angle += 0.1f; // Turn right
+    }
+}
 
 
 
@@ -439,6 +455,7 @@ int loadMap(const char *filename, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
 }
 
 
+
 int main(int argc, char* argv[]) {
     if (argc != 2) {
         fprintf(stderr, "Usage: %s <mapfile>\n", argv[0]);
@@ -490,14 +507,14 @@ int main(int argc, char* argv[]) {
     // Game loop
     bool running = true;
     while (running) {
-        handleInput(&player, &running, maze_map);  // Handle player input
-        render(&player);                           // Render the scene
+        const Uint8 *keyState = SDL_GetKeyboardState(NULL); // Get the current state of the keyboard
+        updatePlayerPosition(&player, keyState); // Update player position based on input
+        render(&player); // Render the scene
 
         SDL_Delay(16);  // Cap the frame rate to ~60 FPS
     }
 
     // Clean up and quit SDL
-    // Clean up textures
     for (int i = 0; i < WALL_TYPES; i++) {
         SDL_DestroyTexture(wallTextures[i]);
     }
