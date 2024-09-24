@@ -229,9 +229,16 @@ void drawMiniMap(Player *player, bool showMap) {
 void render(Player *player) {
     SDL_RenderClear(renderer);
     
+    // Initialize the floor rectangle
+    SDL_Rect floorRect;
+    floorRect.x = 0;                      // X position
+    floorRect.y = SCREEN_HEIGHT / 2;      // Y position (halfway down the screen)
+    floorRect.w = SCREEN_WIDTH;            // Full screen width
+    floorRect.h = SCREEN_HEIGHT / 2;       // Bottom half height
+
     // Draw floor texture
-    SDL_RenderCopy(renderer, floorTexture, NULL, &floorRect); // Ensure floorRect is defined
-    
+    SDL_RenderCopy(renderer, floorTexture, NULL, &floorRect);
+
     int mapXHit, mapYHit, sideHit;
 
     // Loop over each vertical screen line
@@ -272,6 +279,7 @@ void render(Player *player) {
 
     SDL_RenderPresent(renderer);
 }
+
 
 
 
