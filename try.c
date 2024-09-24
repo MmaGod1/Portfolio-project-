@@ -229,11 +229,14 @@ void drawMiniMap(Player *player, bool showMap) {
 void render(Player *player) {
     SDL_RenderClear(renderer);
     
+    // Define the floor rectangle
+    SDL_Rect floorRect = {0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2}; // Covers the bottom half of the screen
+
     // Draw the sky
     drawSky();
 
     // Draw the floor texture
-    SDL_RenderCopy(renderer, floorTexture, NULL, &floorRect); // Make sure floorRect is defined and correct
+    SDL_RenderCopy(renderer, floorTexture, NULL, &floorRect); // Render the floor texture
 
     int mapXHit, mapYHit, sideHit;
 
@@ -277,6 +280,7 @@ void render(Player *player) {
     // Present the rendered frame
     SDL_RenderPresent(renderer);
 }
+
 
 
 
