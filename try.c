@@ -263,8 +263,8 @@ void render(Player *player) {
 
         // Calculate texture X coordinate
         float wallHitX = (sideHit == 0) ? player->y + correctedDistance * sin(rayAngle) : player->x + correctedDistance * cos(rayAngle);
-        wallHitX -= floor(wallHitX); // Normalize
-        int texX = (int)(wallHitX * 64); // Assuming texture width of 64
+            wallHitX -= floor(wallHitX); // Normalize
+            int texX = (int)(wallHitX * 64); // Assuming texture width of 64
         if (sideHit == 0 && rayAngle > M_PI) texX = 64 - texX;
         if (sideHit == 1 && (rayAngle < M_PI / 2 || rayAngle > 3 * M_PI / 2)) texX = 64 - texX;
 
@@ -287,12 +287,22 @@ void render(Player *player) {
 void updatePlayerPosition(Player *player, const Uint8 *keyState) {
     float speed = 0.1f; // Adjust as necessary
     if (keyState[SDL_SCANCODE_W]) {
-        player->x += cos(player->angle) * speed;
-        player->y += sin(player->angle) * speed;
+        float newX = player->x + cos(player->angle) * speed;
+        float newY = player->y + sin(player->angle) * speed;
+        // Check for wall collision
+        if (maze_map[(int)newX][(int)newY] == 0) {
+            player->x = newX;
+            player->y = newY;
+        }
     }
     if (keyState[SDL_SCANCODE_S]) {
-        player->x -= cos(player->angle) * speed;
-        player->y -= sin(player->angle) * speed;
+        float newX = player->x - cos(player->angle) * speed;
+        float newY = player->y - sin(player->angle) * speed;
+        // Check for wall collision
+        if (maze_map[(int)newX][(int)newY] == 0) {
+            player->x = newX;
+            player->y = newY;
+        }
     }
     if (keyState[SDL_SCANCODE_A]) {
         player->angle -= 0.1f; // Turn left
@@ -301,6 +311,7 @@ void updatePlayerPosition(Player *player, const Uint8 *keyState) {
         player->angle += 0.1f; // Turn right
     }
 }
+
 
 
 
