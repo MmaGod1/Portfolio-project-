@@ -65,14 +65,20 @@ SDL_Window *window;
 SDL_Renderer *renderer;
 
 
-void loadTexture() {
-    // Load your textures (ensure the paths are correct)
-    wallTexture = IMG_LoadTexture(renderer, "wall.jpg");
-    floorTexture = IMG_LoadTexture(renderer, "floor.jpg");
-
-    // Query the texture sizes
-    SDL_QueryTexture(wallTexture, NULL, NULL, &wallTextureWidth, &wallTextureHeight);
-    SDL_QueryTexture(floorTexture, NULL, NULL, &floorTextureWidth, &floorTextureHeight);
+SDL_Texture* loadTexture(const char* filePath) {
+    SDL_Surface* surface = IMG_Load(filePath);
+    if (!surface) {
+        printf("Failed to load image %s: %s\n", filePath, IMG_GetError());
+        return NULL;
+    }
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_FreeSurface(surface);
+    
+    if (!texture) {
+        printf("Failed to create texture from %s: %s\n", filePath, SDL_GetError());
+        return NULL;
+    }
+    return texture;
 }
 
 float castRay(float playerX, float playerY, float rayAngle) {
