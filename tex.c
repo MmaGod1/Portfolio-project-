@@ -205,26 +205,6 @@ void drawMiniMap(Player *player, bool showMap) {
 }
 
 
-void render(Player *player) {
-    SDL_RenderClear(renderer);
-
-    // Draw the sky and floor
-    drawSky();
-    drawFloor(player);
-
-    // Cast rays and render walls
-    renderWalls(player);
-
-    // Optionally draw the mini-map
-    if (showMap) {
-        drawMiniMap(player, showMap);
-    }
-
-    SDL_RenderPresent(renderer);
-}
-
-
-
 
 void renderWalls(Player *player) {
     for (int x = 0; x < SCREEN_WIDTH; x++) {
@@ -288,6 +268,26 @@ void drawFloor(Player *player) {
             SDL_RenderCopy(renderer, floorTexture.texture, &srcRect, &dstRect);
         }
     }
+}
+
+
+
+void render(Player *player) {
+    SDL_RenderClear(renderer);
+
+    // Draw the sky and floor
+    drawSky();
+    drawFloor(player);
+
+    // Cast rays and render walls
+    renderWalls(player);
+
+    // Optionally draw the mini-map
+    if (showMap) {
+        drawMiniMap(player, showMap);
+    }
+
+    SDL_RenderPresent(renderer);
 }
 
 
