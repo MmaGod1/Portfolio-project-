@@ -271,51 +271,28 @@ float getWallHitCoordinates(float playerX, float playerY, float rayAngle, int *m
 
 
 void renderWalls(Player *player) {
-    // Calculate the screen's left and right angles
-    float leftAngle = player->angle - (FOV / 2);
-    float rightAngle = player->angle + (FOV / 2);
+    for (int x = 0; x < SCREEN_WIDTH; x += 2) { // Cast rays every two pixels
+        float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
+        float distance = castRay(player->x, player->y, rayAngle);
+        
+        if (distance > 10.0) distance = 10.0;
 
-    // Store wall heights for batch rendering
-    int wallSlices[SCREEN_WIDTH];
-
-    // Cast rays within the field of view and store wall heights
-    for (int x = 0; x < SCREEN_WIDTH; x++) {
-        float rayAngle = leftAngle + (x / (float)SCREEN_WIDTH) * FOV;
-
-        // Check if ray angle is within the field of view
-        if (rayAngle >= leftAngle && rayAngle <= rightAngle) {
-            float distance = castRay(player->x, player->y, rayAngle);
-
-            // Limit distance for rendering
-            if (distance > 10.0) distance = 10.0;
-
-            float correctedDistance = distance * cos(rayAngle - player->angle);
-            int wallHeight = (int)(SCREEN_HEIGHT / correctedDistance);
-            wallSlices[x] = wallHeight;
-        } else {
-            wallSlices[x] = 0; // Mark as outside field of view
-        }
-    }
-
-    // Now render wall slices in one go, processing texture coordinates in one loop
-    for (int x = 0; x < SCREEN_WIDTH; x++) {
-        int wallHeight = wallSlices[x];
-        if (wallHeight == 0) continue; // Skip walls outside field of view
-
+        float correctedDistance = distance * cos(rayAngle - player->angle);
+        int wallHeight = (int)(SCREEN_HEIGHT / correctedDistance);
         int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
         int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
 
         if (wallTop < 0) wallTop = 0;
         if (wallBottom >= SCREEN_HEIGHT) wallBottom = SCREEN_HEIGHT - 1;
 
-        int mapX, mapY; 
-        float wallX = getWallHitCoordinates(player->x, player->y, player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH), &mapX, &mapY);
+        int mapX, mapY;
+        float wallX = getWallHitCoordinates(player->x, player->y, rayAngle, &mapX, &mapY);
         int wallTextureIndex = maze_map[mapX][mapY] - 1;
-
+        
         int texX = (int)(wallX * wallTextures[wallTextureIndex].width) % wallTextures[wallTextureIndex].width;
 
         SDL_Rect srcRect = { texX, 0, 1, wallTextures[wallTextureIndex].height };
-        SDL_Rect dstRect = { x, wallTop, 1, wallHeight };
+        SDL_Rect dstRect = { x, wallTop, 2, wallHeight }; // Adjusting width for batching
 
         SDL_RenderCopy(renderer, wallTextures[wallTextureIndex].texture, &srcRect, &dstRect);
     }
