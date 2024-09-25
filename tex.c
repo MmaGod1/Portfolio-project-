@@ -181,7 +181,7 @@ void drawMiniMap(Player *player, bool showMap) {
 
 
 
-void render(Player *player) {
+void render(Player *player, SDL_Texture *floorTexture, SDL_Texture *wallTextures[]) {
     SDL_RenderClear(renderer);
 
     // Draw the floor texture
@@ -223,7 +223,6 @@ void render(Player *player) {
 
     SDL_RenderPresent(renderer);
 }
-
 
 
 
@@ -378,8 +377,8 @@ int loadMap(const char *filename, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
 
 int main(int argc, char* argv[]) {
         // Load textures
-SDL_Texture *wallTextures[4];
-SDL_Texture *floorTexture;
+//SDL_Texture *wallTextures[4];
+//SDL_Texture *floorTexture;
     if (argc != 2) {
         fprintf(stderr, "Usage: %s <mapfile>\n", argv[0]);
         return 1;
@@ -449,8 +448,7 @@ SDL_Texture *floorTexture;
     bool running = true;
     while (running) {
         handleInput(&player, &running, maze_map);
-        render(&player); // Render the scene
-
+        render(&player, floorTexture, wallTextures);
         SDL_Delay(16); // Cap the frame rate to ~60 FPS
     }
 
