@@ -189,6 +189,7 @@ void drawMiniMap(Player *player, bool showMap) {
 
 
 void render(Player *player, SDL_Texture *floorTexture, SDL_Texture *wallTextures[]) {
+        int mapXHit, mapYHit, sideHit;
     SDL_RenderClear(renderer);
 
     // Draw the floor texture
@@ -198,7 +199,7 @@ void render(Player *player, SDL_Texture *floorTexture, SDL_Texture *wallTextures
     // Cast rays across the screen
     for (int x = 0; x < SCREEN_WIDTH; x++) {
         float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
-        float distance = castRay(player->x, player->y, rayAngle);
+        float distance = castRay(player->x, player->y, rayAngle, &mapXHit, &mapYHit, &sideHit); // Correct
 
         // Cap the distance for better visuals
         if (distance > 10.0) distance = 10.0;
