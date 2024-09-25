@@ -265,7 +265,7 @@ float playerX = 2.0f, playerY = 2.0f; // Example player position
         SDL_Rect floorSrcRect = { floorTexX, floorTexY, 1, 1 };
         SDL_Rect floorDstRect = { x, SCREEN_HEIGHT / 2 + (SCREEN_HEIGHT / 2) / correctedDistance, 1, SCREEN_HEIGHT / 2 };
         SDL_RenderCopy(renderer, floorTexture.texture, &floorSrcRect, &floorDstRect);
-}
+
     }
 
     // Draw the map if enabled
