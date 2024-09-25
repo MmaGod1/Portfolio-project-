@@ -400,7 +400,6 @@ void renderFrame(SDL_Renderer* renderer, double posX, double posY, double dirX, 
 
         int mapXHit, mapYHit, sideHit;
         float perpWallDist = castRay(posX, posY, atan2(rayDirY, rayDirX), &mapXHit, &mapYHit, &sideHit);
-
         // Calculate height of line to draw on screen
         int lineHeight = (int)(SCREEN_HEIGHT / perpWallDist);
 
