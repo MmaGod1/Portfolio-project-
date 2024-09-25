@@ -137,6 +137,40 @@ void drawFloor() {
     SDL_RenderFillRect(renderer, &floorRect);
 }
 
+void renderFloor(Player *player) {
+    for (int y = SCREEN_HEIGHT / 2; y < SCREEN_HEIGHT; y++) {
+        double rayDirX0 = player->dirX - player->planeX;
+        double rayDirY0 = player->dirY - player->planeY;
+        double rayDirX1 = player->dirX + player->planeX;
+        double rayDirY1 = player->dirY + player->planeY;
+
+        int p = y - SCREEN_HEIGHT / 2; // Distance from the middle of the screen
+        double posZ = 0.5 * SCREEN_HEIGHT; // This is a constant that scales with the screen height
+
+        double rowDistance = posZ / p;
+
+        double floorStepX = rowDistance * (rayDirX1 - rayDirX0) / SCREEN_WIDTH;
+        double floorStepY = rowDistance * (rayDirY1 - rayDirY0) / SCREEN_WIDTH;
+
+        double floorX = player->x + rowDistance * rayDirX0;
+        double floorY = player->y + rowDistance * rayDirY0;
+
+        for (int x = 0; x < SCREEN_WIDTH; x++) {
+            int cellX = (int)(floorX);
+            int cellY = (int)(floorY);
+
+            int tx = (int)(texWidth * (floorX - cellX)) & (texWidth - 1);
+            int ty = (int)(texHeight * (floorY - cellY)) & (texHeight - 1);
+
+            floorX += floorStepX;
+            floorY += floorStepY;
+
+            // Use the floor texture
+            Uint32 color = texture[4][texWidth * ty + tx];
+            buffer[y][x] = color; // Set pixel color for floor
+        }
+    }
+}
 
 void drawMiniMap(Player *player, bool showMap) {
     if (!showMap) return;
@@ -188,11 +222,13 @@ void drawMiniMap(Player *player, bool showMap) {
 void render(Player *player) {
     SDL_RenderClear(renderer);
 
-    // Draw the sky and floor
-    drawSky();
-    drawFloor();
+    // 1. Render the floor using the renderFloor function
+    renderFloor(player);
 
-    // Cast rays across the screen
+    // 2. Render the sky (existing function)
+    drawSky();
+
+    // 3. Cast rays across the screen for wall rendering
     for (int x = 0; x < SCREEN_WIDTH; x++) {
         float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
         float distance = castRay(player->x, player->y, rayAngle);
@@ -218,11 +254,12 @@ void render(Player *player) {
         SDL_RenderDrawLine(renderer, x, wallTop, x, wallBottom);
     }
 
-    // Draw the map if enabled
+    // 4. Draw the mini-map if enabled
     if (showMap) {
         drawMiniMap(player, showMap);
     }
 
+    // 5. Update the screen
     SDL_RenderPresent(renderer);
 }
 
