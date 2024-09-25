@@ -517,6 +517,11 @@ int main(int argc, char *argv[]) {
 
     while (running) {
         frameStart = SDL_GetTicks(); // Start timing this frame
+            while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) {
+                running = false;  // Exit loop on quit event.
+            }
+            }
 
         // Handle events
         handleInput(&player, &running, maze_map);  // Handle player input
