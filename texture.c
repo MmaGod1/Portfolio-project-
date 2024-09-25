@@ -271,22 +271,37 @@ float getWallHitCoordinates(float playerX, float playerY, float rayAngle, int *m
 
 
 void renderWalls(Player *player) {
-    int wallSlices[SCREEN_WIDTH]; // Store wall heights for batch rendering
-    for (int x = 0; x < SCREEN_WIDTH; x++) {
-        float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
-        float distance = castRay(player->x, player->y, rayAngle);
-        
-        // Limit distance for rendering
-        if (distance > 10.0) distance = 10.0;
+    // Calculate the screen's left and right angles
+    float leftAngle = player->angle - (FOV / 2);
+    float rightAngle = player->angle + (FOV / 2);
 
-        float correctedDistance = distance * cos(rayAngle - player->angle);
-        int wallHeight = (int)(SCREEN_HEIGHT / correctedDistance);
-        wallSlices[x] = wallHeight; // Store height for batch processing
+    // Store wall heights for batch rendering
+    int wallSlices[SCREEN_WIDTH];
+
+    // Cast rays within the field of view and store wall heights
+    for (int x = 0; x < SCREEN_WIDTH; x++) {
+        float rayAngle = leftAngle + (x / (float)SCREEN_WIDTH) * FOV;
+
+        // Check if ray angle is within the field of view
+        if (rayAngle >= leftAngle && rayAngle <= rightAngle) {
+            float distance = castRay(player->x, player->y, rayAngle);
+
+            // Limit distance for rendering
+            if (distance > 10.0) distance = 10.0;
+
+            float correctedDistance = distance * cos(rayAngle - player->angle);
+            int wallHeight = (int)(SCREEN_HEIGHT / correctedDistance);
+            wallSlices[x] = wallHeight;
+        } else {
+            wallSlices[x] = 0; // Mark as outside field of view
+        }
     }
 
     // Now render wall slices in one go, processing texture coordinates in one loop
     for (int x = 0; x < SCREEN_WIDTH; x++) {
         int wallHeight = wallSlices[x];
+        if (wallHeight == 0) continue; // Skip walls outside field of view
+
         int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
         int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
 
@@ -305,6 +320,7 @@ void renderWalls(Player *player) {
         SDL_RenderCopy(renderer, wallTextures[wallTextureIndex].texture, &srcRect, &dstRect);
     }
 }
+
 
 
 void drawFloor(Player *player) {
