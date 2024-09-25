@@ -171,8 +171,29 @@ void drawSky() {
 }
 
 void drawFloor() {
-    SDL_Rect floorRect = {0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2};
-    SDL_RenderCopy(renderer, floorTexture, NULL, &floorRect);  // Always use floorTextures[0]
+    // Iterate over every pixel below the horizon (the middle of the screen)
+    for (int y = SCREEN_HEIGHT / 2; y < SCREEN_HEIGHT; y++) {
+        // Calculate the distance to the floor for each row
+        float rowDistance = SCREEN_HEIGHT / (2.0 * y - SCREEN_HEIGHT);
+
+        // Precalculate scaling factors
+        float floorStepX = rowDistance * cos(player->angle - FOV / 2);
+        float floorStepY = rowDistance * sin(player->angle - FOV / 2);
+
+        for (int x = 0; x < SCREEN_WIDTH; x++) {
+            float floorX = player->x + rowDistance * cos(player->angle + FOV * x / SCREEN_WIDTH);
+            float floorY = player->y + rowDistance * sin(player->angle + FOV * x / SCREEN_WIDTH);
+
+            // Texture coordinates (assuming 64x64 texture)
+            int texX = (int)(floorX * 64) % 64;
+            int texY = (int)(floorY * 64) % 64;
+
+            // Render the floor texture
+            SDL_Rect srcRect = { texX, texY, 1, 1 };
+            SDL_Rect destRect = { x, y, 1, 1 };
+            SDL_RenderCopy(renderer, floorTexture, &srcRect, &destRect);
+        }
+    }
 }
 
 
@@ -239,45 +260,52 @@ void render(Player *player) {
 
     // Loop over each vertical screen line
     for (int x = 0; x < SCREEN_WIDTH; x++) {
+        // Calculate the ray angle for the current screen column
         float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
         float distance = castRay(player->x, player->y, rayAngle, &mapXHit, &mapYHit, &sideHit);
 
-        // Correct fisheye effect
+        // Fisheye correction
         float correctedDistance = distance * cos(rayAngle - player->angle);
+
+        // Calculate wall height and position
         int wallHeight = (int)(SCREEN_HEIGHT / correctedDistance);
         int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
         int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
 
-        // Ensure within screen bounds
+        // Ensure the top and bottom are within bounds
         if (wallTop < 0) wallTop = 0;
         if (wallBottom >= SCREEN_HEIGHT) wallBottom = SCREEN_HEIGHT - 1;
 
-        // Determine wall texture based on map hit
+        // Determine which texture to use
         int wallType = maze_map[mapXHit][mapYHit] - 1; // Assuming 1-based index in maze_map
         if (wallType < 0 || wallType >= WALL_TYPES) {
             wallType = 0; // Default to the first texture if out of bounds
         }
         SDL_Texture *currentTexture = wallTextures[wallType];
 
-        // Calculate texture X coordinate
-        float wallHitX = (sideHit == 0) ? player->y + correctedDistance * sin(rayAngle) : player->x + correctedDistance * cos(rayAngle);
-        wallHitX -= floor(wallHitX); // Normalize
-        int texX = (int)(wallHitX * 64); // Assuming texture width of 64
+        // Calculate where the wall was hit (for texture X coordinate)
+        float wallHitX = (sideHit == 0) ? (player->y + correctedDistance * sin(rayAngle)) 
+                                        : (player->x + correctedDistance * cos(rayAngle));
+        wallHitX -= floor(wallHitX); // Normalize to a range of [0, 1]
+        int texX = (int)(wallHitX * 64); // Assuming texture width of 64 pixels
+
+        // Flip the texture X coordinate if necessary
         if (sideHit == 0 && rayAngle > M_PI) texX = 64 - texX;
         if (sideHit == 1 && (rayAngle < M_PI / 2 || rayAngle > 3 * M_PI / 2)) texX = 64 - texX;
 
-        // Render wall slice
+        // Render the wall slice
         SDL_Rect srcRect = { texX, 0, 1, 64 }; // Texture coordinates
         SDL_Rect destRect = { x, wallTop, 1, wallHeight }; // Screen coordinates
         SDL_RenderCopy(renderer, currentTexture, &srcRect, &destRect);
     }
 
-    // Draw the floor after the walls
+    // After rendering the walls, render the floor
     drawFloor();
 
-    // Present the final render
+    // Present the final render to the screen
     SDL_RenderPresent(renderer);
 }
+
 
 
 void updatePlayerPosition(Player *player, const Uint8 *keyState) {
