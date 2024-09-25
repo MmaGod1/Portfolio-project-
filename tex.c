@@ -377,6 +377,9 @@ int loadMap(const char *filename, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
 
 
 int main(int argc, char* argv[]) {
+        // Load textures
+SDL_Texture *wallTextures[4];
+SDL_Texture *floorTexture;
     if (argc != 2) {
         fprintf(stderr, "Usage: %s <mapfile>\n", argv[0]);
         return 1;
