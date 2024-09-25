@@ -56,6 +56,7 @@ typedef struct {
 
 typedef struct {
     SDL_Texture *texture;
+SDL_Texture* sdlTexture;
     int width, height;
 } Texture;
 
@@ -540,14 +541,19 @@ int main(int argc, char *argv[]) {
     }
 
     // Clean up and free resources
-    for (int i = 0; i < 4; i++) {
-        if (wallTextures[i]) SDL_DestroyTexture(wallTextures[i]);
+for (int i = 0; i < 4; i++) {
+    if (wallTextures[i].sdlTexture) {
+        SDL_DestroyTexture(wallTextures[i].sdlTexture);
     }
-    if (floorTexture) SDL_DestroyTexture(floorTexture);
-    
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
+}
+if (floorTexture.sdlTexture) {
+    SDL_DestroyTexture(floorTexture.sdlTexture);
+}
+
+SDL_DestroyRenderer(renderer);
+SDL_DestroyWindow(window);
+SDL_Quit();
+
 
     return 0;
 }
