@@ -62,7 +62,8 @@ typedef struct {
 
 
 
-float castRay(float playerX, float playerY, float rayAngle) {
+float castRay(float playerX, float playerY, float rayAngle, int *mapXHit, int *mapYHit, int *sideHit) {
+    
     // Ray direction
     float rayDirX = cos(rayAngle);
     float rayDirY = sin(rayAngle);
