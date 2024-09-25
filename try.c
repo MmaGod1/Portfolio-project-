@@ -171,20 +171,26 @@ void drawSky() {
 }
 
 void drawFloor(Player *player) {
-    float precomputedCos = cos(player->angle - FOV / 2);
-    float precomputedSin = sin(player->angle - FOV / 2);
-
-    // Instead of drawing each pixel, draw row by row
     for (int y = SCREEN_HEIGHT / 2; y < SCREEN_HEIGHT; y++) {
         float rowDistance = SCREEN_HEIGHT / (2.0 * y - SCREEN_HEIGHT);
 
-        // Calculate step sizes for the row
-        float floorStepX = rowDistance * precomputedCos;
-        float floorStepY = rowDistance * precomputedSin;
+        // Now calculate the direction vector for the floor row
+        float floorStepX = rowDistance * cos(player->angle - FOV / 2);
+        float floorStepY = rowDistance * sin(player->angle - FOV / 2);
 
-        // Instead of rendering individual pixels, render strips or rows
-        SDL_Rect destRect = {0, y, SCREEN_WIDTH, 1};  // Draw one row at a time
-        SDL_RenderCopy(renderer, floorTexture, NULL, &destRect);  // Batch rendering
+        for (int x = 0; x < SCREEN_WIDTH; x++) {
+            // The floorX and floorY represent the coordinates in the world space
+            float floorX = player->x + rowDistance * cos(player->angle + FOV * x / SCREEN_WIDTH);
+            float floorY = player->y + rowDistance * sin(player->angle + FOV * x / SCREEN_WIDTH);
+
+            // Map floorX and floorY to texture coordinates and draw the pixel
+            // Example: using some floor texture
+            int texX = (int)(floorX * textureWidth) % textureWidth;
+            int texY = (int)(floorY * textureHeight) % textureHeight;
+
+            Uint32 pixelColor = getTexturePixel(floorTexture, texX, texY);
+            setPixel(renderer, x, y, pixelColor);
+        }
     }
 }
 
@@ -300,34 +306,22 @@ void render(Player *player) {
 
 
 
-void updatePlayerPosition(Player *player, const Uint8 *keyState) {
-    float speed = 0.1f; // Adjust as necessary
-    if (keyState[SDL_SCANCODE_W]) {
-        float newX = player->x + cos(player->angle) * speed;
-        float newY = player->y + sin(player->angle) * speed;
-        // Check for wall collision
-        if (maze_map[(int)newX][(int)newY] == 0) {
-            player->x = newX;
-            player->y = newY;
-        }
+void updatePlayerPosition(Player *player, float deltaTime) {
+    if (player->moveForward) {
+        player->x += cos(player->angle) * player->speed * deltaTime;
+        player->y += sin(player->angle) * player->speed * deltaTime;
     }
-    if (keyState[SDL_SCANCODE_S]) {
-        float newX = player->x - cos(player->angle) * speed;
-        float newY = player->y - sin(player->angle) * speed;
-        // Check for wall collision
-        if (maze_map[(int)newX][(int)newY] == 0) {
-            player->x = newX;
-            player->y = newY;
-        }
+    if (player->moveBackward) {
+        player->x -= cos(player->angle) * player->speed * deltaTime;
+        player->y -= sin(player->angle) * player->speed * deltaTime;
     }
-    if (keyState[SDL_SCANCODE_A]) {
-        player->angle -= 0.1f; // Turn left
+    if (player->turnLeft) {
+        player->angle -= player->turnSpeed * deltaTime;
     }
-    if (keyState[SDL_SCANCODE_D]) {
-        player->angle += 0.1f; // Turn right
+    if (player->turnRight) {
+        player->angle += player->turnSpeed * deltaTime;
     }
 }
-
 
 
 
