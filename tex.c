@@ -152,7 +152,7 @@ void drawSky() {
     SDL_RenderFillRect(renderer, &skyRect);
 }
 
-void drawFloor() {
+//void drawFloor() {
     SDL_SetRenderDrawColor(renderer, 34, 139, 34, 255);  // Green for floor
     SDL_Rect floorRect = {0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2};
     SDL_RenderFillRect(renderer, &floorRect);
@@ -205,81 +205,17 @@ void drawMiniMap(Player *player, bool showMap) {
 }
 
 
-
 void render(Player *player) {
-int mapX = 0, mapY = 0; // or initialized to whatever makes sense for your game logic
-float rayDirX = 1.0f, rayDirY = 0.0f;
-float playerX = 2.0f, playerY = 2.0f; // Example player position
-
     SDL_RenderClear(renderer);
 
     // Draw the sky and floor
     drawSky();
-    drawFloor();
+    drawFloor(player);
 
-    // Cast rays across the screen
-    for (int x = 0; x < SCREEN_WIDTH; x++) {
-        float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
-        float distance = castRay(player->x, player->y, rayAngle);
+    // Cast rays and render walls
+    renderWalls(player);
 
-        // Cap the distance for better visuals
-        if (distance > 10.0) distance = 10.0;
-
-        // Correct distance for wall height calculation
-        float correctedDistance = distance * cos(rayAngle - player->angle);
-
-        // Calculate wall height and position
-        int wallHeight = (int)(SCREEN_HEIGHT / correctedDistance);
-        int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
-        int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
-
-        // Ensure wall heights are non-negative
-        if (wallHeight < 0) wallHeight = 0;
-        if (wallTop < 0) wallTop = 0;
-        if (wallBottom >= SCREEN_HEIGHT) wallBottom = SCREEN_HEIGHT - 1;
-
-        // Draw the vertical line representing the wall slice
-        SDL_SetRenderDrawColor(renderer, 180, 180, 180, 255);  // Light gray
-        SDL_RenderDrawLine(renderer, x, wallTop, x, wallBottom);
-
-              // Calculate texture coordinates
-        float wallX = mapX + (rayDirY > 0 ? 1 : 0);
-        float wallY = mapY + (rayDirX > 0 ? 1 : 0);
-        float texX = (wallX - playerX) * (1.0 / correctedDistance);
-        float texY = (wallY - playerY) * (1.0 / correctedDistance);
-
-        // Determine which wall texture to use based on map value (adjust as needed)
-        int wallTextureIndex = maze_map[mapX][mapY] - 1;
-
-        // Draw the textured wall
-        SDL_Rect srcRect = { (int)(texX * wallTextures[wallTextureIndex].width), 0, 1, wallTextures[wallTextureIndex].height };
-        SDL_Rect dstRect = { x, wallTop, 1, wallHeight };
-        SDL_RenderCopy(renderer, wallTextures[wallTextureIndex].texture, &srcRect, &dstRect);
-         
-            // Draw the floor
-        float floorDist = distance * cos(rayAngle - player->angle); // Adjust distance for floor
-        float floorX = playerX + rayDirX * floorDist;
-        float floorY = playerY + rayDirY * floorDist;
-        int floorTexX = (int)(floorX * floorTexture.width) % floorTexture.width;
-        int floorTexY = (int)(floorY * floorTexture.height) % floorTexture.height;
-
-        // Adjust floor texture coordinates based on distance for perspective
-        float floorScale = (SCREEN_HEIGHT / 2) / floorDist;
-        floorTexX *= floorScale;
-        floorTexY *= floorScale;
-
-        // Ensure floor texture coordinates are within bounds
-        if (floorTexX < 0) floorTexX = 0;
-        if (floorTexY < 0) floorTexY = 0;
-        if (floorTexX >= floorTexture.width) floorTexX = floorTexture.width - 1;
-        if (floorTexY >= floorTexture.height) floorTexY = floorTexture.height - 1;
-
-        SDL_Rect floorSrcRect = { floorTexX, floorTexY, 1, 1 };
-        SDL_Rect floorDstRect = { x, SCREEN_HEIGHT / 2 + (SCREEN_HEIGHT / 2) / correctedDistance, 1, SCREEN_HEIGHT / 2 };
-        SDL_RenderCopy(renderer, floorTexture.texture, &floorSrcRect, &floorDstRect);
-    }
-
-    // Draw the map if enabled
+    // Optionally draw the mini-map
     if (showMap) {
         drawMiniMap(player, showMap);
     }
@@ -288,6 +224,71 @@ float playerX = 2.0f, playerY = 2.0f; // Example player position
 }
 
 
+
+
+void renderWalls(Player *player) {
+    for (int x = 0; x < SCREEN_WIDTH; x++) {
+        float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
+        float distance = castRay(player->x, player->y, rayAngle);
+        
+        if (distance > 10.0) distance = 10.0;
+
+        // Correct the distance to avoid fisheye effect
+        float correctedDistance = distance * cos(rayAngle - player->angle);
+
+        // Calculate the wall height
+        int wallHeight = (int)(SCREEN_HEIGHT / correctedDistance);
+        int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
+        int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
+
+        // Ensure values are within screen bounds
+        if (wallTop < 0) wallTop = 0;
+        if (wallBottom >= SCREEN_HEIGHT) wallBottom = SCREEN_HEIGHT - 1;
+
+        // Determine which wall texture to use based on map hit
+        int mapX, mapY; // Ray hit coordinates
+        float wallX = getWallHitCoordinates(player->x, player->y, rayAngle, &mapX, &mapY);
+        int wallTextureIndex = maze_map[mapX][mapY] - 1;
+
+        // Texture coordinates
+        int texX = (int)(wallX * wallTextures[wallTextureIndex].width) % wallTextures[wallTextureIndex].width;
+
+        SDL_Rect srcRect = { texX, 0, 1, wallTextures[wallTextureIndex].height };
+        SDL_Rect dstRect = { x, wallTop, 1, wallHeight };
+
+        // Render wall slice
+        SDL_RenderCopy(renderer, wallTextures[wallTextureIndex].texture, &srcRect, &dstRect);
+    }
+}
+
+
+
+void drawFloor(Player *player) {
+    for (int y = SCREEN_HEIGHT / 2; y < SCREEN_HEIGHT; y++) {
+        float floorDist = SCREEN_HEIGHT / (2.0f * y - SCREEN_HEIGHT); // Perspective correct distance
+
+        for (int x = 0; x < SCREEN_WIDTH; x++) {
+            float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
+
+            // Compute floor X and Y coordinates
+            float floorX = player->x + cos(rayAngle) * floorDist;
+            float floorY = player->y + sin(rayAngle) * floorDist;
+
+            // Determine the texture coordinates
+            int texX = (int)(floorX * floorTexture.width) % floorTexture.width;
+            int texY = (int)(floorY * floorTexture.height) % floorTexture.height;
+
+            // Ensure texture coordinates are valid
+            if (texX < 0) texX = 0;
+            if (texY < 0) texY = 0;
+
+            // Render the floor pixel
+            SDL_Rect srcRect = { texX, texY, 1, 1 };
+            SDL_Rect dstRect = { x, y, 1, 1 };
+            SDL_RenderCopy(renderer, floorTexture.texture, &srcRect, &dstRect);
+        }
+    }
+}
 
 
 void handleInput(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
