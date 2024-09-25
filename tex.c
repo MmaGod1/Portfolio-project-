@@ -257,15 +257,20 @@ float playerX = 2.0f, playerY = 2.0f; // Example player position
         SDL_RenderCopy(renderer, wallTextures[wallTextureIndex].texture, &srcRect, &dstRect);
          
             // Draw the floor
-        float floorX = playerX + rayDirX * correctedDistance;
-        float floorY = playerY + rayDirY * correctedDistance;
+        float floorDist = distance * cos(rayAngle - player->angle); // Adjust distance for floor
+        float floorX = playerX + rayDirX * floorDist;
+        float floorY = playerY + rayDirY * floorDist;
         int floorTexX = (int)(floorX * floorTexture.width) % floorTexture.width;
         int floorTexY = (int)(floorY * floorTexture.height) % floorTexture.height;
+
+        // Adjust floor texture coordinates based on distance for perspective
+        float floorScale = (SCREEN_HEIGHT / 2) / floorDist;
+        floorTexX *= floorScale;
+        floorTexY *= floorScale;
 
         SDL_Rect floorSrcRect = { floorTexX, floorTexY, 1, 1 };
         SDL_Rect floorDstRect = { x, SCREEN_HEIGHT / 2 + (SCREEN_HEIGHT / 2) / correctedDistance, 1, SCREEN_HEIGHT / 2 };
         SDL_RenderCopy(renderer, floorTexture.texture, &floorSrcRect, &floorDstRect);
-
     }
 
     // Draw the map if enabled
