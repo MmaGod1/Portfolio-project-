@@ -50,12 +50,15 @@ int maze_map[MAP_WIDTH][MAP_HEIGHT] = {
         {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
 };
 
-typedef struct {
-    float x, y;         // Player position
-    float angle;        // Player angle (rotation)
-    float moveSpeed;
-    float rotSpeed;
+typedef struct Player {
+    double x, y;        // Player's position
+    double dirX, dirY;  // Player's direction vector
+    double planeX, planeY;  // Camera plane (for FOV)
+    double angle;       // Current viewing angle (optional)
+    double moveSpeed;   // Movement speed
+    double rotSpeed;    // Rotation speed
 } Player;
+
 
 SDL_Window *window;
 SDL_Renderer *renderer;
