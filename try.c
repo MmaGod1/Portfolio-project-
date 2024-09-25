@@ -170,7 +170,7 @@ void drawSky() {
     SDL_RenderFillRect(renderer, &skyRect);
 }
 
-void drawFloor() {
+void drawFloor(Player *player) {
     // Iterate over every pixel below the horizon (the middle of the screen)
     for (int y = SCREEN_HEIGHT / 2; y < SCREEN_HEIGHT; y++) {
         // Calculate the distance to the floor for each row
@@ -300,7 +300,7 @@ void render(Player *player) {
     }
 
     // After rendering the walls, render the floor
-    drawFloor();
+    drawFloor(player);
 
     // Present the final render to the screen
     SDL_RenderPresent(renderer);
