@@ -16,8 +16,7 @@
 // Global variable to toggle map display
 int showMap = 1;  // 1 to show map, 0 to hide map
 
-Texture wallTextures[4];
-Texture floorTexture;
+
 
 
 // Maze map (1 = wall, 0 = empty space)
@@ -63,6 +62,9 @@ typedef struct {
 SDL_Window *window;
 SDL_Renderer *renderer;
 
+
+Texture wallTextures[4];
+Texture floorTexture;
 
 // Load a texture from a file
 Texture loadTexture(const char *filename) {
@@ -205,6 +207,10 @@ void drawMiniMap(Player *player, bool showMap) {
 
 
 void render(Player *player) {
+int mapX = 0, mapY = 0; // or initialized to whatever makes sense for your game logic
+float rayDirX = 1.0f, rayDirY = 0.0f;
+float playerX = 2.0f, playerY = 2.0f; // Example player position
+
     SDL_RenderClear(renderer);
 
     // Draw the sky and floor
