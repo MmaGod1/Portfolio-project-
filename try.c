@@ -171,28 +171,20 @@ void drawSky() {
 }
 
 void drawFloor(Player *player) {
-    // Iterate over every pixel below the horizon (the middle of the screen)
+    float precomputedCos = cos(player->angle - FOV / 2);
+    float precomputedSin = sin(player->angle - FOV / 2);
+
+    // Instead of drawing each pixel, draw row by row
     for (int y = SCREEN_HEIGHT / 2; y < SCREEN_HEIGHT; y++) {
-        // Calculate the distance to the floor for each row
         float rowDistance = SCREEN_HEIGHT / (2.0 * y - SCREEN_HEIGHT);
 
-        // Precalculate scaling factors
-        float floorStepX = rowDistance * cos(player->angle - FOV / 2);
-        float floorStepY = rowDistance * sin(player->angle - FOV / 2);
+        // Calculate step sizes for the row
+        float floorStepX = rowDistance * precomputedCos;
+        float floorStepY = rowDistance * precomputedSin;
 
-        for (int x = 0; x < SCREEN_WIDTH; x++) {
-            float floorX = player->x + rowDistance * cos(player->angle + FOV * x / SCREEN_WIDTH);
-            float floorY = player->y + rowDistance * sin(player->angle + FOV * x / SCREEN_WIDTH);
-
-            // Texture coordinates (assuming 64x64 texture)
-            int texX = (int)(floorX * 64) % 64;
-            int texY = (int)(floorY * 64) % 64;
-
-            // Render the floor texture
-            SDL_Rect srcRect = { texX, texY, 1, 1 };
-            SDL_Rect destRect = { x, y, 1, 1 };
-            SDL_RenderCopy(renderer, floorTexture, &srcRect, &destRect);
-        }
+        // Instead of rendering individual pixels, render strips or rows
+        SDL_Rect destRect = {0, y, SCREEN_WIDTH, 1};  // Draw one row at a time
+        SDL_RenderCopy(renderer, floorTexture, NULL, &destRect);  // Batch rendering
     }
 }
 
