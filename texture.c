@@ -459,7 +459,8 @@ int loadMap(const char *filename, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
 }
 
 
-int main(int argc, char* argv[]) {
+
+int main(int argc, char *argv[]) {
     if (argc != 2) {
         fprintf(stderr, "Usage: %s <mapfile>\n", argv[0]);
         return 1;
@@ -485,10 +486,9 @@ int main(int argc, char* argv[]) {
         SDL_Quit();
         return 1;
     }
-        
 
     // Initialize player
-    Player player = { .x = 2.0, .y = 2.0, .angle = 0.0, .moveSpeed = 0.05, .rotSpeed = 0.05 };
+    Player player = {2.0f, 2.0f, 0.0f, 0.05f, 0.05f}; // Example player initialization
 
     // Load the map
     if (loadMap(argv[1], maze_map) != 0) {
@@ -499,23 +499,52 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-        wallTextures[0] = loadTexture("./wall1.jpg");
+    // Load textures
+    wallTextures[0] = loadTexture("./wall1.jpg");
     wallTextures[1] = loadTexture("./wall2.jpg");
     wallTextures[2] = loadTexture("./wall3.jpg");
     wallTextures[3] = loadTexture("./wall4.jpg");
     floorTexture = loadTexture("./floor3.1.jpg");
 
-        
     // Game loop
     bool running = true;
-    while (running) {
-        handleInput(&player, &running, maze_map);  // Handle player input
-        render(&player);                 // Render the scene
+    SDL_Event event;
+    const int FPS = 60;
+    const int frameDelay = 1000 / FPS;
+    Uint32 frameStart;
+    int frameTime;
 
-        SDL_Delay(16);  // Cap the frame rate to ~60 FPS
+    while (running) {
+        frameStart = SDL_GetTicks(); // Start timing this frame
+
+        // Handle events
+        handleInput(&player, &running, maze_map);  // Handle player input
+
+        // Clear the screen
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // Set clear color (black)
+        SDL_RenderClear(renderer);
+
+        // Render the frame
+        drawSky();          // Draw the sky
+        renderWalls(&player); // Render walls
+        drawFloor(&player); // Draw floor
+        drawMiniMap(&player, true); // Draw mini-map
+
+        // Present the rendered frame
+        SDL_RenderPresent(renderer);
+
+        frameTime = SDL_GetTicks() - frameStart; // Calculate the frame time
+        if (frameDelay > frameTime) {
+            SDL_Delay(frameDelay - frameTime); // Delay to maintain consistent frame rate
+        }
     }
 
-    // Clean up and quit SDL
+    // Clean up and free resources
+    for (int i = 0; i < 4; i++) {
+        if (wallTextures[i]) SDL_DestroyTexture(wallTextures[i]);
+    }
+    if (floorTexture) SDL_DestroyTexture(floorTexture);
+    
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
