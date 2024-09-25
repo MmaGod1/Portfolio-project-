@@ -152,12 +152,12 @@ void drawSky() {
     SDL_RenderFillRect(renderer, &skyRect);
 }
 
-//void drawFloor() {
+/**void drawFloor() {
     SDL_SetRenderDrawColor(renderer, 34, 139, 34, 255);  // Green for floor
     SDL_Rect floorRect = {0, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT / 2};
     SDL_RenderFillRect(renderer, &floorRect);
 }
-
+**/
 
 void drawMiniMap(Player *player, bool showMap) {
     if (!showMap) return;
