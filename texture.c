@@ -510,38 +510,43 @@ int main(int argc, char *argv[]) {
     // Game loop
     bool running = true;
     SDL_Event event;
+    
+    // Main game loop
     const int FPS = 60;
-    const int frameDelay = 1000 / FPS;
+    const int frameDelay = 1000 / FPS;  // Delay in milliseconds
     Uint32 frameStart;
     int frameTime;
 
     while (running) {
-        frameStart = SDL_GetTicks(); // Start timing this frame
-            while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) {
-                running = false;  // Exit loop on quit event.
-            }
-            }
+        frameStart = SDL_GetTicks();  // Start timing this frame
 
-        // Handle events
-        handleInput(&player, &running, maze_map);  // Handle player input
+        // Handle events (only once per frame)
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) {
+                running = false;  // Exit loop on quit event
+            }
+        }
+
+        // Call handleInput only once per frame
+        handleInput(&player, &running, maze_map);  
 
         // Clear the screen
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // Set clear color (black)
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
-        // Render the frame
-        drawSky();          // Draw the sky
-        renderWalls(&player); // Render walls
-        drawFloor(&player); // Draw floor
-        drawMiniMap(&player, true); // Draw mini-map
+        // Render the scene
+        drawSky();
+        renderWalls(&player);
+        drawFloor(&player);
+        drawMiniMap(&player, showMap);
 
         // Present the rendered frame
         SDL_RenderPresent(renderer);
 
-        frameTime = SDL_GetTicks() - frameStart; // Calculate the frame time
+        // Frame rate control
+        frameTime = SDL_GetTicks() - frameStart; // Calculate frame time
         if (frameDelay > frameTime) {
-            SDL_Delay(frameDelay - frameTime); // Delay to maintain consistent frame rate
+            SDL_Delay(frameDelay - frameTime);  // Delay to maintain consistent frame rate
         }
     }
 
