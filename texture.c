@@ -278,7 +278,7 @@ void renderWalls(Player *player) {
         if (distance > 10.0) distance = 10.0;
 
         // Correct the distance to avoid fisheye effect
-        float correctedDistance = distance //* cos(rayAngle - player->angle);
+        float correctedDistance = distance; //* cos(rayAngle - player->angle);
 
         // Calculate the wall height
         int wallHeight = (int)(SCREEN_HEIGHT / correctedDistance);
