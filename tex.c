@@ -268,6 +268,12 @@ float playerX = 2.0f, playerY = 2.0f; // Example player position
         floorTexX *= floorScale;
         floorTexY *= floorScale;
 
+        // Ensure floor texture coordinates are within bounds
+        if (floorTexX < 0) floorTexX = 0;
+        if (floorTexY < 0) floorTexY = 0;
+        if (floorTexX >= floorTexture.width) floorTexX = floorTexture.width - 1;
+        if (floorTexY >= floorTexture.height) floorTexY = floorTexture.height - 1;
+
         SDL_Rect floorSrcRect = { floorTexX, floorTexY, 1, 1 };
         SDL_Rect floorDstRect = { x, SCREEN_HEIGHT / 2 + (SCREEN_HEIGHT / 2) / correctedDistance, 1, SCREEN_HEIGHT / 2 };
         SDL_RenderCopy(renderer, floorTexture.texture, &floorSrcRect, &floorDstRect);
