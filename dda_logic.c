@@ -231,7 +231,7 @@ void handleInput(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIG
             float moveAngle = player->angle;
 
             switch (event.key.keysym.sym) {
-                case SDLK_q:  // Quit when 'q' is pressed
+                case SDLK_l:  // leave game when 'l' is pressed
                     *running = false;
                     break;
                 case SDLK_m:
