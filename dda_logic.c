@@ -215,7 +215,7 @@ void render(Player *player) {
 
     // Draw the map if enabled
     if (showMap) {
-        drawMiniMap(player, showMap)
+        drawMiniMap(player, showMap);
     }
 
     SDL_RenderPresent(renderer);
