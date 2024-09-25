@@ -56,7 +56,6 @@ typedef struct {
 
 typedef struct {
     SDL_Texture *texture;
-SDL_Texture* sdlTexture;
     int width, height;
 } Texture;
 
@@ -272,29 +271,36 @@ float getWallHitCoordinates(float playerX, float playerY, float rayAngle, int *m
 
 
 void renderWalls(Player *player) {
-    for (int x = 0; x < SCREEN_WIDTH; x += 2) { // Cast rays every two pixels
-        float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
+    for (int x = 0; x < SCREEN_WIDTH; x++) {
+        float rayAngle = player->angle + atan((x - SCREEN_WIDTH / 2) / SCREEN_WIDTH);
         float distance = castRay(player->x, player->y, rayAngle);
         
         if (distance > 10.0) distance = 10.0;
 
-        float correctedDistance = distance * cos(rayAngle - player->angle);
+        // Correct the distance to avoid fisheye effect
+        float correctedDistance = distance //* cos(rayAngle - player->angle);
+
+        // Calculate the wall height
         int wallHeight = (int)(SCREEN_HEIGHT / correctedDistance);
         int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
         int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
 
+        // Ensure values are within screen bounds
         if (wallTop < 0) wallTop = 0;
         if (wallBottom >= SCREEN_HEIGHT) wallBottom = SCREEN_HEIGHT - 1;
 
-        int mapX, mapY;
+        // Determine which wall texture to use based on map hit
+        int mapX, mapY; // Ray hit coordinates
         float wallX = getWallHitCoordinates(player->x, player->y, rayAngle, &mapX, &mapY);
         int wallTextureIndex = maze_map[mapX][mapY] - 1;
-        
+
+        // Texture coordinates
         int texX = (int)(wallX * wallTextures[wallTextureIndex].width) % wallTextures[wallTextureIndex].width;
 
         SDL_Rect srcRect = { texX, 0, 1, wallTextures[wallTextureIndex].height };
-        SDL_Rect dstRect = { x, wallTop, 2, wallHeight }; // Adjusting width for batching
+        SDL_Rect dstRect = { x, wallTop, 1, wallHeight };
 
+        // Render wall slice
         SDL_RenderCopy(renderer, wallTextures[wallTextureIndex].texture, &srcRect, &dstRect);
     }
 }
@@ -460,8 +466,7 @@ int loadMap(const char *filename, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
 }
 
 
-
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
     if (argc != 2) {
         fprintf(stderr, "Usage: %s <mapfile>\n", argv[0]);
         return 1;
@@ -487,9 +492,10 @@ int main(int argc, char *argv[]) {
         SDL_Quit();
         return 1;
     }
+        
 
     // Initialize player
-    Player player = {2.0f, 2.0f, 0.0f, 0.05f, 0.05f}; // Example player initialization
+    Player player = { .x = 2.0, .y = 2.0, .angle = 0.0, .moveSpeed = 0.05, .rotSpeed = 0.05 };
 
     // Load the map
     if (loadMap(argv[1], maze_map) != 0) {
@@ -500,70 +506,26 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    // Load textures
-    wallTextures[0] = loadTexture("./wall1.jpg");
+        wallTextures[0] = loadTexture("./wall1.jpg");
     wallTextures[1] = loadTexture("./wall2.jpg");
     wallTextures[2] = loadTexture("./wall3.jpg");
     wallTextures[3] = loadTexture("./wall4.jpg");
     floorTexture = loadTexture("./floor3.1.jpg");
 
+        
     // Game loop
     bool running = true;
-    SDL_Event event;
-    
-    // Main game loop
-    const int FPS = 60;
-    const int frameDelay = 1000 / FPS;  // Delay in milliseconds
-    Uint32 frameStart;
-    int frameTime;
-
     while (running) {
-        frameStart = SDL_GetTicks();  // Start timing this frame
+        handleInput(&player, &running, maze_map);  // Handle player input
+        render(&player);                 // Render the scene
 
-        // Handle events (only once per frame)
-        while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) {
-                running = false;  // Exit loop on quit event
-            }
-        }
-
-        // Call handleInput only once per frame
-        handleInput(&player, &running, maze_map);  
-
-        // Clear the screen
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-        SDL_RenderClear(renderer);
-
-        // Render the scene
-        drawSky();
-        renderWalls(&player);
-        drawFloor(&player);
-        drawMiniMap(&player, showMap);
-
-        // Present the rendered frame
-        SDL_RenderPresent(renderer);
-
-        // Frame rate control
-        frameTime = SDL_GetTicks() - frameStart; // Calculate frame time
-        if (frameDelay > frameTime) {
-            SDL_Delay(frameDelay - frameTime);  // Delay to maintain consistent frame rate
-        }
+        SDL_Delay(16);  // Cap the frame rate to ~60 FPS
     }
 
-    // Clean up and free resources
-for (int i = 0; i < 4; i++) {
-    if (wallTextures[i].sdlTexture) {
-        SDL_DestroyTexture(wallTextures[i].sdlTexture);
-    }
-}
-if (floorTexture.sdlTexture) {
-    SDL_DestroyTexture(floorTexture.sdlTexture);
-}
-
-SDL_DestroyRenderer(renderer);
-SDL_DestroyWindow(window);
-SDL_Quit();
-
+    // Clean up and quit SDL
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
 
     return 0;
 }
