@@ -1,6 +1,6 @@
 #include "raycasting.h"
 
-int showMap = 1;  /* 1 to show map, 0 to hide map */
+extern int showMap = 1;  /* 1 to show map, 0 to hide map */
 
 /**
  * handle_input - Processes player input and updates the player's state.
@@ -16,7 +16,9 @@ int showMap = 1;  /* 1 to show map, 0 to hide map */
  *
  * Return: void
  */
-void handle_input(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIGHT])
+void handle_input(Player *player,
+		bool *running,
+		int maze_map[MAP_WIDTH][MAP_HEIGHT])
 {
 	SDL_Event event;
 	float newX, newY. moveStep, moveAngle;
@@ -46,11 +48,13 @@ void handle_input(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEI
 					break;
 				case SDLK_LEFT:  /* Rotate left */
 					player->angle -= player->rotSpeed;
-					if (player->angle < 0) player->angle += 2 * M_PI;
+					if (player->angle < 0)
+						player->angle += 2 * M_PI;
 					break;
 				case SDLK_RIGHT:  /* Rotate right */
 					player->angle += player->rotSpeed;
-					if (player->angle > 2 * M_PI) player->angle -= 2 * M_PI;
+					if (player->angle > 2 * M_PI)
+						player->angle -= 2 * M_PI;
 					break;
 				case SDLK_w:
 					newX = player->x + cos(moveAngle) * moveStep;

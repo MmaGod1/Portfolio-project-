@@ -63,8 +63,10 @@ void draw_floor(Player *player)
 			texY = (int)(floorY * floorTexture.height) % floorTexture.height;
 
 			/* Ensure texture coordinates are valid */
-			if (texX < 0) texX = 0;
-			if (texY < 0) texY = 0;
+			if (texX < 0)
+				texX = 0;
+			if (texY < 0)
+				texY = 0;
 
 			/* Set the values for the srcRect structure */
 			srcRect.x = texX;
@@ -104,7 +106,8 @@ void draw_mini_map(Player *player, bool showMap)
 	SDL_Rect playerRect;
 	float mapPlayerX, mapPlayerY, rayAngle, endX, endY;
 
-	if (!showMap) return;
+	if (!showMap)
+		return;
 
 	/* Position the map in the top-left corner */
 	mapStartX = 10;
