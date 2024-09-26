@@ -71,7 +71,9 @@ void handle_input(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEI
 int read_next_char(FILE *file);
 int process_char(int ch, int x, int y, int maze_map[MAP_WIDTH][MAP_HEIGHT]);
 int load_map(const char *filename, int maze_map[MAP_WIDTH][MAP_HEIGHT]);
+int load_resources(char *mapfile);
 int initialize_sdl(void);
-int initialize_player_and_load_resources(Player *player, char *mapfile);
+void initialize_player(Player *player);
+void cleanup(void);
 
 #endif /* RAYCASTING_H */
