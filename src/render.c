@@ -1,5 +1,16 @@
 #include "raycasting.h"
 
+/**
+ * render_walls - Renders the walls of the maze by casting rays from the player's
+ *                position and calculating their heights based on distance.
+ *
+ * This function loops through each vertical slice of the screen and determines
+ * the angle for each ray. It calculates the distance to the nearest wall, adjusts
+ * the distance to correct for fisheye effects, and renders the appropriate wall texture
+ * based on the hit coordinates.
+ *
+ * @player: A pointer to the Player structure containing the player's position and angle.
+ */
 void render_walls(Player *player)
 {
 	for (int x = 0; x < SCREEN_WIDTH; x++)
@@ -35,7 +46,16 @@ void render_walls(Player *player)
 	}
 }
 
-
+/**
+ * render - Clears the renderer and draws the current frame of the game,
+ *          including the sky, floor, and walls.
+ *
+ * This function handles the rendering process, which includes clearing the screen,
+ * drawing the sky and floor, casting rays to render the walls, and, if enabled,
+ * drawing a mini-map of the maze.
+ *
+ * @player: A pointer to the Player structure containing the player's position and angle.
+ */
 void render(Player *player)
 {
 	SDL_RenderClear(renderer);
