@@ -28,6 +28,19 @@
 };
 
 
+
+/**
+ * load_map - Load the maze map from a file.
+ *
+ * This function reads a map file and populates the maze_map array.
+ * It interprets '#' as walls (1) and '.' as empty spaces (0).
+ *
+ * @filename: The name of the file to read the map from.
+ * @maze_map: The 2D array where the map will be stored.
+ *
+ * Return: 0 on success, or -1 on error (e.g., file not found, unexpected EOF,
+ * invalid characters).
+ */
 int load_map(const char *filename, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
     FILE *file = fopen(filename, "r");
     if (!file) {
