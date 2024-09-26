@@ -11,8 +11,12 @@
 void draw_sky(void)
 {
 	SDL_Rect skyRect;
+	skyRect.x = 0;
+	skyRect.y = 0;
+	skyRect.w = SCREEN_WIDTH;
+	skyRect.h = SCREEN_HEIGHT / 2;
+
 	SDL_SetRenderDrawColor(renderer, 135, 206, 235, 255);
-	skyRect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT / 2};
 	SDL_RenderFillRect(renderer, &skyRect);
 }
 
