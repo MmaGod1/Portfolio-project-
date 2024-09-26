@@ -67,6 +67,7 @@ void render_single_wall(int x, int wallHeight, int wallTop,
 void render_walls(Player *player)
 {
 	int x, mapX, mapY, wallHeight, wallTop, wallBottom;
+	int wallTextureIndex;
 	float rayAngle, distance, wallX;
 
 	for (x = 0; x < SCREEN_WIDTH; x++)
@@ -81,7 +82,7 @@ void render_walls(Player *player)
 				&wallHeight, &wallTop, &wallBottom);
 		wallX = get_wall_hit_coordinates(player->x,
 				player->y, rayAngle, &mapX, &mapY);
-		int wallTextureIndex = maze_map[mapX][mapY] - 1;
+		wallTextureIndex = maze_map[mapX][mapY] - 1;
 
 		render_single_wall(x, wallHeight, wallTop, wallX, wallTextureIndex);
 	}
