@@ -5,7 +5,18 @@ SDL_Renderer *renderer = NULL;
 Texture wallTextures[4]; 
 Texture floorTexture;
 
-
+/**
+ * main - Entry point of the Go-Maze game.
+ *
+ * This function initializes SDL, creates a window and renderer, loads the map
+ * and textures, and enters the main game loop where input is handled and the
+ * game is rendered. It cleans up resources before exiting.
+ *
+ * @argc: The number of command-line arguments.
+ * @argv: The array of command-line argument strings.
+ *
+ * Return: 0 on successful execution, or 1 if an error occurs.
+ */
 int main(int argc, char* argv[])
 {
 	window = NULL;
