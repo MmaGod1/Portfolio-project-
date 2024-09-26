@@ -2,7 +2,7 @@
 
 /**
  * calculate_step_and_side_dist - Calculate the step direction and
- * 		initial side distances.
+ *		initial side distances.
  *
  * @rayDirX: The X direction of the ray.
  * @rayDirY: The Y direction of the ray.
@@ -42,7 +42,7 @@ void calculate_step_and_side_dist(float rayDirX, float rayDirY,
 
 /**
  * perform_DDA - Perform the Digital Differential Analyzer algorithm
- * 		for raycasting.
+ *		for raycasting.
  *
  * @stepX: The step in the X direction.
  * @stepY: The step in the Y direction.
@@ -56,6 +56,10 @@ void calculate_step_and_side_dist(float rayDirX, float rayDirY,
 void perform_DDA(int stepX, int stepY, float *sideDistX,
 	float *sideDistY, int *mapX, int *mapY, int *hit, int *side)
 {
+	/* Ray direction */
+	float rayDirX = cos(rayAngle);
+	float rayDirY = sin(rayAngle);
+	
 	while (*hit == 0)
 	{
 		if (*sideDistX < *sideDistY)
