@@ -19,7 +19,8 @@ int showMap = 1;  /* 1 to show map, 0 to hide map */
 void handle_input(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIGHT])
 {
 	SDL_Event event;
-	float newX, newY; 
+	float newX, newY. moveStep, moveAngle;
+	int newXInt, newYInt;
 
 	while (SDL_PollEvent(&event))
 	{
@@ -31,9 +32,8 @@ void handle_input(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEI
 
 		if (event.type == SDL_KEYDOWN)
 		{
-
-			float moveStep = player->moveSpeed;
-			float moveAngle = player->angle;
+			moveStep = player->moveSpeed;
+			moveAngle = player->angle;
 
 			switch (event.key.keysym.sym)
 			{
@@ -76,9 +76,8 @@ void handle_input(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEI
 			/* Ensure the new position is within bounds */
 			if (newX >= 0 && newX < MAP_WIDTH && newY >= 0 && newY < MAP_HEIGHT)
 			{
-				int newXInt = (int)newX;
-				int newYInt = (int)newY;
-
+				newXInt = (int)newX;
+				newYInt = (int)newY;
 
 				/* Check for collisions with walls */
 				if (maze_map[newXInt][(int)player->y] == 0)
