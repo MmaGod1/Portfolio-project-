@@ -302,7 +302,7 @@ void renderWalls(Player *player) {
         SDL_RenderCopy(renderer, wallTextures[wallTextureIndex].texture, &srcRect, &dstRect);
     }
 
-    // Render the floor
+    // Render the floor using a single texture
     for (int x = 0; x < SCREEN_WIDTH; x++) {
         float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
         float distance = castRay(player->x, player->y, rayAngle);
@@ -314,7 +314,6 @@ void renderWalls(Player *player) {
         float correctedDistance = distance * cos(rayAngle - player->angle);
 
         // Calculate the floor height based on perspective
-        int floorHeight = (int)(SCREEN_HEIGHT / correctedDistance);
         int floorTop = wallBottom;  // Start floor rendering below the wall
         int floorBottom = SCREEN_HEIGHT;  // Extend to the bottom of the screen
 
@@ -322,15 +321,14 @@ void renderWalls(Player *player) {
         if (floorTop < 0) floorTop = 0;
         if (floorBottom >= SCREEN_HEIGHT) floorBottom = SCREEN_HEIGHT - 1;
 
-        // Determine the floor texture based on player position
-        int floorTextureIndex = maze_map[(int)player->x][(int)player->y] - 1;  // Use player position for texture
-        int texX = (int)((player->x + player->y) * 0.5) % floorTextures[floorTextureIndex].width;  // Adjust texture based on player position
+        // Use the single floor texture
+        int texX = (int)((player->x + player->y) * 0.5) % floorTexture.width;  // Adjust texture based on player position
 
-        SDL_Rect srcFloorRect = { texX, 0, 1, floorTextures[floorTextureIndex].height };
+        SDL_Rect srcFloorRect = { texX, 0, 1, floorTexture.height };
         SDL_Rect dstFloorRect = { x, floorTop, 1, floorBottom - floorTop };
 
         // Render floor slice
-        SDL_RenderCopy(renderer, floorTextures[floorTextureIndex].texture, &srcFloorRect, &dstFloorRect);
+        SDL_RenderCopy(renderer, floorTexture.texture, &srcFloorRect, &dstFloorRect);
     }
 }
 
