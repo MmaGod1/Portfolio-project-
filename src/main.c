@@ -6,7 +6,7 @@ Texture wallTextures[4];
 Texture floorTexture;
 
 /**
- * initialize_sdl - Initializes SDL, creates a window and a renderer.
+ * initialize_sdl - Initializes SDL and creates the window and renderer.
  *
  * Return: 0 on success, or 1 if an error occurs.
  */
@@ -22,7 +22,6 @@ int initialize_sdl(void)
 		SDL_Quit();
 		return (1);
 	}
-
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 	if (!renderer)
 	{
@@ -36,24 +35,28 @@ int initialize_sdl(void)
 }
 
 /**
- * initialize_player_and_load_resources - Initializes player and loads resources.
+ * initialize_player - Initializes the player with starting values.
  *
- * @player: Pointer to the Player struct.
- * @mapfile: The name of the map file to load.
- *
- * Return: 0 on success, or 1 if an error occurs.
+ * @player: Pointer to the Player struct to initialize.
  */
-int initialize_player_and_load_resources(Player *player, char *mapfile)
+void initialize_player(Player *player)
 {
-	int i;
-
 	player->x = 2.0;
 	player->y = 2.0;
 	player->angle = 0.0;
 	player->moveSpeed = 0.05;
 	player->rotSpeed = 0.05;
+}
 
-	/* Load the map */
+/**
+ * load_resources - Loads the map and textures required for the game.
+ *
+ * @mapfile: The name of the map file to load.
+ *
+ * Return: 0 on success, or 1 if an error occurs.
+ */
+int load_resources(char *mapfile)
+{
 	if (load_map(mapfile, maze_map) != 0)
 	{
 		fprintf(stderr, "Failed to load map\n");
@@ -68,6 +71,31 @@ int initialize_player_and_load_resources(Player *player, char *mapfile)
 	floorTexture = load_texture("./images/floor.jpg");
 
 	return (0);
+}
+
+/**
+ * cleanup - Cleans up SDL resources.
+ */
+void cleanup(void)
+{
+	for (int i = 0; i < 4; i++)
+	{
+		if (wallTextures[i].texture)
+		{
+			SDL_DestroyTexture(wallTextures[i].texture);
+			wallTextures[i].texture = NULL;
+		}
+	}
+	if (floorTexture.texture)
+	{
+		SDL_DestroyTexture(floorTexture.texture);
+		floorTexture.texture = NULL;
+	}
+
+	/* Clean up and quit SDL */
+	SDL_DestroyRenderer(renderer);
+	SDL_DestroyWindow(window);
+	SDL_Quit();
 }
 
 /**
@@ -103,11 +131,11 @@ int main(int argc, char *argv[])
 	if (initialize_sdl() != 0)
 		return (1);
 
-	if (initialize_player_and_load_resources(&player, argv[1]) != 0)
+	initialize_player(&player);
+
+	if (load_resources(argv[1]) != 0)
 	{
-		SDL_DestroyRenderer(renderer);
-		SDL_DestroyWindow(window);
-		SDL_Quit();
+		cleanup();
 		return (1);
 	}
 
@@ -119,25 +147,7 @@ int main(int argc, char *argv[])
 		SDL_Delay(16); /* Cap the frame rate to ~60 FPS */
 	}
 
-	/* Cleanup textures */
-	for (int i = 0; i < 4; i++)
-	{
-		if (wallTextures[i].texture)
-		{
-			SDL_DestroyTexture(wallTextures[i].texture);
-			wallTextures[i].texture = NULL;
-		}
-	}
-	if (floorTexture.texture)
-	{
-		SDL_DestroyTexture(floorTexture.texture);
-		floorTexture.texture = NULL;
-	}
-
-	/* Clean up and quit SDL */
-	SDL_DestroyRenderer(renderer);
-	SDL_DestroyWindow(window);
-	SDL_Quit();
+	cleanup();
 
 	return (0);
 }
