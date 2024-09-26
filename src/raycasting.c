@@ -70,7 +70,7 @@ float cast_ray(float playerX, float playerY, float rayAngle)
 			side = 1;
 		}
 
-        /* Check if ray has hit a wall */
+		/* Check if ray has hit a wall */
 		if (mapX >= 0 && mapX < MAP_WIDTH && mapY >= 0 && mapY < MAP_HEIGHT && maze_map[mapX][mapY] == 1)
 			hit = true;
 	}
