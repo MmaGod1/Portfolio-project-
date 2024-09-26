@@ -10,8 +10,9 @@
  */
 void draw_sky(void)
 {
+	SDL_Rect skyRect;
 	SDL_SetRenderDrawColor(renderer, 135, 206, 235, 255);
-	SDL_Rect skyRect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT / 2};
+	skyRect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT / 2};
 	SDL_RenderFillRect(renderer, &skyRect);
 }
 
@@ -20,6 +21,7 @@ void draw_floor(Player *player)
 {
 	int y, x, texX, texY;
 	float rayAngle, floorX, floorY;
+	SDL_Rect srcRect, dstRect;
 
 	for (y = SCREEN_HEIGHT / 2; y < SCREEN_HEIGHT; y++)
 	{
@@ -44,8 +46,8 @@ void draw_floor(Player *player)
 			if (texY < 0) texY = 0;
 
 			/* Render the floor pixel */
-			SDL_Rect srcRect = { texX, texY, 1, 1 };
-			SDL_Rect dstRect = { x, y, 1, 1 };
+			srcRect = { texX, texY, 1, 1 };
+			dstRect = { x, y, 1, 1 };
 			SDL_RenderCopy(renderer, floorTexture.texture, &srcRect, &dstRect);
 		}
 	}
@@ -79,7 +81,7 @@ void draw_mini_map(Player *player, bool showMap)
 	mapHeight = 120;
 	tileSize = TILE_SIZE;
 
-	// Draw the map tiles
+	/* Draw the map tiles */
 	for (y = 0; y < MAP_HEIGHT; y++)
 	{
 		for (x = 0; x < MAP_WIDTH; x++)
