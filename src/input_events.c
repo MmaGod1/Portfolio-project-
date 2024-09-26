@@ -1,6 +1,6 @@
 #include "raycasting.h"
 
-extern int showMap = 1;  /* 1 to show map, 0 to hide map */
+showMap = 1;  /* 1 to show map, 0 to hide map */
 
 /**
  * handle_input - Processes player input and updates the player's state.
@@ -21,7 +21,7 @@ void handle_input(Player *player,
 		int maze_map[MAP_WIDTH][MAP_HEIGHT])
 {
 	SDL_Event event;
-	float newX, newY. moveStep, moveAngle;
+	float newX, newY, moveStep, moveAngle;
 	int newXInt, newYInt;
 
 	while (SDL_PollEvent(&event))

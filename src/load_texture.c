@@ -11,17 +11,17 @@
  *
  * @filename: The path to the image file to load.
  *
- * Return: A Texture structure containing the loaded texture and its dimensions.
+ * Return: Textured structure containing the loaded texture and its dimensions.
  */
 Texture load_texture(const char *filename)
 {
 	Texture texture;
-
 	SDL_Surface *surface = IMG_Load(filename);
+
 	if (!surface)
 	{
 		fprintf(stderr, "Error loading texture: %s\n", IMG_GetError());
-		return (Texture){NULL, 0, 0};
+		return ((Texture){NULL, 0, 0});
 	}
 
 	texture.texture = SDL_CreateTextureFromSurface(renderer, surface);
