@@ -21,6 +21,9 @@ int main(int argc, char* argv[])
 {
 	window = NULL;
 	renderer = NULL;
+	Player player;
+	bool running = true;
+	int i;
 
 	if (argc != 2)
 	{
@@ -53,7 +56,7 @@ int main(int argc, char* argv[])
 	}
         
 	/* Initialize player */
-	Player player = { .x = 2.0, .y = 2.0, .angle = 0.0, .moveSpeed = 0.05, .rotSpeed = 0.05 };
+	player = { .x = 2.0, .y = 2.0, .angle = 0.0, .moveSpeed = 0.05, .rotSpeed = 0.05 };
 
 	/* Load the map */
 	if (load_map(argv[1], maze_map) != 0)
@@ -73,7 +76,6 @@ int main(int argc, char* argv[])
 	floorTexture = load_texture("./images/floor.jpg");
 
 	/* Game loop */
-	bool running = true;
 	while (running) {
 		handle_input(&player, &running, maze_map);
 		render(&player);
@@ -83,7 +85,7 @@ int main(int argc, char* argv[])
 	}
 
 	/* Cleanup textures */
-	for (int i = 0; i < 4; i++)
+	for (i = 0; i < 4; i++)
 	{
 		/* Free each texture if valid */
 		if (wallTextures[i].texture)
