@@ -1,7 +1,8 @@
 #include "raycasting.h"
 
 /**
- * calculate_step_and_side_dist - Calculate the step direction and initial side distances.
+ * calculate_step_and_side_dist - Calculate the step direction and
+ initial side distances.
  *
  * @rayDirX: The X direction of the ray.
  * @rayDirY: The Y direction of the ray.
@@ -40,7 +41,7 @@ void calculate_step_and_side_dist(float rayDirX, float rayDirY,
 }
 
 /**
- * perform_DDA - Perform the Digital Differential Analyzer algorithm for raycasting.
+ * perform_DDA - Perform the Digital Differential Analyzer - raycasting algorithm.
  *
  * @stepX: The step in the X direction.
  * @stepY: The step in the Y direction.
@@ -78,6 +79,10 @@ void perform_DDA(int stepX, int stepY, float *sideDistX,
  * cast_ray - Casts a ray from the player's position to determine
  *            the distance to the nearest wall.
  *
+ * @playerX: The X-coordinate of the player's position.
+ * @playerY: The Y-coordinate of the player's position.
+ * @rayAngle: The angle at which the ray is cast.
+ *
  * Return: Perpendicular distance from the player to the wall hit by the ray.
  */
 float cast_ray(float playerX, float playerY, float rayAngle)
@@ -106,6 +111,12 @@ float cast_ray(float playerX, float playerY, float rayAngle)
 /**
  * get_wall_hit_coordinates - Determines the coordinates of the wall hit
  *                            by a ray from the player's position.
+ *
+ * @playerX: The X-coordinate of the player's position.
+ * @playerY: The Y-coordinate of the player's position.
+ * @rayAngle: The angle at which the ray is cast.
+ * @mapX: A pointer to an integer set to the X map coordinate of the wall hit.
+ * @mapY: A pointer to an integer set to the Y map coordinate of the wall hit.
  *
  * Return: The fractional X-coordinate of the wall hit relative to its width.
  */
