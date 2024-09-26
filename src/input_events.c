@@ -32,7 +32,12 @@ void process_quit_event(SDL_Event event, bool *running)
  *
  * Return: void
  */
-void process_keydown_event(SDL_Event event, Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIGHT])
+void process_keydown_event(
+	SDL_Event event,
+	Player *player, 
+	bool *running,
+	int maze_map[MAP_WIDTH][MAP_HEIGHT]
+)
 {
 	float moveStep = player->moveSpeed;
 	float moveAngle = player->angle;
@@ -80,7 +85,8 @@ void process_keydown_event(SDL_Event event, Player *player, bool *running, int m
  *
  * Return: void
  */
-void handle_input(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIGHT])
+void handle_input(Player *player,
+bool *running, int maze_map[MAP_WIDTH][MAP_HEIGHT])
 {
 	SDL_Event event;
 
