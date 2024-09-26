@@ -59,6 +59,8 @@ void process_movement(Player *player, int maze_map[MAP_WIDTH][MAP_HEIGHT], float
 void process_quit_event(SDL_Event event, bool *running);
 void process_keydown_event(SDL_Event event, Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIGHT]);
 void handle_input(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIGHT]);
+int read_next_char(FILE *file);
+int process_char(int ch, int x, int y, int maze_map[MAP_WIDTH][MAP_HEIGHT]);
 int load_map(const char *filename, int maze_map[MAP_WIDTH][MAP_HEIGHT]);
 
 #endif /* RAYCASTING_H */
