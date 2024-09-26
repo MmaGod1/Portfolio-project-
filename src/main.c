@@ -78,7 +78,8 @@ int load_resources(char *mapfile)
  */
 void cleanup(void)
 {
-	for (int i = 0; i < 4; i++)
+	int i; // Declare 'i' here
+	for (i = 0; i < 4; i++)
 	{
 		if (wallTextures[i].texture)
 		{
