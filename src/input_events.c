@@ -1,4 +1,4 @@
-!#include "raycasting.h"
+#include "raycasting.h"
 
 void handleInput(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
     SDL_Event event;
