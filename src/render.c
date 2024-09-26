@@ -1,7 +1,8 @@
 #include "raycasting.h"
 
 /**
- * calculate_wall_dimensions - Calculate the wall dimensions and correct for fisheye effect.
+ * calculate_wall_dimensions - Calculate the wall dimensions
+ * and correct for fisheye effect.
  *
  * @distance: The distance to the wall.
  * @player: Pointer to the Player structure containing player's attributes.
@@ -40,6 +41,7 @@ void render_single_wall(int x, int wallHeight, int wallTop,
 	int texWidth = wallTextures[wallTextureIndex].width;
 
 	int texX = (int)(wallX * texWidth) % texWidth;
+
 	srcRect.x = texX;
 	srcRect.y = 0;
 	srcRect.w = 1;
@@ -75,8 +77,10 @@ void render_walls(Player *player)
 		if (distance > 10.0)
 			distance = 10.0;
 
-		calculate_wall_dimensions(distance, player, &wallHeight, &wallTop, &wallBottom);
-		wallX = get_wall_hit_coordinates(player->x, player->y, rayAngle, &mapX, &mapY);
+		calculate_wall_dimensions(distance, player,
+				&wallHeight, &wallTop, &wallBottom);
+		wallX = get_wall_hit_coordinates(player->x,
+				player->y, rayAngle, &mapX, &mapY);
 		int wallTextureIndex = maze_map[mapX][mapY] - 1;
 
 		render_single_wall(x, wallHeight, wallTop, wallX, wallTextureIndex);
