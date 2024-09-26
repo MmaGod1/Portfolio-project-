@@ -513,15 +513,16 @@ int main(int argc, char* argv[]) {
     }
 
     // Cleanup textures
-    for (int i = 0; i < 4; i++) {
-        if (wallTextures[i]) {
-            SDL_DestroyTexture(wallTextures[i]); // Free each wall texture
-        }
+for (int i = 0; i < 4; i++) {
+    if (wallTextures[i].texture) {  // Check if the texture is valid
+        SDL_DestroyTexture(wallTextures[i].texture); // Free each wall texture
+        wallTextures[i].texture = NULL;  // Avoid dangling pointer
     }
-    if (floorTexture.texture) { // Check if floorTexture is valid
-        SDL_DestroyTexture(floorTexture.texture); // Free the floor texture
-    }
-
+}
+if (floorTexture.texture) { // Check if floorTexture is valid
+    SDL_DestroyTexture(floorTexture.texture); // Free the floor texture
+    floorTexture.texture = NULL;  // Avoid dangling pointer
+}
     // Clean up and quit SDL
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
