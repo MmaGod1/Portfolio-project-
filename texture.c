@@ -81,7 +81,10 @@ Texture loadTexture(const char *filename) {
     return texture;
 }
 
-/**float castRay(float playerX, float playerY, float rayAngle) {
+float castRay(float playerX, float playerY, float rayAngle) {
+    const int MAX_STEPS = 100;  // Limit the number of steps to avoid excessive ray distance
+    int steps = 0;
+
     // Ray direction
     float rayDirX = cos(rayAngle);
     float rayDirY = sin(rayAngle);
@@ -116,9 +119,8 @@ Texture loadTexture(const char *filename) {
 
     // Perform DDA
     bool hit = false;
-    int side; // was the wall hit on the X or Y side?
-    while (!hit) {
-        // Jump to next map square, either in x-direction or y-direction
+    int side;
+    while (!hit && steps < MAX_STEPS) {  // Add step counter
         if (sideDistX < sideDistY) {
             sideDistX += deltaDistX;
             mapX += stepX;
@@ -133,7 +135,12 @@ Texture loadTexture(const char *filename) {
         if (mapX >= 0 && mapX < MAP_WIDTH && mapY >= 0 && mapY < MAP_HEIGHT && maze_map[mapX][mapY] == 1) {
             hit = true;
         }
+
+        steps++;  // Increment step counter
     }
+
+    // If no wall is hit, return a max distance or some other fallback
+    if (!hit) return 10.0;
 
     // Calculate the distance to the point of impact
     float perpWallDist;
@@ -144,7 +151,7 @@ Texture loadTexture(const char *filename) {
 
     return perpWallDist;
 }
-**/
+
 
 void drawSky() {
     SDL_SetRenderDrawColor(renderer, 135, 206, 235, 255);  // Light blue for sky
@@ -205,26 +212,21 @@ void drawMiniMap(Player *player, bool showMap) {
 }
 
 float getWallHitCoordinates(float playerX, float playerY, float rayAngle, int *mapX, int *mapY) {
-    // DDA (Digital Differential Analyzer) algorithm for raycasting
     float rayDirX = cos(rayAngle);
     float rayDirY = sin(rayAngle);
 
-    // Map grid positions of the player
     *mapX = (int)playerX;
     *mapY = (int)playerY;
 
-    // Length of ray to the next side in X and Y
     float sideDistX, sideDistY;
-
-    // Length of the ray to the next X or Y side (constant)
     float deltaDistX = fabs(1 / rayDirX);
     float deltaDistY = fabs(1 / rayDirY);
 
     int stepX, stepY;
-    int hit = 0;  // Did we hit a wall?
-    int side;     // Was it a vertical or horizontal wall hit?
+    int hit = 0;
+    int side;
 
-    // Calculate step and initial sideDist
+    // Determine step direction and initial side distances
     if (rayDirX < 0) {
         stepX = -1;
         sideDistX = (playerX - *mapX) * deltaDistX;
@@ -232,6 +234,7 @@ float getWallHitCoordinates(float playerX, float playerY, float rayAngle, int *m
         stepX = 1;
         sideDistX = (*mapX + 1.0 - playerX) * deltaDistX;
     }
+
     if (rayDirY < 0) {
         stepY = -1;
         sideDistY = (playerY - *mapY) * deltaDistY;
@@ -240,47 +243,63 @@ float getWallHitCoordinates(float playerX, float playerY, float rayAngle, int *m
         sideDistY = (*mapY + 1.0 - playerY) * deltaDistY;
     }
 
-    // Perform DDA (ray casting)
+    // Perform DDA (Digital Differential Analyzer)
     while (hit == 0) {
-        // Jump to next map square, either in X-direction or Y-direction
         if (sideDistX < sideDistY) {
             sideDistX += deltaDistX;
             *mapX += stepX;
-            side = 0;
+            side = 0;  // Hit a vertical wall
         } else {
             sideDistY += deltaDistY;
             *mapY += stepY;
-            side = 1;
+            side = 1;  // Hit a horizontal wall
         }
 
-        // Check if the ray has hit a wall (1 represents a wall in the maze_map)
-        if (maze_map[*mapX][*mapY] > 0) hit = 1;
+        // Check for wall hit
+        if (*mapX >= 0 && *mapX < MAP_WIDTH && *mapY >= 0 && *mapY < MAP_HEIGHT && maze_map[*mapX][*mapY] == 1) {
+            hit = 1;
+        }
     }
 
-    // Calculate exact position of where the wall was hit
-    float wallX;  // Where the wall was hit (X-coordinate)
+    // Calculate the coordinates of the wall hit
+    float wallHitX, wallHitY;
     if (side == 0) {
-        wallX = playerY + ((sideDistX - deltaDistX) * rayDirY);
+        wallHitX = (*mapX - (1 - stepX) / 2) / rayDirX;
+        wallHitY = playerY + (wallHitX - playerX) * rayDirY / rayDirX;
     } else {
-        wallX = playerX + ((sideDistY - deltaDistY) * rayDirX);
+        wallHitY = (*mapY - (1 - stepY) / 2) / rayDirY;
+        wallHitX = playerX + (wallHitY - playerY) * rayDirX / rayDirY;
     }
-    wallX -= floor(wallX);  // Keep only the fractional part
 
-    return wallX;  // Return the hit coordinate on the wall
+    // Return the distance to the wall hit
+    return sqrt(pow(wallHitX - playerX, 2) + pow(wallHitY - playerY, 2));
 }
 
-
 void renderWalls(Player *player) {
-    for (int x = 0; x < SCREEN_WIDTH; x++) {
+    // Precompute player angle cos and sin
+    float playerCos = cos(player->angle);
+    float playerSin = sin(player->angle);
+
+    const int RENDER_STEP = 2;  // Skip every second pixel column
+
+    // Clear screen before rendering
+    SDL_RenderClear(renderer);
+
+    for (int x = 0; x < SCREEN_WIDTH; x += RENDER_STEP) {
         float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
+
+        // Precompute cos and sin for the ray angle to avoid multiple calls
+        float rayCos = cos(rayAngle);
+        float raySin = sin(rayAngle);
+
+        // Cast ray and get distance to wall
         float distance = castRay(player->x, player->y, rayAngle);
-        
         if (distance > 10.0) distance = 10.0;
 
         // Correct the distance to avoid fisheye effect
-        float correctedDistance = distance * cos(rayAngle - player->angle);
+        float correctedDistance = distance * (rayCos * playerCos + raySin * playerSin);
 
-        // Calculate the wall height
+        // Calculate wall height
         int wallHeight = (int)(SCREEN_HEIGHT / correctedDistance);
         int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
         int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
@@ -290,7 +309,7 @@ void renderWalls(Player *player) {
         if (wallBottom >= SCREEN_HEIGHT) wallBottom = SCREEN_HEIGHT - 1;
 
         // Determine which wall texture to use based on map hit
-        int mapX, mapY; // Ray hit coordinates
+        int mapX, mapY;
         float wallX = getWallHitCoordinates(player->x, player->y, rayAngle, &mapX, &mapY);
         int wallTextureIndex = maze_map[mapX][mapY] - 1;
 
@@ -298,11 +317,14 @@ void renderWalls(Player *player) {
         int texX = (int)(wallX * wallTextures[wallTextureIndex].width) % wallTextures[wallTextureIndex].width;
 
         SDL_Rect srcRect = { texX, 0, 1, wallTextures[wallTextureIndex].height };
-        SDL_Rect dstRect = { x, wallTop, 1, wallHeight };
+        SDL_Rect dstRect = { x, wallTop, RENDER_STEP, wallHeight };
 
         // Render wall slice
         SDL_RenderCopy(renderer, wallTextures[wallTextureIndex].texture, &srcRect, &dstRect);
     }
+
+    // Present the entire rendered frame
+    SDL_RenderPresent(renderer);
 }
 
 
@@ -357,6 +379,7 @@ void render(Player *player) {
 
 void handleInput(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
     SDL_Event event;
+    float newX, newY;  // Define new positions outside the switch case
 
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT) {
@@ -366,53 +389,46 @@ void handleInput(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIG
         if (event.type == SDL_KEYDOWN) {
             float moveStep = player->moveSpeed;
             float moveAngle = player->angle;
-            float newX, newY;
 
             switch (event.key.keysym.sym) {
-                case SDLK_l:  // Leave game when 'l' is pressed
+                case SDLK_l:
                     *running = false;
                     break;
                 case SDLK_m:
                     showMap = !showMap;
                     break;
-                case SDLK_LEFT:  // Rotate left
+                case SDLK_LEFT:
                     player->angle -= player->rotSpeed;
                     if (player->angle < 0) player->angle += 2 * M_PI;
                     break;
-                case SDLK_RIGHT:  // Rotate right
+                case SDLK_RIGHT:
                     player->angle += player->rotSpeed;
                     if (player->angle > 2 * M_PI) player->angle -= 2 * M_PI;
                     break;
-                case SDLK_w:  // Move forward
+                case SDLK_w:
                     newX = player->x + cos(moveAngle) * moveStep;
                     newY = player->y + sin(moveAngle) * moveStep;
                     break;
-                case SDLK_s:  // Move backward
+                case SDLK_s:
                     newX = player->x - cos(moveAngle) * moveStep;
                     newY = player->y - sin(moveAngle) * moveStep;
                     break;
-                case SDLK_a:  // Strafe left
+                case SDLK_a:
                     newX = player->x + cos(moveAngle - M_PI / 2) * moveStep;
                     newY = player->y + sin(moveAngle - M_PI / 2) * moveStep;
                     break;
-                case SDLK_d:  // Strafe right
+                case SDLK_d:
                     newX = player->x + cos(moveAngle + M_PI / 2) * moveStep;
                     newY = player->y + sin(moveAngle + M_PI / 2) * moveStep;
                     break;
                 default:
-                    continue; // Skip rest of the loop if no relevant key is pressed
+                    continue;
             }
 
-            // Ensure the new position is within bounds
+            // Perform collision detection once, checking both newX and newY
             if (newX >= 0 && newX < MAP_WIDTH && newY >= 0 && newY < MAP_HEIGHT) {
-                int newXInt = (int)newX;
-                int newYInt = (int)newY;
-
-                // Check for collisions with walls
-                if (maze_map[newXInt][(int)player->y] == 0) {
+                if (maze_map[(int)newX][(int)newY] == 0) {
                     player->x = newX;
-                }
-                if (maze_map[(int)player->x][newYInt] == 0) {
                     player->y = newY;
                 }
             }
