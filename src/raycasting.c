@@ -85,6 +85,44 @@ void perform_DDA(int stepX, int stepY, float *sideDistX,
     }
 }
 
+
+/**
+ * cast_ray - Casts a ray from the player's position to determine
+ *            the distance to the nearest wall.
+ *
+ * @playerX: The X-coordinate of the player's position.
+ * @playerY: The Y-coordinate of the player's position.
+ * @rayAngle: The angle at which the ray is cast.
+ *
+ * Return: The perpendicular distance from the player to the wall
+ *         hit by the ray.
+ */
+float cast_ray(float playerX, float playerY, float rayAngle)
+{
+    float rayDirX = cos(rayAngle);
+    float rayDirY = sin(rayAngle);
+    int mapX = (int)playerX;
+    int mapY = (int)playerY;
+    float sideDistX, sideDistY;
+    int stepX, stepY, hit = 0, side;
+    float perpWallDist;
+
+    calculate_step_and_side_dist(rayDirX, rayDirY, playerX, playerY,
+                                  &mapX, &mapY, &stepX, &stepY,
+                                  &sideDistX, &sideDistY);
+
+    perform_DDA(stepX, stepY, &sideDistX, &sideDistY,
+                 &mapX, &mapY, &hit, &side);
+
+    if (side == 0)
+        perpWallDist = (mapX - playerX + (1 - stepX) / 2) / rayDirX;
+    else
+        perpWallDist = (mapY - playerY + (1 - stepY) / 2) / rayDirY;
+
+    return (perpWallDist);
+}
+
+
 /**
  * get_wall_hit_coordinates - Determines the coordinates of the wall hit
  *                            by a ray from the player's position.
