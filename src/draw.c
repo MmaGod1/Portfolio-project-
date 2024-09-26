@@ -41,7 +41,7 @@ void draw_floor(Player *player)
 		{
 			/* Calculate the ray angle for the current column*/
 			rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
-    
+
 			/* Compute floor X and Y coordinates */
 			floorX = player->x + cos(rayAngle) * floorDist;
 			floorY = player->y + sin(rayAngle) * floorDist;
@@ -135,7 +135,7 @@ void draw_mini_map(Player *player, bool showMap)
 		playerRect.y = (int)mapPlayerY - 2;
 		playerRect.w = 4;
 		playerRect.h = 4;
-    
+
 		/* Render the player's position */
 		SDL_RenderFillRect(renderer, &playerRect);
 
@@ -149,7 +149,7 @@ void draw_mini_map(Player *player, bool showMap)
 			/* Adjust length for rays (shorter) */
 			endX = mapPlayerX + cos(rayAngle) * (mapWidth / 4);
 			endY = mapPlayerY + sin(rayAngle) * (mapHeight / 4);
-        
+
 			/* Render the line of sight */
 			SDL_RenderDrawLine(renderer, mapPlayerX, mapPlayerY, endX, endY);
 		}
