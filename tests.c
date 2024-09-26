@@ -518,7 +518,7 @@ int main(int argc, char* argv[]) {
     wallTextures[1] = loadTexture("./wall2.jpg");
     wallTextures[2] = loadTexture("./wall3.jpg");
     wallTextures[3] = loadTexture("./wall4.jpg");
-    floorTexture = loadTexture("./floor3.1.jpg");
+    floorTexture = loadTexture("./floor.jpg");
 
         
     // Game loop
