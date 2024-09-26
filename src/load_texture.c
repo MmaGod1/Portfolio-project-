@@ -1,7 +1,18 @@
 #include "raycasting.h"
 
 
-
+/**
+ * load_texture - Loads a texture from a file and creates an SDL texture.
+ *
+ * This function loads an image from the specified filename into an SDL_Surface
+ * and then creates an SDL_Texture from that surface. It also frees the surface
+ * once the texture has been created. If the image cannot be loaded, it logs
+ * an error and returns a Texture with a NULL pointer and zero dimensions.
+ *
+ * @filename: The path to the image file to load.
+ *
+ * Return: A Texture structure containing the loaded texture and its dimensions.
+ */
 Texture load_texture(const char *filename)
 {
 
