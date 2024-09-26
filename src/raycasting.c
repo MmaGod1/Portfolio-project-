@@ -85,7 +85,6 @@ void perform_DDA(int stepX, int stepY, float *sideDistX,
     }
 }
 
-
 /**
  * cast_ray - Casts a ray from the player's position to determine
  *            the distance to the nearest wall.
@@ -112,7 +111,7 @@ float cast_ray(float playerX, float playerY, float rayAngle)
                                   &sideDistX, &sideDistY);
 
     perform_DDA(stepX, stepY, &sideDistX, &sideDistY,
-                 &mapX, &mapY, &hit, &side);
+                 &mapX, &mapY, &hit, &side, rayAngle);
 
     if (side == 0)
         perpWallDist = (mapX - playerX + (1 - stepX) / 2) / rayDirX;
@@ -121,7 +120,6 @@ float cast_ray(float playerX, float playerY, float rayAngle)
 
     return (perpWallDist);
 }
-
 
 /**
  * get_wall_hit_coordinates - Determines the coordinates of the wall hit
@@ -153,7 +151,7 @@ float get_wall_hit_coordinates(float playerX,
                                   &sideDistX, &sideDistY);
 
     perform_DDA(stepX, stepY, &sideDistX, &sideDistY, mapX, mapY,
-                 &hit, &side, rayAngle);
+                 &hit, &side, rayAngle);  // Corrected to include rayAngle
 
     if (side == 0)
     {
