@@ -115,7 +115,7 @@ float get_wall_hit_coordinates(float playerX,
                                   &sideDistX, &sideDistY);
 
     perform_DDA(stepX, stepY, &sideDistX, &sideDistY, mapX, mapY,
-                 &hit, &side, rayAngle); // Added rayAngle here
+                 &hit, &side, rayAngle);
 
     if (side == 0)
     {
