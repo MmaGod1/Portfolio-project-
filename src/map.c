@@ -1,6 +1,6 @@
 #include "raycasting.h"
 
-  int maze_map[MAP_WIDTH][MAP_HEIGHT] = {
+int maze_map[MAP_WIDTH][MAP_HEIGHT] = {
 	  {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
 	  {1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1},
 	  {1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1},
@@ -38,6 +38,7 @@
 int read_next_char(FILE *file)
 {
 	int ch = fgetc(file);
+
 	while (ch == '\r' || ch == '\n')
 	{
 		ch = fgetc(file);
