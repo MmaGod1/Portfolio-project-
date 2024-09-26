@@ -37,28 +37,20 @@ void draw_sky(void)
 void draw_floor(Player *player)
 {
 	int y, x, texX, texY;
-	float rayAngle, floorX, floorY;
-	float floorDist;
-	SDL_Rect srcRect;
-	SDL_Rect dstRect;
+	float rayAngle, floorX, floorY, floorDist;
+	SDL_Rect srcRect, dstRect;
 
 	/* Loop over the lower half of the screen */
 	for (y = SCREEN_HEIGHT / 2; y < SCREEN_HEIGHT; y++)
 	{
-		/* Calculate the distance to the floor */
 		floorDist = SCREEN_HEIGHT / (2.0f * y - SCREEN_HEIGHT);
 
 		/* Loop over the screen width */
 		for (x = 0; x < SCREEN_WIDTH; x++)
 		{
-			/* Calculate the ray angle for the current column*/
 			rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
-
-			/* Compute floor X and Y coordinates */
 			floorX = player->x + cos(rayAngle) * floorDist;
 			floorY = player->y + sin(rayAngle) * floorDist;
-
-			/* Determine the texture coordinates */
 			texX = (int)(floorX * floorTexture.width) % floorTexture.width;
 			texY = (int)(floorY * floorTexture.height) % floorTexture.height;
 
@@ -68,19 +60,16 @@ void draw_floor(Player *player)
 			if (texY < 0)
 				texY = 0;
 
-			/* Set the values for the srcRect structure */
 			srcRect.x = texX;
 			srcRect.y = texY;
 			srcRect.w = 1;
 			srcRect.h = 1;
 
-			/* Set the values for the dstRect structure */
 			dstRect.x = x;
 			dstRect.y = y;
 			dstRect.w = 1;
 			dstRect.h = 1;
 
-			/* Render the floor pixel */
 			SDL_RenderCopy(renderer, floorTexture.texture, &srcRect, &dstRect);
 		}
 	}
