@@ -1,4 +1,4 @@
-#include "raycasting.h".
+#include "raycasting.h"
 
 /**
  * calculate_step_and_side_dist - Calculate the step direction and
