@@ -91,13 +91,18 @@ float castRay(float playerX, float playerY, float rayAngle) {
     int mapY = (int)playerY;
 
     // Length of ray from one x or y side to next x or y side
-    float deltaDistX = fabs(1 / rayDirX);
-    float deltaDistY = fabs(1 / rayDirY);
+    int deltaDistX = abs(1 / rayDirX);
+        int deltaDistY = abs(1 / rayDirY);
+
 
     // What direction to step in (+1 or -1)
     int stepX, stepY;
     float sideDistX, sideDistY;
 
+        if (maze_map[(int)playerX][(int)playerY] == 1) {
+                return 0; // Or return a default value for distance
+        }
+        
     // Calculate step and initial sideDist
     if (rayDirX < 0) {
         stepX = -1;
@@ -272,13 +277,13 @@ float getWallHitCoordinates(float playerX, float playerY, float rayAngle, int *m
 
 void renderWalls(Player *player) {
     for (int x = 0; x < SCREEN_WIDTH; x++) {
-        float rayAngle = player->angle + atan((x - SCREEN_WIDTH / 2) / SCREEN_WIDTH);
+        float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
         float distance = castRay(player->x, player->y, rayAngle);
         
         if (distance > 10.0) distance = 10.0;
 
         // Correct the distance to avoid fisheye effect
-        float correctedDistance = distance; //* cos(rayAngle - player->angle);
+        float correctedDistance = distance * cos(rayAngle - player->angle);
 
         // Calculate the wall height
         int wallHeight = (int)(SCREEN_HEIGHT / correctedDistance);
