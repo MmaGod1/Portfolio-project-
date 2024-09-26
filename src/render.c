@@ -5,7 +5,7 @@ void render_walls(Player *player)
 	for (int x = 0; x < SCREEN_WIDTH; x++)
 	{
 		float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
-		float distance = castRay(player->x, player->y, rayAngle);
+		float distance = cast_ray(player->x, player->y, rayAngle);
         
 		if (distance > 10.0) distance = 10.0;
 
@@ -21,7 +21,7 @@ void render_walls(Player *player)
 
 		/* Determine which wall texture to use based on map hit */
 		int mapX, mapY;
-		float wallX = getWallHitCoordinates(player->x, player->y, rayAngle, &mapX, &mapY);
+		float wallX = get_wall_hit_coordinates(player->x, player->y, rayAngle, &mapX, &mapY);
 		int wallTextureIndex = maze_map[mapX][mapY] - 1;
 
 		/* Texture coordinates */

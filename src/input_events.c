@@ -1,8 +1,13 @@
 #include "raycasting.h"
 
+#include "raycasting.h"
+
+int showMap = 1;  /* 1 to show map, 0 to hide map */
+
 void handle_input(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIGHT])
 {
 	SDL_Event event;
+	float newX, newY; 
 
 	while (SDL_PollEvent(&event))
 	{
@@ -17,8 +22,6 @@ void handle_input(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEI
 
 			float moveStep = player->moveSpeed;
 			float moveAngle = player->angle;
-			float newX, newY;
-
 
 			switch (event.key.keysym.sym)
 			{

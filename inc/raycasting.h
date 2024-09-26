@@ -21,6 +21,7 @@
 
 #define TILE_SIZE (MAP_DISPLAY_WIDTH / MAP_WIDTH)
 
+
 /* Structure to represent the player */
 typedef struct {
 	float x, y;           /* Player position */
@@ -35,12 +36,13 @@ typedef struct {
 	int width, height;
 } Texture;
 
-/* Global variables */
-SDL_Window *window;
-SDL_Renderer *renderer;
+extern int maze_map[MAP_WIDTH][MAP_HEIGHT];
 
-Texture wallTextures[4];
-Texture floorTexture;
+extern Texture wallTextures[4];
+extern Texture floorTexture;
+extern int maze_map[MAP_WIDTH][MAP_HEIGHT];
+extern int showMap;                                               extern SDL_Window *window;
+extern SDL_Renderer *renderer;
 
 /* Function prototypes */
 Texture load_texture(const char *filename);

@@ -1,7 +1,16 @@
 #include "raycasting.h"
-  
+
+SDL_Window *window = NULL;
+SDL_Renderer *renderer = NULL;
+Texture wallTextures[4]; 
+Texture floorTexture;
+
+
 int main(int argc, char* argv[])
 {
+	window = NULL;
+	renderer = NULL;
+
 	if (argc != 2)
 	{
 		fprintf(stderr, "Usage: %s <mapfile>\n", argv[0]);
@@ -46,11 +55,11 @@ int main(int argc, char* argv[])
 	}
 
 	/* Load textures */
-	wallTextures[0] = loadTexture("./images/wall1.jpg");
-	wallTextures[1] = loadTexture("./images/wall2.jpg");
-	wallTextures[2] = loadTexture("./images/wall3.jpg");
-	wallTextures[3] = loadTexture("./images/wall4.jpg");
-	floorTexture = loadTexture("./images/floor.jpg");
+	wallTextures[0] = load_texture("./images/wall1.jpg");
+	wallTextures[1] = load_texture("./images/wall2.jpg");
+	wallTextures[2] = load_texture("./images/wall3.jpg");
+	wallTextures[3] = load_texture("./images/wall4.jpg");
+	floorTexture = load_texture("./images/floor.jpg");
 
 	/* Game loop */
 	bool running = true;
