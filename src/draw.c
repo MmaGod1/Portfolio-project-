@@ -11,6 +11,7 @@
 void draw_sky(void)
 {
 	SDL_Rect skyRect;
+
 	skyRect.x = 0;
 	skyRect.y = 0;
 	skyRect.w = SCREEN_WIDTH;
@@ -107,7 +108,6 @@ void draw_mini_map(Player *player, bool showMap)
 		{
 			SDL_Rect rect;
 
-			/* Position of the tile */
 			rect.x = mapStartX + x * tileSize;
 			rect.y = mapStartY + y * tileSize;
 			rect.w = tileSize;
