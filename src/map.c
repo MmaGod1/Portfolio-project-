@@ -1,4 +1,4 @@
-#!include "raycasting.h"
+#include "raycasting.h"
 
   int maze_map[MAP_WIDTH][MAP_HEIGHT] = {
         {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},                       
