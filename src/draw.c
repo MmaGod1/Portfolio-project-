@@ -23,23 +23,22 @@ void draw_sky(void)
 
 void draw_floor(Player *player)
 {
-    // Declare all variables at the top
     int y, x, texX, texY;
     float rayAngle, floorX, floorY;
-    float floorDist; // Declare floorDist here
-    SDL_Rect srcRect; // Declare srcRect at the top
-    SDL_Rect dstRect; // Declare dstRect at the top
+    float floorDist;
+    SDL_Rect srcRect;
+    SDL_Rect dstRect;
 
-    // Loop over the lower half of the screen
+    /* Loop over the lower half of the screen */
     for (y = SCREEN_HEIGHT / 2; y < SCREEN_HEIGHT; y++)
     {
-        // Calculate the distance to the floor
+        /* Calculate the distance to the floor */
         floorDist = SCREEN_HEIGHT / (2.0f * y - SCREEN_HEIGHT);
 
-        // Loop over the screen width
+        /* Loop over the screen width */
         for (x = 0; x < SCREEN_WIDTH; x++)
         {
-            // Calculate the ray angle for the current column
+            /* Calculate the ray angle for the current column*/
             rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
     
             /* Compute floor X and Y coordinates */
@@ -87,12 +86,10 @@ void draw_floor(Player *player)
  */
 void draw_mini_map(Player *player, bool showMap)
 {
-    // Declare all variables at the top
     int mapStartX, mapStartY, mapWidth, mapHeight, tileSize;
     int y, x, i;
     float mapPlayerX, mapPlayerY, rayAngle, endX, endY;
 
-    // Check if the mini map should be displayed
     if (!showMap) return;
 
     /* Position the map in the top-left corner */
@@ -107,7 +104,7 @@ void draw_mini_map(Player *player, bool showMap)
     {
         for (x = 0; x < MAP_WIDTH; x++)
         {
-            SDL_Rect rect; // Declare rect here
+            SDL_Rect rect;
 
             /* Position of the tile */
             rect.x = mapStartX + x * tileSize;
@@ -128,13 +125,12 @@ void draw_mini_map(Player *player, bool showMap)
             /* Render the tile */
             SDL_RenderFillRect(renderer, &rect);
         }
-    }
 
     /* Draw the player's position on the map */
     mapPlayerX = mapStartX + (player->x * mapWidth / MAP_WIDTH);
     mapPlayerY = mapStartY + (player->y * mapHeight / MAP_HEIGHT);
-    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); // Green for player position
-    SDL_Rect playerRect; // Declare playerRect here
+    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+    SDL_Rect playerRect;
     playerRect.x = (int)mapPlayerX - 2;
     playerRect.y = (int)mapPlayerY - 2;
     playerRect.w = 4;
@@ -144,7 +140,7 @@ void draw_mini_map(Player *player, bool showMap)
     SDL_RenderFillRect(renderer, &playerRect);
 
     /* Draw the player's line of sight on the map */
-    SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255); // Blue for line of sight
+    SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
 
     for (i = 0; i < SCREEN_WIDTH; i++)
     {
