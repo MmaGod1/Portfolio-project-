@@ -18,7 +18,6 @@ int showMap = 1;  // 1 to show map, 0 to hide map
 
 
 
-
 // Maze map (1 = wall, 0 = empty space)
 int maze_map[MAP_WIDTH][MAP_HEIGHT] = {
         {1, 2, 2, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 2, 2, 1, 1, 2, 1, 1, 1, 1, 2},                    
