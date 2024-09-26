@@ -292,7 +292,7 @@ void renderWalls(Player *player) {
         float wallX = getWallHitCoordinates(player->x, player->y, rayAngle, &mapX, &mapY);
         int wallTextureIndex = maze_map[mapX][mapY] - 1;
 
-        // Texture coordinates for the wall
+        // Texture coordinates
         int texX = (int)(wallX * wallTextures[wallTextureIndex].width) % wallTextures[wallTextureIndex].width;
 
         SDL_Rect srcRect = { texX, 0, 1, wallTextures[wallTextureIndex].height };
@@ -300,23 +300,6 @@ void renderWalls(Player *player) {
 
         // Render wall slice
         SDL_RenderCopy(renderer, wallTextures[wallTextureIndex].texture, &srcRect, &dstRect);
-        
-        // Floor rendering
-        int floorTop = wallBottom;  // Start floor rendering below the wall
-        int floorBottom = SCREEN_HEIGHT;  // Extend to the bottom of the screen
-
-        // Ensure values are within screen bounds
-        if (floorTop < 0) floorTop = 0;
-        if (floorBottom >= SCREEN_HEIGHT) floorBottom = SCREEN_HEIGHT - 1;
-
-        // Use the single floor texture
-        int texXFloor = (int)((player->x + player->y) * 0.5) % floorTexture.width;  // Adjust texture based on player position
-
-        SDL_Rect srcFloorRect = { texXFloor, 0, 1, floorTexture.height };
-        SDL_Rect dstFloorRect = { x, floorTop, 1, floorBottom - floorTop };
-
-        // Render floor slice
-        SDL_RenderCopy(renderer, floorTexture.texture, &srcFloorRect, &dstFloorRect);
     }
 }
 
