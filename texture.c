@@ -122,11 +122,11 @@ float castRay(float playerX, float playerY, float rayAngle) {
         if (sideDistX < sideDistY) {
             sideDistX += deltaDistX;
             mapX += stepX;
-            side = 0;
+            side = 0; // X-side hit
         } else {
             sideDistY += deltaDistY;
             mapY += stepY;
-            side = 1;
+            side = 1; // Y-side hit
         }
 
         // Check if ray has hit a wall
@@ -135,7 +135,7 @@ float castRay(float playerX, float playerY, float rayAngle) {
         }
     }
 
-    // Calculate the distance to the point of impact
+    // Calculate the perpendicular wall distance for correction
     float perpWallDist;
     if (side == 0) {
         perpWallDist = (mapX - playerX + (1 - stepX) / 2) / rayDirX;
@@ -145,7 +145,6 @@ float castRay(float playerX, float playerY, float rayAngle) {
 
     return perpWallDist;
 }
-
 
 void drawSky() {
     SDL_SetRenderDrawColor(renderer, 135, 206, 235, 255);  // Light blue for sky
@@ -273,7 +272,8 @@ void renderWalls(Player *player) {
         float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
         float distance = castRay(player->x, player->y, rayAngle);
         
-        if (distance > 10.0) distance = 10.0;
+        // Avoid division by zero
+        if (distance < 0.1) distance = 0.1;
 
         // Correct the distance to avoid fisheye effect
         float correctedDistance = distance * cos(rayAngle - player->angle);
