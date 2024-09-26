@@ -1,15 +1,16 @@
 #include "raycasting.h"
 
 /**
- * render_walls - Renders the walls of the maze by casting rays from the player's
- *                position and calculating their heights based on distance.
+ * render_walls - Renders the walls of the maze by casting rays from the
+ * player's position and calculating their heights based on distance.
  *
  * This function loops through each vertical slice of the screen and determines
- * the angle for each ray. It calculates the distance to the nearest wall, adjusts
- * the distance to correct for fisheye effects, and renders the appropriate wall texture
- * based on the hit coordinates.
+ * the angle for each ray. It calculates the distance to the nearest wall,
+ * adjusts the distance to correct for fisheye effects, and renders the
+ * appropriate wall texture based on the hit coordinates.
  *
- * @player: A pointer to the Player structure containing the player's position and angle.
+ * @player: A pointer to the Player structure containing
+ * the player's position and angle.
  */
 void render_walls(Player *player)
 {
@@ -21,7 +22,8 @@ void render_walls(Player *player)
 		rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
 		distance = cast_ray(player->x, player->y, rayAngle);
         
-		if (distance > 10.0) distance = 10.0;
+		if (distance > 10.0)
+			distance = 10.0;
 
 		/* Correct the distance to avoid fisheye effect */
 		correctedDistance = distance * cos(rayAngle - player->angle);
@@ -30,21 +32,30 @@ void render_walls(Player *player)
 		wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
 
 		/* Ensure values are within screen bounds */
-		if (wallTop < 0) wallTop = 0;
-		if (wallBottom >= SCREEN_HEIGHT) wallBottom = SCREEN_HEIGHT - 1;
+		if (wallTop < 0)
+			wallTop = 0;
+		if (wallBottom >= SCREEN_HEIGHT)
+			wallBottom = SCREEN_HEIGHT - 1;
 
 		/* Determine which wall texture to use based on map hit */
-		wallX = get_wall_hit_coordinates(player->x, player->y, rayAngle, &mapX, &mapY);
+		wallX = get_wall_hit_coordinates(
+				player->x, player->y,
+				rayAngle, &mapX, &mapY);
 		wallTextureIndex = maze_map[mapX][mapY] - 1;
 
 		/* Texture coordinates */
-		texX = (int)(wallX * wallTextures[wallTextureIndex].width) % wallTextures[wallTextureIndex].width;
-
-		SDL_Rect srcRect = { texX, 0, 1, wallTextures[wallTextureIndex].height };
+		int texWidth = wallTextures[wallTextureIndex].width;
+		texX = (int)(wallX * texWidth) % texWidth;
+		SDL_Rect srcRect = {
+			texX, 0, 1,
+			wallTextures[wallTextureIndex].height
+		};
 		SDL_Rect dstRect = { x, wallTop, 1, wallHeight };
 
 		/*  Render wall slice */
-		SDL_RenderCopy(renderer, wallTextures[wallTextureIndex].texture, &srcRect, &dstRect);
+		SDL_RenderCopy(
+				renderer, wallTextures[wallTextureIndex].texture,
+				&srcRect, &dstRect);
 	}
 }
 
@@ -52,11 +63,11 @@ void render_walls(Player *player)
  * render - Clears the renderer and draws the current frame of the game,
  *          including the sky, floor, and walls.
  *
- * This function handles the rendering process, which includes clearing the screen,
- * drawing the sky and floor, casting rays to render the walls, and, if enabled,
+ * This function handles the rendering process, including clearing the screen,
+ * drawing the sky and floor, casting rays to render the walls, and,
  * drawing a mini-map of the maze.
  *
- * @player: A pointer to the Player structure containing the player's position and angle.
+ * @player: points to Player structure - the player's position and angle.
  */
 void render(Player *player)
 {

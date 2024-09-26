@@ -11,7 +11,7 @@
  * @playerY: The Y-coordinate of the player's position.
  * @rayAngle: The angle at which the ray is cast.
  *
- * Return: The perpendicular distance from the player to the wall hit by the ray.
+ * Return: perpendicular distance from the player to the wall hit by the ray.
  */
 float cast_ray(float playerX, float playerY, float rayAngle)
 {
@@ -56,7 +56,7 @@ float cast_ray(float playerX, float playerY, float rayAngle)
 	/* Perform DDA */
 	while (!hit)
 	{
-        /* Jump to next map square, either in x-direction or y-direction */
+		/* Jump to next map square, either in x-direction or y-direction */
 		if (sideDistX < sideDistY)
 		{
 			sideDistX += deltaDistX;
@@ -98,19 +98,22 @@ float cast_ray(float playerX, float playerY, float rayAngle)
  * @playerX: The X-coordinate of the player's position.
  * @playerY: The Y-coordinate of the player's position.
  * @rayAngle: The angle at which the ray is cast.
- * @mapX: A pointer to an integer that will be set to the X map coordinate of the wall hit.
- * @mapY: A pointer to an integer that will be set to the Y map coordinate of the wall hit.
+ * @mapX: A pointer to an integer set to the X map coordinate of the wall hit.
+ * @mapY: A pointer to an integerset to the Y map coordinate of the wall hit.
  *
  * Return: The fractional X-coordinate of the wall hit relative to its width.
  */
-float get_wall_hit_coordinates(float playerX, float playerY, float rayAngle, int *mapX, int *mapY)
+float get_wall_hit_coordinates(float playerX,
+		float playerY,
+		float rayAngle,
+		int *mapX, int *mapY)
 {
 	/* DDA algorithm for raycasting */
 	float rayDirX = cos(rayAngle);
 	float rayDirY = sin(rayAngle);
 
 	/* Length of ray to the next side in X and Y */
-	float sideDistX, sideDistY, wallX;;
+	float sideDistX, sideDistY, wallX;
 
 	/* Length of the ray to the next X or Y side (constant) */
 	float deltaDistX = fabs(1 / rayDirX);
@@ -147,7 +150,7 @@ float get_wall_hit_coordinates(float playerX, float playerY, float rayAngle, int
 	/* Perform DDA */
 	while (hit == 0)
 	{
-        /* Jump to next map square, either in X-direction or Y-direction */
+		/* Jump to next map square, either in X-direction or Y-direction */
 		if (sideDistX < sideDistY)
 		{
 			sideDistX += deltaDistX;
@@ -162,7 +165,8 @@ float get_wall_hit_coordinates(float playerX, float playerY, float rayAngle, int
 		}
 
 		/* Check if the ray has hit a wall */
-		if (maze_map[*mapX][*mapY] > 0) hit = 1;
+		if (maze_map[*mapX][*mapY] > 0)
+			hit = 1;
 	}
 
 	/* Calculate exact position of where the wall was hit */
