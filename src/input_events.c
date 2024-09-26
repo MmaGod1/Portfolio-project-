@@ -33,10 +33,10 @@ void process_quit_event(SDL_Event event, bool *running)
  * Return: void
  */
 void process_keydown_event(
-	SDL_Event event,
-	Player *player, 
-	bool *running,
-	int maze_map[MAP_WIDTH][MAP_HEIGHT]
+		SDL_Event event,
+		Player *player,
+		bool *running,
+		int maze_map[MAP_WIDTH][MAP_HEIGHT]
 )
 {
 	float moveStep = player->moveSpeed;
@@ -81,7 +81,7 @@ void process_keydown_event(
  *
  * This function processes all user inputs and updates the player's state.
  * It handles quit events, key presses for movement, rotation, and toggling
- * the mini-map. Key press handling is delegated to the process_keydown_event function.
+ * the mini-map. Key press is handled by the process_keydown_event function.
  *
  * Return: void
  */
