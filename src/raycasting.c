@@ -2,7 +2,7 @@
 
 /**
  * calculate_step_and_side_dist - Calculate the step direction and
- initial side distances.
+ * 		initial side distances.
  *
  * @rayDirX: The X direction of the ray.
  * @rayDirY: The Y direction of the ray.
@@ -41,7 +41,8 @@ void calculate_step_and_side_dist(float rayDirX, float rayDirY,
 }
 
 /**
- * perform_DDA - Perform the Digital Differential Analyzer - raycasting algorithm.
+ * perform_DDA - Perform the Digital Differential Analyzer algorithm
+ * 		for raycasting.
  *
  * @stepX: The step in the X direction.
  * @stepY: The step in the Y direction.
