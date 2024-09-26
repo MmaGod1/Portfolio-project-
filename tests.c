@@ -268,6 +268,7 @@ float getWallHitCoordinates(float playerX, float playerY, float rayAngle, int *m
 
 
 void renderWalls(Player *player) {
+        int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
     for (int x = 0; x < SCREEN_WIDTH; x++) {
         float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
         float distance = castRay(player->x, player->y, rayAngle);
