@@ -46,6 +46,11 @@ extern SDL_Renderer *renderer;
 
 /* Function prototypes */
 Texture load_texture(const char *filename);
+void calculate_step_and_side_dist(float rayDirX, float rayDirY,
+	float playerX, float playerY, int *mapX, int *mapY,
+	int *stepX, int *stepY, float *sideDistX, float *sideDistY);
+void perform_DDA(int stepX, int stepY, float *sideDistX,
+	float *sideDistY, int *mapX, int *mapY, int *hit, int *side);
 float cast_ray(float playerX, float playerY, float rayAngle);
 void draw_sky(void);
 void draw_mini_map(Player *player, bool showMap);
