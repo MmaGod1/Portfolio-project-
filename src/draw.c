@@ -116,7 +116,7 @@ void draw_map_tiles(int mapStartX, int mapStartY, int tileSize)
 }
 
 /**
- * draw_mini_map - Draws the mini-map, including the player and their line of sight.
+ * draw_mini_map - Draws the mini-map, the player and their line of sight.
  * @player: Pointer to the player's structure containing position and angle.
  * @showMap: Boolean indicating whether to show the map or not.
  *
