@@ -91,8 +91,8 @@ float castRay(float playerX, float playerY, float rayAngle) {
     int mapY = (int)playerY;
 
     // Length of ray from one x or y side to next x or y side
-    int deltaDistX = abs(1 / rayDirX);
-        int deltaDistY = abs(1 / rayDirY);
+    int deltaDistX = fabs(1 / rayDirX);
+        int deltaDistY = fabs(1 / rayDirY);
 
 
     // What direction to step in (+1 or -1)
