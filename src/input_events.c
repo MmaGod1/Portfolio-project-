@@ -1,6 +1,6 @@
 #include "raycasting.h"
 
-showMap = 1;  /* 1 to show map, 0 to hide map */
+int showMap = 1;  /* 1 to show map, 0 to hide map */
 
 /**
  * handle_input - Processes player input and updates the player's state.
