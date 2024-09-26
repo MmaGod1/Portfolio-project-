@@ -1,82 +1,100 @@
 #include "raycasting.h"
 
 /**
- * cast_ray - Casts a ray from the player's position to determine
- *            the distance to the nearest wall.
+ * calculate_step_and_side_dist - Calculate the step direction and initial side distances.
  *
- * This function uses the DDA (Digital Differential Analyzer) algorithm
- * to traverse the map grid based on the player's angle and position.
- *
- * @playerX: The X-coordinate of the player's position.
- * @playerY: The Y-coordinate of the player's position.
- * @rayAngle: The angle at which the ray is cast.
- *
- * Return: perpendicular distance from the player to the wall hit by the ray.
+ * @rayDirX: The X direction of the ray.
+ * @rayDirY: The Y direction of the ray.
+ * @playerX: The player's X position.
+ * @playerY: The player's Y position.
+ * @mapX: Pointer to the map's X coordinate.
+ * @mapY: Pointer to the map's Y coordinate.
+ * @stepX: Pointer to store the step in the X direction.
+ * @stepY: Pointer to store the step in the Y direction.
+ * @sideDistX: Pointer to store the initial distance to the next X side.
+ * @sideDistY: Pointer to store the initial distance to the next Y side.
  */
-float cast_ray(float playerX, float playerY, float rayAngle)
+void calculate_step_and_side_dist(float rayDirX, float rayDirY,
+	float playerX, float playerY, int *mapX, int *mapY,
+	int *stepX, int *stepY, float *sideDistX, float *sideDistY)
 {
-	/* Ray direction */
-	float rayDirX = cos(rayAngle);
-	float rayDirY = sin(rayAngle);
-
-	/* Which box of the map we're in */
-	int mapX = (int)playerX;
-	int mapY = (int)playerY;
-
-	/* Length of ray from one x or y side to next x or y side */
-	float deltaDistX = fabs(1 / rayDirX);
-	float deltaDistY = fabs(1 / rayDirY);
-
-	/* What direction to step in (+1 or -1) */
-	int stepX, stepY, side;
-	float sideDistX, sideDistY;
-	bool hit = false;
-	float perpWallDist;
-
-	/* Calculate step and initial sideDist */
 	if (rayDirX < 0)
 	{
-		stepX = -1;
-		sideDistX = (playerX - mapX) * deltaDistX;
+		*stepX = -1;
+		*sideDistX = (playerX - *mapX) * fabs(1 / rayDirX);
 	} else
 	{
-		stepX = 1;
-		sideDistX = (mapX + 1.0 - playerX) * deltaDistX;
-	}
-	if (rayDirY < 0)
-	{
-		stepY = -1;
-		sideDistY = (playerY - mapY) * deltaDistY;
-	}
-	else
-	{
-		stepY = 1;
-		sideDistY = (mapY + 1.0 - playerY) * deltaDistY;
+		*stepX = 1;
+		*sideDistX = (*mapX + 1.0 - playerX) * fabs(1 / rayDirX);
 	}
 
-	/* Perform DDA */
-	while (!hit)
+	if (rayDirY < 0)
 	{
-		/* Jump to next map square, either in x-direction or y-direction */
-		if (sideDistX < sideDistY)
+		*stepY = -1;
+		*sideDistY = (playerY - *mapY) * fabs(1 / rayDirY);
+	} else
+	{
+		*stepY = 1;
+		*sideDistY = (*mapY + 1.0 - playerY) * fabs(1 / rayDirY);
+	}
+}
+
+/**
+ * perform_DDA - Perform the Digital Differential Analyzer algorithm for raycasting.
+ *
+ * @stepX: The step in the X direction.
+ * @stepY: The step in the Y direction.
+ * @sideDistX: Pointer to the current side distance in the X direction.
+ * @sideDistY: Pointer to the current side distance in the Y direction.
+ * @mapX: Pointer to the map's X coordinate.
+ * @mapY: Pointer to the map's Y coordinate.
+ * @hit: Pointer to indicate if a wall has been hit.
+ * @side: Pointer to store the side of the wall hit.
+ */
+void perform_DDA(int stepX, int stepY, float *sideDistX,
+	float *sideDistY, int *mapX, int *mapY, int *hit, int *side)
+{
+	while (*hit == 0)
+	{
+		if (*sideDistX < *sideDistY)
 		{
-			sideDistX += deltaDistX;
-			mapX += stepX;
-			side = 0;
+			*sideDistX += fabs(1 / rayDirX);
+			*mapX += stepX;
+			*side = 0;
 		}
 		else
 		{
-			sideDistY += deltaDistY;
-			mapY += stepY;
-			side = 1;
+			*sideDistY += fabs(1 / rayDirY);
+			*mapY += stepY;
+			*side = 1;
 		}
 
-		/* Check if ray has hit a wall */
-		if (mapX >= 0 && mapX < MAP_WIDTH && mapY >= 0 && mapY < MAP_HEIGHT && maze_map[mapX][mapY] == 1)
-			hit = true;
+		if (maze_map[*mapX][*mapY] == 1)
+			*hit = 1;
 	}
+}
 
-	/* Calculate the distance to the hit */
+/**
+ * cast_ray - Casts a ray from the player's position to determine
+ *            the distance to the nearest wall.
+ *
+ * Return: Perpendicular distance from the player to the wall hit by the ray.
+ */
+float cast_ray(float playerX, float playerY, float rayAngle)
+{
+	float rayDirX = cos(rayAngle);
+	float rayDirY = sin(rayAngle);
+	int mapX = (int)playerX;
+	int mapY = (int)playerY;
+	float sideDistX, sideDistY;
+	int stepX, stepY, hit = 0, side;
+	float perpWallDist;
+
+	calculate_step_and_side_dist(rayDirX, rayDirY, playerX, playerY,
+		&mapX, &mapY, &stepX, &stepY, &sideDistX, &sideDistY);
+
+	perform_DDA(stepX, stepY, &sideDistX, &sideDistY, &mapX, &mapY, &hit, &side);
+
 	if (side == 0)
 		perpWallDist = (mapX - playerX + (1 - stepX) / 2) / rayDirX;
 	else
@@ -85,101 +103,38 @@ float cast_ray(float playerX, float playerY, float rayAngle)
 	return (perpWallDist);
 }
 
-
-
 /**
  * get_wall_hit_coordinates - Determines the coordinates of the wall hit
  *                            by a ray from the player's position.
  *
- * This function also implements the DDA algorithm to find the exact position
- * where the ray intersects with a wall, returning the wall's X-coordinate
- * as a fraction of the wall's width.
- *
- * @playerX: The X-coordinate of the player's position.
- * @playerY: The Y-coordinate of the player's position.
- * @rayAngle: The angle at which the ray is cast.
- * @mapX: A pointer to an integer set to the X map coordinate of the wall hit.
- * @mapY: A pointer to an integerset to the Y map coordinate of the wall hit.
- *
  * Return: The fractional X-coordinate of the wall hit relative to its width.
  */
 float get_wall_hit_coordinates(float playerX,
-		float playerY,
-		float rayAngle,
-		int *mapX, int *mapY)
+	float playerY, float rayAngle, int *mapX, int *mapY)
 {
-	/* DDA algorithm for raycasting */
 	float rayDirX = cos(rayAngle);
 	float rayDirY = sin(rayAngle);
-
-	/* Length of ray to the next side in X and Y */
 	float sideDistX, sideDistY, wallX;
-
-	/* Length of the ray to the next X or Y side (constant) */
-	float deltaDistX = fabs(1 / rayDirX);
-	float deltaDistY = fabs(1 / rayDirY);
 	int stepX, stepY;
 	int hit = 0;
 	int side;
 
-	/* Map grid positions of the player */
 	*mapX = (int)playerX;
 	*mapY = (int)playerY;
-	/* Calculate step and initial sideDist */
-	if (rayDirX < 0)
-	{
-		stepX = -1;
-		sideDistX = (playerX - *mapX) * deltaDistX;
-	}
-	else
-	{
-		stepX = 1;
-		sideDistX = (*mapX + 1.0 - playerX) * deltaDistX;
-	}
-	if (rayDirY < 0)
-	{
-		stepY = -1;
-		sideDistY = (playerY - *mapY) * deltaDistY;
-	}
-	else
-	{
-		stepY = 1;
-		sideDistY = (*mapY + 1.0 - playerY) * deltaDistY;
-	}
+	calculate_step_and_side_dist(rayDirX, rayDirY, playerX, playerY,
+		mapX, mapY, &stepX, &stepY, &sideDistX, &sideDistY);
 
-	/* Perform DDA */
-	while (hit == 0)
-	{
-		/* Jump to next map square, either in X-direction or Y-direction */
-		if (sideDistX < sideDistY)
-		{
-			sideDistX += deltaDistX;
-			*mapX += stepX;
-			side = 0;
-		}
-		else
-		{
-			sideDistY += deltaDistY;
-			*mapY += stepY;
-			side = 1;
-		}
+	perform_DDA(stepX, stepY, &sideDistX, &sideDistY, mapX, mapY, &hit, &side);
 
-		/* Check if the ray has hit a wall */
-		if (maze_map[*mapX][*mapY] > 0)
-			hit = 1;
-	}
-
-	/* Calculate exact position of where the wall was hit */
 	if (side == 0)
 	{
-		wallX = playerY + ((sideDistX - deltaDistX) * rayDirY);
+		wallX = playerY + ((sideDistX - fabs(1 / rayDirX)) * rayDirY);
 	}
 	else
 	{
-		wallX = playerX + ((sideDistY - deltaDistY) * rayDirX);
+		wallX = playerX + ((sideDistY - fabs(1 / rayDirY)) * rayDirX);
 	}
 	wallX -= floor(wallX);
 
-	/* Return the hit coordinate on the wall */
 	return (wallX);
 }
