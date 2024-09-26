@@ -2,7 +2,7 @@
 
 /**
  * process_rotation - Rotates the player by a certain amount.
- * @player: Pointer to the Player structure containing the player's current angle.
+ * @player: Pointer to the Player structure - the player's current angle.
  * @direction: The direction to rotate (-1 for left, 1 for right).
  *
  * This function rotates the player by modifying the player's angle.
@@ -14,25 +14,25 @@
  */
 void process_rotation(Player *player, int direction)
 {
-    /* Update the player's angle based on direction */
-    player->angle += direction * player->rotSpeed;
+	/* Update the player's angle based on direction */
+	player->angle += direction * player->rotSpeed;
 
-    /* Ensure the angle stays between 0 and 2 * M_PI */
-    if (player->angle < 0)
-    {
-        player->angle += 2 * M_PI;
-    }
-    else if (player->angle > 2 * M_PI)
-    {
-        player->angle -= 2 * M_PI;
-    }
+	/* Ensure the angle stays between 0 and 2 * M_PI */
+	if (player->angle < 0)
+	{
+		player->angle += 2 * M_PI;
+	}
+	else if (player->angle > 2 * M_PI)
+	{
+		player->angle -= 2 * M_PI;
+	}
 }
 
 /**
  * process_movement - Handles player movement and collision detection.
  * @player: Pointer to the Player structure containing position and angle.
  * @maze_map: 2D array representing the maze layout for collision detection.
- * @moveStep: The step size for the player's movement (can be positive or negative).
+ * @moveStep: The step size for the player's movement - positive or negative.
  * @moveAngle: The angle at which the player is moving.
  *
  * This function moves the player in the direction of moveAngle by moveStep.
@@ -40,7 +40,9 @@ void process_rotation(Player *player, int direction)
  *
  * Return: void
  */
-void process_movement(Player *player, int maze_map[MAP_WIDTH][MAP_HEIGHT], float moveStep, float moveAngle)
+void process_movement(Player *player,
+		int maze_map[MAP_WIDTH][MAP_HEIGHT],
+		float moveStep, float moveAngle)
 {
 	float newX, newY;
 	int newXInt, newYInt;
@@ -54,7 +56,8 @@ void process_movement(Player *player, int maze_map[MAP_WIDTH][MAP_HEIGHT], float
 	newYInt = (int)newY;
 
 	/* Ensure the new position is within bounds and not colliding with walls */
-	if (newXInt >= 0 && newXInt < MAP_WIDTH && newYInt >= 0 && newYInt < MAP_HEIGHT)
+	if (newXInt >= 0 && newXInt < MAP_WIDTH &&
+			newYInt >= 0 && newYInt < MAP_HEIGHT)
 	{
 		/* Check for collisions with walls */
 		if (maze_map[newXInt][(int)player->y] == 0)  /* Check horizontal movement */
