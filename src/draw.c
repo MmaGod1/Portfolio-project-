@@ -1,4 +1,4 @@
-#!include "raycasting.h"
+#include "raycasting.h"
 
 void drawSky() {
     SDL_SetRenderDrawColor(renderer, 135, 206, 235, 255);  // Light blue for sky
