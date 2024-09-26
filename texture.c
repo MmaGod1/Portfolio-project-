@@ -81,7 +81,7 @@ Texture loadTexture(const char *filename) {
     return texture;
 }
 
-float castRay(float playerX, float playerY, float rayAngle) {
+/**float castRay(float playerX, float playerY, float rayAngle) {
     // Ray direction
     float rayDirX = cos(rayAngle);
     float rayDirY = sin(rayAngle);
@@ -91,18 +91,13 @@ float castRay(float playerX, float playerY, float rayAngle) {
     int mapY = (int)playerY;
 
     // Length of ray from one x or y side to next x or y side
-    int deltaDistX = fabs(1 / rayDirX);
-        int deltaDistY = fabs(1 / rayDirY);
-
+    float deltaDistX = fabs(1 / rayDirX);
+    float deltaDistY = fabs(1 / rayDirY);
 
     // What direction to step in (+1 or -1)
     int stepX, stepY;
     float sideDistX, sideDistY;
 
-        if (maze_map[(int)playerX][(int)playerY] == 1) {
-                return 0; // Or return a default value for distance
-        }
-        
     // Calculate step and initial sideDist
     if (rayDirX < 0) {
         stepX = -1;
@@ -149,7 +144,7 @@ float castRay(float playerX, float playerY, float rayAngle) {
 
     return perpWallDist;
 }
-
+**/
 
 void drawSky() {
     SDL_SetRenderDrawColor(renderer, 135, 206, 235, 255);  // Light blue for sky
