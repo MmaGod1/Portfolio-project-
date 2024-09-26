@@ -85,7 +85,8 @@ int load_map(const char *filename, int maze_map[MAP_WIDTH][MAP_HEIGHT])
 		}
 
 		/* Skip over remaining characters (newline or carriage return) */
-		while ((ch = fgetc(file)) == '\r' || ch == '\n');
+		while ((ch = fgetc(file)) == '\r' || ch == '\n')
+			;
 		if (ch != EOF)
 		{
 			ungetc(ch, file);

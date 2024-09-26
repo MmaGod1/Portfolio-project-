@@ -16,12 +16,12 @@ void render_walls(Player *player)
 {
 	int x, mapX, mapY, wallHeight, wallTop, wallBottom. wallTextureIndex, texX;
 	float rayAngle, distance, wallX, correctedDistance;
-	
+
 	for (x = 0; x < SCREEN_WIDTH; x++)
 	{
 		rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
 		distance = cast_ray(player->x, player->y, rayAngle);
-        
+
 		if (distance > 10.0)
 			distance = 10.0;
 
@@ -45,6 +45,7 @@ void render_walls(Player *player)
 
 		/* Texture coordinates */
 		int texWidth = wallTextures[wallTextureIndex].width;
+
 		texX = (int)(wallX * texWidth) % texWidth;
 		SDL_Rect srcRect = {
 			texX, 0, 1,

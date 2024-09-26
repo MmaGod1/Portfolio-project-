@@ -17,7 +17,7 @@ Texture floorTexture;
  *
  * Return: 0 on successful execution, or 1 if an error occurs.
  */
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
 	window = NULL;
 	renderer = NULL;
@@ -37,11 +37,14 @@ int main(int argc, char* argv[])
 		fprintf(stderr, "SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
 		return (1);
 	}
-    
-	window = SDL_CreateWindow("Go-Maze", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+
+	window = SDL_CreateWindow("Go-Maze",
+			SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+			SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 	if (!window)
 	{
-		fprintf(stderr, "Window could not be created! SDL_Error: %s\n", SDL_GetError());
+		fprintf(stderr, "Window could not be created! SDL_Error: %s\n",
+				SDL_GetError());
 		SDL_Quit();
 		return (1);
 	}
@@ -49,12 +52,13 @@ int main(int argc, char* argv[])
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 	if (!renderer)
 	{
-		fprintf(stderr, "Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
+		fprintf(stderr, "Renderer could not be created! SDL_Error: %s\n",
+				SDL_GetError());
 		SDL_DestroyWindow(window);
 		SDL_Quit();
 		return (1);
 	}
-        
+
 	/* Initialize player */
 	player = { .x = 2.0, .y = 2.0, .angle = 0.0, .moveSpeed = 0.05, .rotSpeed = 0.05 };
 
@@ -76,7 +80,8 @@ int main(int argc, char* argv[])
 	floorTexture = load_texture("./images/floor.jpg");
 
 	/* Game loop */
-	while (running) {
+	while (running)
+	{
 		handle_input(&player, &running, maze_map);
 		render(&player);
 

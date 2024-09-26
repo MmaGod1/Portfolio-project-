@@ -21,7 +21,12 @@ Texture load_texture(const char *filename)
 	if (!surface)
 	{
 		fprintf(stderr, "Error loading texture: %s\n", IMG_GetError());
-		return ((Texture){NULL, 0, 0});
+		Texture temp;
+		temp.texture = NULL;
+		temp.width = 0;
+		temp.height = 0;
+
+		return (temp);
 	}
 
 	texture.texture = SDL_CreateTextureFromSurface(renderer, surface);
