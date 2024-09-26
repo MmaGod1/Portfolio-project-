@@ -41,17 +41,18 @@
  * Return: 0 on success, or -1 on error (e.g., file not found, unexpected EOF,
  * invalid characters).
  */
-int load_map(const char *filename, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
-    FILE *file = fopen(filename, "r");
+int load_map(const char *filename, int maze_map[MAP_WIDTH][MAP_HEIGHT])
+{
+  int ch, y, x;
+  
+  FILE *file = fopen(filename, "r");
     if (!file) {
         fprintf(stderr, "Error opening file %s\n", filename);
-        return -1;
+        return (-1);
     }
 
-    int ch;  // Declare the variable 'ch' here
-
-    for (int y = 0; y < MAP_HEIGHT; y++) {
-        for (int x = 0; x < MAP_WIDTH; x++) {
+    for (y = 0; y < MAP_HEIGHT; y++) {
+        for (x = 0; x < MAP_WIDTH; x++) {
             ch = fgetc(file);
             while (ch == '\r' || ch == '\n') {  // Skip newline and carriage return characters
                 ch = fgetc(file);
@@ -60,7 +61,7 @@ int load_map(const char *filename, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
             if (ch == EOF) {
                 fprintf(stderr, "Error reading file %s: unexpected EOF\n", filename);
                 fclose(file);
-                return -1;
+                return (-1);
             }
 
             if (ch == '#') {  // Wall character
@@ -70,7 +71,7 @@ int load_map(const char *filename, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
             } else {
                 fprintf(stderr, "Invalid character '%c' in map file at [%d,%d]\n", ch, x, y);
                 fclose(file);
-                return -1;
+                return (-1);
             }
         }
 
@@ -82,5 +83,5 @@ int load_map(const char *filename, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
     }
 
     fclose(file);
-    return 0;
+    return (0);
 }
