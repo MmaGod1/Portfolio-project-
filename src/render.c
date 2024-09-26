@@ -1,23 +1,71 @@
 #include "raycasting.h"
 
 /**
- * render_walls - Renders the walls of the maze by casting rays from the
- * player's position and calculating their heights based on distance.
+ * calculate_wall_dimensions - Calculate the wall dimensions and correct for fisheye effect.
  *
- * This function loops through each vertical slice of the screen and determines
- * the angle for each ray. It calculates the distance to the nearest wall,
- * adjusts the distance to correct for fisheye effects, and renders the
- * appropriate wall texture based on the hit coordinates.
+ * @distance: The distance to the wall.
+ * @player: Pointer to the Player structure containing player's attributes.
+ * @wallHeight: Pointer to store the calculated wall height.
+ * @wallTop: Pointer to store the top position of the wall.
+ * @wallBottom: Pointer to store the bottom position of the wall.
+ */
+void calculate_wall_dimensions(int distance, Player *player,
+	int *wallHeight, int *wallTop, int *wallBottom)
+{
+	float correctedDistance = distance * cos(player->angle - player->angle);
+	*wallHeight = (int)(SCREEN_HEIGHT / correctedDistance);
+	*wallTop = (SCREEN_HEIGHT / 2) - (*wallHeight / 2);
+	*wallBottom = (SCREEN_HEIGHT / 2) + (*wallHeight / 2);
+
+	/* Ensure values are within screen bounds */
+	if (*wallTop < 0)
+		*wallTop = 0;
+	if (*wallBottom >= SCREEN_HEIGHT)
+		*wallBottom = SCREEN_HEIGHT - 1;
+}
+
+/**
+ * render_single_wall - Render a single wall slice based on the player's view.
  *
- * @player: A pointer to the Player structure containing
- * the player's position and angle.
+ * @x: The x position on the screen to render the wall slice.
+ * @wallHeight: The height of the wall slice.
+ * @wallTop: The top position of the wall slice.
+ * @wallX: The x coordinate of the wall texture.
+ * @wallTextureIndex: The index of the wall texture.
+ */
+void render_single_wall(int x, int wallHeight, int wallTop,
+	float wallX, int wallTextureIndex)
+{
+	SDL_Rect srcRect, dstRect;
+	int texWidth = wallTextures[wallTextureIndex].width;
+
+	int texX = (int)(wallX * texWidth) % texWidth;
+	srcRect.x = texX;
+	srcRect.y = 0;
+	srcRect.w = 1;
+	srcRect.h = wallTextures[wallTextureIndex].height;
+
+	dstRect.x = x;
+	dstRect.y = wallTop;
+	dstRect.w = 1;
+	dstRect.h = wallHeight;
+
+	/* Render wall slice */
+	SDL_RenderCopy(renderer, wallTextures[wallTextureIndex].texture,
+		&srcRect, &dstRect);
+}
+
+/**
+ * render_walls - Render the walls of the maze based on the player's position.
+ *
+ * This function calculates the wall dimensions and renders them on the screen.
+ *
+ * @player: Pointer to the Player structure containing player's attributes.
  */
 void render_walls(Player *player)
 {
 	int x, mapX, mapY, wallHeight, wallTop, wallBottom;
-	int texWidth, wallTextureIndex, texX;
-	float rayAngle, distance, wallX, correctedDistance;
-	SDL_Rect srcRect, dstRect;
+	float rayAngle, distance, wallX;
 
 	for (x = 0; x < SCREEN_WIDTH; x++)
 	{
@@ -27,42 +75,11 @@ void render_walls(Player *player)
 		if (distance > 10.0)
 			distance = 10.0;
 
-		/* Correct the distance to avoid fisheye effect */
-		correctedDistance = distance * cos(rayAngle - player->angle);
-		wallHeight = (int)(SCREEN_HEIGHT / correctedDistance);
-		wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
-		wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
+		calculate_wall_dimensions(distance, player, &wallHeight, &wallTop, &wallBottom);
+		wallX = get_wall_hit_coordinates(player->x, player->y, rayAngle, &mapX, &mapY);
+		int wallTextureIndex = maze_map[mapX][mapY] - 1;
 
-		/* Ensure values are within screen bounds */
-		if (wallTop < 0)
-			wallTop = 0;
-		if (wallBottom >= SCREEN_HEIGHT)
-			wallBottom = SCREEN_HEIGHT - 1;
-
-		/* Determine which wall texture to use based on map hit */
-		wallX = get_wall_hit_coordinates(
-				player->x, player->y,
-				rayAngle, &mapX, &mapY);
-		wallTextureIndex = maze_map[mapX][mapY] - 1;
-
-		/* Texture coordinates */
-		texWidth = wallTextures[wallTextureIndex].width;
-
-		texX = (int)(wallX * texWidth) % texWidth;
-		srcRect.x = texX;
-		srcRect.y = 0;
-		srcRect.w = 1;
-		srcRect.h = wallTextures[wallTextureIndex].height;
-
-		dstRect.x = x;
-		dstRect.y = wallTop;
-		dstRect.w = 1;
-		dstRect.h = wallHeight;
-
-		/*  Render wall slice */
-		SDL_RenderCopy(
-				renderer, wallTextures[wallTextureIndex].texture,
-				&srcRect, &dstRect);
+		render_single_wall(x, wallHeight, wallTop, wallX, wallTextureIndex);
 	}
 }
 
