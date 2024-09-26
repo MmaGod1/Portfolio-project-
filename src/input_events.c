@@ -1,9 +1,21 @@
 #include "raycasting.h"
 
-#include "raycasting.h"
-
 int showMap = 1;  /* 1 to show map, 0 to hide map */
 
+/**
+ * handle_input - Processes player input and updates the player's state.
+ *
+ * This function handles user input for player movement and actions.
+ * It listens for keyboard events to move the player in different
+ * directions, rotate the player, toggle the mini-map display, or
+ * exit the game. It also checks for collisions with walls in the maze.
+ *
+ * @player: Pointer to the Player structure containing position and angle.
+ * @running: Pointer to a boolean that indicates if the game is running.
+ * @maze_map: 2D array representing the maze layout for collision detection.
+ *
+ * Return: void
+ */
 void handle_input(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIGHT])
 {
 	SDL_Event event;
