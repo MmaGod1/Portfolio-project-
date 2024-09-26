@@ -13,30 +13,32 @@
  */
 void render_walls(Player *player)
 {
-	for (int x = 0; x < SCREEN_WIDTH; x++)
+	int x, mapX, mapY, wallHeight, wallTop, wallBottom. wallTextureIndex, texX;
+	float rayAngle, distance, wallX, correctedDistance;
+	
+	for (x = 0; x < SCREEN_WIDTH; x++)
 	{
-		float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
-		float distance = cast_ray(player->x, player->y, rayAngle);
+		rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
+		distance = cast_ray(player->x, player->y, rayAngle);
         
 		if (distance > 10.0) distance = 10.0;
 
 		/* Correct the distance to avoid fisheye effect */
-		float correctedDistance = distance * cos(rayAngle - player->angle);
-		int wallHeight = (int)(SCREEN_HEIGHT / correctedDistance);
-		int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
-		int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
+		correctedDistance = distance * cos(rayAngle - player->angle);
+		wallHeight = (int)(SCREEN_HEIGHT / correctedDistance);
+		wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
+		wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
 
 		/* Ensure values are within screen bounds */
 		if (wallTop < 0) wallTop = 0;
 		if (wallBottom >= SCREEN_HEIGHT) wallBottom = SCREEN_HEIGHT - 1;
 
 		/* Determine which wall texture to use based on map hit */
-		int mapX, mapY;
-		float wallX = get_wall_hit_coordinates(player->x, player->y, rayAngle, &mapX, &mapY);
-		int wallTextureIndex = maze_map[mapX][mapY] - 1;
+		wallX = get_wall_hit_coordinates(player->x, player->y, rayAngle, &mapX, &mapY);
+		wallTextureIndex = maze_map[mapX][mapY] - 1;
 
 		/* Texture coordinates */
-		int texX = (int)(wallX * wallTextures[wallTextureIndex].width) % wallTextures[wallTextureIndex].width;
+		texX = (int)(wallX * wallTextures[wallTextureIndex].width) % wallTextures[wallTextureIndex].width;
 
 		SDL_Rect srcRect = { texX, 0, 1, wallTextures[wallTextureIndex].height };
 		SDL_Rect dstRect = { x, wallTop, 1, wallHeight };
