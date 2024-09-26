@@ -268,7 +268,6 @@ float getWallHitCoordinates(float playerX, float playerY, float rayAngle, int *m
 
 
 void renderWalls(Player *player) {
-        int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
     for (int x = 0; x < SCREEN_WIDTH; x++) {
         float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
         float distance = castRay(player->x, player->y, rayAngle);
@@ -315,7 +314,7 @@ void renderWalls(Player *player) {
         float correctedDistance = distance * cos(rayAngle - player->angle);
 
         // Calculate the floor height based on perspective
-        int floorTop = wallBottom;  // Start floor rendering below the wall
+        int floorTop = (SCREEN_HEIGHT / 2) + (wallHeight / 2);  // Start floor rendering below the wall
         int floorBottom = SCREEN_HEIGHT;  // Extend to the bottom of the screen
 
         // Ensure values are within screen bounds
