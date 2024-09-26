@@ -1,9 +1,20 @@
 #include "raycasting.h"
 
-
+/**
+ * cast_ray - Casts a ray from the player's position to determine
+ *            the distance to the nearest wall.
+ *
+ * This function uses the DDA (Digital Differential Analyzer) algorithm
+ * to traverse the map grid based on the player's angle and position.
+ *
+ * @playerX: The X-coordinate of the player's position.
+ * @playerY: The Y-coordinate of the player's position.
+ * @rayAngle: The angle at which the ray is cast.
+ *
+ * Return: The perpendicular distance from the player to the wall hit by the ray.
+ */
 float cast_ray(float playerX, float playerY, float rayAngle)
 {
-
 	/* Ray direction */
 	float rayDirX = cos(rayAngle);
 	float rayDirY = sin(rayAngle);
@@ -19,7 +30,6 @@ float cast_ray(float playerX, float playerY, float rayAngle)
 	/* What direction to step in (+1 or -1) */
 	int stepX, stepY;
 	float sideDistX, sideDistY;
-
 
 	/* Calculate step and initial sideDist */
 	if (rayDirX < 0)
@@ -40,7 +50,6 @@ float cast_ray(float playerX, float playerY, float rayAngle)
 	{
 		stepY = 1;
 		sideDistY = (mapY + 1.0 - playerY) * deltaDistY;
-
 	}
 
 	/* Perform DDA */
@@ -79,6 +88,23 @@ float cast_ray(float playerX, float playerY, float rayAngle)
 }
 
 
+
+/**
+ * get_wall_hit_coordinates - Determines the coordinates of the wall hit
+ *                            by a ray from the player's position.
+ *
+ * This function also implements the DDA algorithm to find the exact position
+ * where the ray intersects with a wall, returning the wall's X-coordinate
+ * as a fraction of the wall's width.
+ *
+ * @playerX: The X-coordinate of the player's position.
+ * @playerY: The Y-coordinate of the player's position.
+ * @rayAngle: The angle at which the ray is cast.
+ * @mapX: A pointer to an integer that will be set to the X map coordinate of the wall hit.
+ * @mapY: A pointer to an integer that will be set to the Y map coordinate of the wall hit.
+ *
+ * Return: The fractional X-coordinate of the wall hit relative to its width.
+ */
 float get_wall_hit_coordinates(float playerX, float playerY, float rayAngle, int *mapX, int *mapY)
 {
 	/* DDA algorithm for raycasting */
