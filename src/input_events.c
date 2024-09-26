@@ -1,45 +1,31 @@
 #include "raycasting.h"
 
 /**
- * process_movement - Handles player movement and collision detection.
- * @player: Pointer to the Player structure containing position and angle.
- * @maze_map: 2D array representing the maze layout for collision detection.
- * @moveStep: The step size for the player's movement (can be positive or negative).
- * @moveAngle: The angle at which the player is moving.
+ * process_rotation - Rotates the player by a certain amount.
+ * @player: Pointer to the Player structure containing the player's current angle.
+ * @direction: The direction to rotate (-1 for left, 1 for right).
  *
- * This function moves the player in the direction of moveAngle by moveStep.
- * It checks the maze_map to ensure the player doesn't move into a wall.
+ * This function rotates the player by modifying the player's angle.
+ * The rotation speed is determined by player->rotSpeed. If the angle goes
+ * below 0 or above 2 * M_PI (360 degrees), it wraps around to ensure the
+ * angle stays within the valid range.
  *
  * Return: void
  */
-void process_movement(Player *player, 
-int maze_map[MAP_WIDTH][MAP_HEIGHT],
-float moveStep, float moveAngle)
+void process_rotation(Player *player, int direction)
 {
-	float newX, newY;
-	int newXInt, newYInt;
+    /* Update the player's angle based on direction */
+    player->angle += direction * player->rotSpeed;
 
-	/* Calculate new player position based on moveStep and moveAngle */
-	newX = player->x + cos(moveAngle) * moveStep;
-	newY = player->y + sin(moveAngle) * moveStep;
-
-	/* Convert newX and newY to integers for map boundary checking */
-	newXInt = (int)newX;
-	newYInt = (int)newY;
-
-	/* Ensure the new position is within bounds and not colliding with walls */
-	if (newXInt >= 0 && newXInt < MAP_WIDTH && newYInt >= 0 && newYInt < MAP_HEIGHT)
-	{
-		/* Check for collisions with walls */
-		if (maze_map[newXInt][(int)player->y] == 0)  /* Check horizontal movement */
-		{
-			player->x = newX;  /* Update player's x position */
-		}
-		if (maze_map[(int)player->x][newYInt] == 0)  /* Check vertical movement */
-		{
-			player->y = newY;  /* Update player's y position */
-		}
-	}
+    /* Ensure the angle stays between 0 and 2 * M_PI */
+    if (player->angle < 0)
+    {
+        player->angle += 2 * M_PI;
+    }
+    else if (player->angle > 2 * M_PI)
+    {
+        player->angle -= 2 * M_PI;
+    }
 }
 
 int showMap = 1;  /* 1 to show map, 0 to hide map */
