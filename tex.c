@@ -493,7 +493,6 @@ int main(int argc, char* argv[]) {
         return 1;
     }
         
-
     // Initialize player
     Player player = { .x = 2.0, .y = 2.0, .angle = 0.0, .moveSpeed = 0.05, .rotSpeed = 0.05 };
 
@@ -506,13 +505,13 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-        wallTextures[0] = loadTexture("./wall1.jpg");
+    // Load textures
+    wallTextures[0] = loadTexture("./wall1.jpg");
     wallTextures[1] = loadTexture("./wall2.jpg");
     wallTextures[2] = loadTexture("./wall3.jpg");
     wallTextures[3] = loadTexture("./wall4.jpg");
     floorTexture = loadTexture("./floor.jpg");
 
-        
     // Game loop
     bool running = true;
     while (running) {
@@ -520,6 +519,16 @@ int main(int argc, char* argv[]) {
         render(&player);                 // Render the scene
 
         SDL_Delay(16);  // Cap the frame rate to ~60 FPS
+    }
+
+    // Cleanup textures
+    for (int i = 0; i < 4; i++) {
+        if (wallTextures[i]) {
+            SDL_DestroyTexture(wallTextures[i]); // Free each wall texture
+        }
+    }
+    if (floorTexture.texture) { // Check if floorTexture is valid
+        SDL_DestroyTexture(floorTexture.texture); // Free the floor texture
     }
 
     // Clean up and quit SDL
