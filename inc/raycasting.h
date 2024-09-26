@@ -49,6 +49,7 @@ Texture load_texture(const char *filename);
 float cast_ray(float playerX, float playerY, float rayAngle);
 void draw_sky(void);
 void draw_mini_map(Player *player, bool showMap);
+void draw_map_tiles(int mapStartX, int mapStartY, int tileSize);
 void draw_floor(Player *player);
 float get_wall_hit_coordinates(float playerX, float playerY, float rayAngle, int *mapX, int *mapY);
 void render_walls(Player *player);
