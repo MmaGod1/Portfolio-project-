@@ -496,8 +496,8 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-        wallTextures[0] = loadTexture("./wall1.jpg");
-    wallTextures[1] = loadTexture("./wall2.jpg");
+        wallTextures[0] = loadTexture("./wall2.jpg");
+    wallTextures[1] = loadTexture("./wall1.jpg");
     wallTextures[2] = loadTexture("./wall3.jpg");
     wallTextures[3] = loadTexture("./wall4.jpg");
     floorTexture = loadTexture("./floor.jpg");
