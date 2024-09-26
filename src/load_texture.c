@@ -15,13 +15,12 @@
  */
 Texture load_texture(const char *filename)
 {
-	Texture texture;
+	Texture texture, temp;
 	SDL_Surface *surface = IMG_Load(filename);
 
 	if (!surface)
 	{
 		fprintf(stderr, "Error loading texture: %s\n", IMG_GetError());
-		Texture temp;
 		temp.texture = NULL;
 		temp.width = 0;
 		temp.height = 0;

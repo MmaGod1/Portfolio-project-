@@ -31,6 +31,7 @@ float cast_ray(float playerX, float playerY, float rayAngle)
 	int stepX, stepY, side;
 	float sideDistX, sideDistY;
 	bool hit = false;
+	float perpWallDist;
 
 	/* Calculate step and initial sideDist */
 	if (rayDirX < 0)
@@ -76,7 +77,6 @@ float cast_ray(float playerX, float playerY, float rayAngle)
 	}
 
 	/* Calculate the distance to the hit */
-	float perpWallDist;
 	if (side == 0)
 		perpWallDist = (mapX - playerX + (1 - stepX) / 2) / rayDirX;
 	else

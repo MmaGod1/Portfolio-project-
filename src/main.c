@@ -19,9 +19,9 @@ Texture floorTexture;
  */
 int main(int argc, char *argv[])
 {
+	Player player;
 	window = NULL;
 	renderer = NULL;
-	Player player;
 	bool running = true;
 	int i;
 
@@ -60,7 +60,11 @@ int main(int argc, char *argv[])
 	}
 
 	/* Initialize player */
-	player = { .x = 2.0, .y = 2.0, .angle = 0.0, .moveSpeed = 0.05, .rotSpeed = 0.05 };
+	player.x = 2.0;
+	player.y = 2.0;
+	player.angle = 0.0;
+	player.moveSpeed = 0.05;
+	player.rotSpeed = 0.05;
 
 	/* Load the map */
 	if (load_map(argv[1], maze_map) != 0)

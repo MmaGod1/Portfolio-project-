@@ -14,8 +14,10 @@
  */
 void render_walls(Player *player)
 {
-	int x, mapX, mapY, wallHeight, wallTop, wallBottom. wallTextureIndex, texX;
+	int x, mapX, mapY, wallHeight, wallTop, wallBottom;
+	int texWidth, wallTextureIndex, texX;
 	float rayAngle, distance, wallX, correctedDistance;
+	SDL_Rect srcRect, dstRect;
 
 	for (x = 0; x < SCREEN_WIDTH; x++)
 	{
@@ -44,14 +46,18 @@ void render_walls(Player *player)
 		wallTextureIndex = maze_map[mapX][mapY] - 1;
 
 		/* Texture coordinates */
-		int texWidth = wallTextures[wallTextureIndex].width;
+		texWidth = wallTextures[wallTextureIndex].width;
 
 		texX = (int)(wallX * texWidth) % texWidth;
-		SDL_Rect srcRect = {
-			texX, 0, 1,
-			wallTextures[wallTextureIndex].height
-		};
-		SDL_Rect dstRect = { x, wallTop, 1, wallHeight };
+		srcRect.x = texX;
+		srcRect.y = 0;
+		srcRect.w = 1;
+		srcRect.h = wallTextures[wallTextureIndex].height;
+
+		dstRect.x = x;
+		dstRect.y = wallTop;
+		dstRect.w = 1;
+		dstRect.h = wallHeight;
 
 		/*  Render wall slice */
 		SDL_RenderCopy(
