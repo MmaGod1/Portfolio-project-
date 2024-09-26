@@ -28,7 +28,7 @@
 };
 
 
-int loadMap(const char *filename, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
+int load_map(const char *filename, int maze_map[MAP_WIDTH][MAP_HEIGHT]) {
     FILE *file = fopen(filename, "r");
     if (!file) {
         fprintf(stderr, "Error opening file %s\n", filename);
