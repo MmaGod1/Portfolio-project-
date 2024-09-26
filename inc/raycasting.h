@@ -54,7 +54,7 @@ void draw_floor(Player *player);
 float get_wall_hit_coordinates(float playerX, float playerY, float rayAngle, int *mapX, int *mapY);
 void render_walls(Player *player);
 void render(Player *player);
-void process_rotation(Player *player, int direction):
+void process_rotation(Player *player, int direction);
 void process_movement(Player *player, int maze_map[MAP_WIDTH][MAP_HEIGHT], float moveStep, float moveAngle);
 void handle_input(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIGHT]);
 int load_map(const char *filename, int maze_map[MAP_WIDTH][MAP_HEIGHT]);
