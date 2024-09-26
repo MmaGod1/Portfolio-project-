@@ -100,7 +100,8 @@ float cast_ray(float playerX, float playerY, float rayAngle)
 {
     float rayDirX = cos(rayAngle);
     float rayDirY = sin(rayAngle);
-    int mapX = (int)playerX, mapY = (int)playerY;
+    int mapX = (int)playerX;
+    int mapY = (int)playerY;
     float sideDistX, sideDistY;
     int stepX, stepY, hit = 0, side;
     float perpWallDist;
@@ -139,7 +140,9 @@ float get_wall_hit_coordinates(float playerX,
     float rayDirX = cos(rayAngle);
     float rayDirY = sin(rayAngle);
     float sideDistX, sideDistY, wallX;
-    int stepX, stepY, hit = 0, side;
+    int stepX, stepY;
+    int hit = 0;
+    int side;
 
     *mapX = (int)playerX;
     *mapY = (int)playerY;
