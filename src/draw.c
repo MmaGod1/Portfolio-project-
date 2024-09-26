@@ -21,7 +21,19 @@ void draw_sky(void)
 	SDL_RenderFillRect(renderer, &skyRect);
 }
 
-
+/**
+ * draw_mini_map - Renders a mini-map in the game window.
+ *
+ * This function draws a mini-map showing the maze layout and the player's
+ * position. It highlights walls in red, free spaces in white, and marks
+ * the player's position in green. Additionally, it visualizes the player's
+ * line of sight with blue rays.
+ *
+ * @player: Pointer to the Player structure containing the player's position and angle.
+ * @showMap: Boolean flag indicating whether to display the mini-map.
+ *
+ * Return: void
+ */
 void draw_floor(Player *player)
 {
 	int y, x, texX, texY;
