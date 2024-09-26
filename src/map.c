@@ -28,7 +28,6 @@
 };
 
 
-#include <stdio.h>
 
 /**
  * read_next_char - Read the next character from the file, skipping newlines.
@@ -38,12 +37,12 @@
  */
 int read_next_char(FILE *file)
 {
-    int ch = fgetc(file);
-    while (ch == '\r' || ch == '\n')
-    {
-        ch = fgetc(file);
-    }
-    return ch;
+	int ch = fgetc(file);
+	while (ch == '\r' || ch == '\n')
+	{
+		ch = fgetc(file);
+	}
+	return (ch);
 }
 
 /**
@@ -57,20 +56,21 @@ int read_next_char(FILE *file)
  */
 int process_char(int ch, int x, int y, int maze_map[MAP_WIDTH][MAP_HEIGHT])
 {
-    if (ch == '#')
-    {
-        maze_map[x][y] = 1;
-    }
-    else if (ch == '.')
-    {
-        maze_map[x][y] = 0;
-    }
-    else
-    {
-        fprintf(stderr, "Invalid character '%c' in map file at [%d,%d]\n", ch, x, y);
-        return -1;
-    }
-    return 0;
+	if (ch == '#')
+	{
+		maze_map[x][y] = 1;
+	}
+	else if (ch == '.')
+	{
+		maze_map[x][y] = 0;
+	}
+	else
+	{
+		fprintf(stderr, "Invalid character '%c' in map file at [%d,%d]\n",
+				ch, x, y);
+		return (-1);
+	}
+	return (0);
 }
 
 /**
@@ -87,44 +87,42 @@ int process_char(int ch, int x, int y, int maze_map[MAP_WIDTH][MAP_HEIGHT])
  */
 int load_map(const char *filename, int maze_map[MAP_WIDTH][MAP_HEIGHT])
 {
-    int ch, y, x;
-    FILE *file = fopen(filename, "r");
+	int ch, y, x;
+	FILE *file = fopen(filename, "r");
 
-    if (!file)
-    {
-        fprintf(stderr, "Error opening file %s\n", filename);
-        return -1;
-    }
+	if (!file)
+	{
+		fprintf(stderr, "Error opening file %s\n", filename);
+		return (-1);
+	}
 
-    for (y = 0; y < MAP_HEIGHT; y++)
-    {
-        for (x = 0; x < MAP_WIDTH; x++)
-        {
-            ch = read_next_char(file);
-            if (ch == EOF)
-            {
-                fprintf(stderr, "Error reading file %s: unexpected EOF\n", filename);
-                fclose(file);
-                return -1;
-            }
+	for (y = 0; y < MAP_HEIGHT; y++)
+	{
+		for (x = 0; x < MAP_WIDTH; x++)
+		{
+			ch = read_next_char(file);
+			if (ch == EOF)
+			{
+				fprintf(stderr, "Error reading file %s: unexpected EOF\n",
+						filename);
+				fclose(file);
+				return (-1);
+			}
 
-            if (process_char(ch, x, y, maze_map) == -1)
-            {
-                fclose(file);
-                return -1;
-            }
-        }
+			if (process_char(ch, x, y, maze_map) == -1)
+			{
+				fclose(file);
+				return (-1);
+			}
+		}
+		/* Skip over remaining characters (newline or carriage return) */
+		while ((ch = fgetc(file)) == '\r' || ch == '\n')
+			;
 
-        /* Skip over remaining characters (newline or carriage return) */
-        while ((ch = fgetc(file)) == '\r' || ch == '\n')
-            ;
+		if (ch != EOF)
+			ungetc(ch, file);
+	}
 
-        if (ch != EOF)
-        {
-            ungetc(ch, file);
-        }
-    }
-
-    fclose(file);
-    return 0;
+	fclose(file);
+	return (0);
 }
