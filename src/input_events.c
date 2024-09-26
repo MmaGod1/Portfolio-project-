@@ -28,6 +28,46 @@ void process_rotation(Player *player, int direction)
     }
 }
 
+/**
+ * process_movement - Handles player movement and collision detection.
+ * @player: Pointer to the Player structure containing position and angle.
+ * @maze_map: 2D array representing the maze layout for collision detection.
+ * @moveStep: The step size for the player's movement (can be positive or negative).
+ * @moveAngle: The angle at which the player is moving.
+ *
+ * This function moves the player in the direction of moveAngle by moveStep.
+ * It checks the maze_map to ensure the player doesn't move into a wall.
+ *
+ * Return: void
+ */
+void process_movement(Player *player, int maze_map[MAP_WIDTH][MAP_HEIGHT], float moveStep, float moveAngle)
+{
+	float newX, newY;
+	int newXInt, newYInt;
+
+	/* Calculate new player position based on moveStep and moveAngle */
+	newX = player->x + cos(moveAngle) * moveStep;
+	newY = player->y + sin(moveAngle) * moveStep;
+
+	/* Convert newX and newY to integers for map boundary checking */
+	newXInt = (int)newX;
+	newYInt = (int)newY;
+
+	/* Ensure the new position is within bounds and not colliding with walls */
+	if (newXInt >= 0 && newXInt < MAP_WIDTH && newYInt >= 0 && newYInt < MAP_HEIGHT)
+	{
+		/* Check for collisions with walls */
+		if (maze_map[newXInt][(int)player->y] == 0)  /* Check horizontal movement */
+		{
+			player->x = newX;  /* Update player's x position */
+		}
+		if (maze_map[(int)player->x][newYInt] == 0)  /* Check vertical movement */
+		{
+			player->y = newY;  /* Update player's y position */
+		}
+	}
+}
+
 int showMap = 1;  /* 1 to show map, 0 to hide map */
 
 /**
