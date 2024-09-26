@@ -88,6 +88,7 @@ void draw_mini_map(Player *player, bool showMap)
 {
     int mapStartX, mapStartY, mapWidth, mapHeight, tileSize;
     int y, x, i;
+SDL_Rect playerRect;
     float mapPlayerX, mapPlayerY, rayAngle, endX, endY;
 
     if (!showMap) return;
@@ -115,11 +116,11 @@ void draw_mini_map(Player *player, bool showMap)
             /* Set the draw color based on the maze map */
             if (maze_map[x][y] == 1)
             {
-                SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Red for walls
+                SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
             }
             else
             {
-                SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // White for empty space
+                SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
             }
 
             /* Render the tile */
@@ -130,7 +131,6 @@ void draw_mini_map(Player *player, bool showMap)
     mapPlayerX = mapStartX + (player->x * mapWidth / MAP_WIDTH);
     mapPlayerY = mapStartY + (player->y * mapHeight / MAP_HEIGHT);
     SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-    SDL_Rect playerRect;
     playerRect.x = (int)mapPlayerX - 2;
     playerRect.y = (int)mapPlayerY - 2;
     playerRect.w = 4;
