@@ -28,8 +28,9 @@ float cast_ray(float playerX, float playerY, float rayAngle)
 	float deltaDistY = fabs(1 / rayDirY);
 
 	/* What direction to step in (+1 or -1) */
-	int stepX, stepY;
+	int stepX, stepY, side;
 	float sideDistX, sideDistY;
+	bool hit = false;
 
 	/* Calculate step and initial sideDist */
 	if (rayDirX < 0)
@@ -53,9 +54,6 @@ float cast_ray(float playerX, float playerY, float rayAngle)
 	}
 
 	/* Perform DDA */
-	bool hit = false;
-	int side;
-
 	while (!hit)
 	{
         /* Jump to next map square, either in x-direction or y-direction */
@@ -111,12 +109,8 @@ float get_wall_hit_coordinates(float playerX, float playerY, float rayAngle, int
 	float rayDirX = cos(rayAngle);
 	float rayDirY = sin(rayAngle);
 
-	/* Map grid positions of the player */
-	*mapX = (int)playerX;
-	*mapY = (int)playerY;
-
 	/* Length of ray to the next side in X and Y */
-	float sideDistX, sideDistY;
+	float sideDistX, sideDistY, wallX;;
 
 	/* Length of the ray to the next X or Y side (constant) */
 	float deltaDistX = fabs(1 / rayDirX);
@@ -125,6 +119,9 @@ float get_wall_hit_coordinates(float playerX, float playerY, float rayAngle, int
 	int hit = 0;
 	int side;
 
+	/* Map grid positions of the player */
+	*mapX = (int)playerX;
+	*mapY = (int)playerY;
 	/* Calculate step and initial sideDist */
 	if (rayDirX < 0)
 	{
@@ -169,7 +166,6 @@ float get_wall_hit_coordinates(float playerX, float playerY, float rayAngle, int
 	}
 
 	/* Calculate exact position of where the wall was hit */
-	float wallX;
 	if (side == 0)
 	{
 		wallX = playerY + ((sideDistX - deltaDistX) * rayDirY);
