@@ -1,4 +1,4 @@
-#!include "raycasting.h"
+#include "raycasting.h"
 
 
 float castRay(float playerX, float playerY, float rayAngle) {
