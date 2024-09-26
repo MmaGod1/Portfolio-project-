@@ -43,45 +43,55 @@
  */
 int load_map(const char *filename, int maze_map[MAP_WIDTH][MAP_HEIGHT])
 {
-  int ch, y, x;
-  
-  FILE *file = fopen(filename, "r");
-    if (!file) {
-        fprintf(stderr, "Error opening file %s\n", filename);
-        return (-1);
-    }
+	int ch, y, x;
 
-    for (y = 0; y < MAP_HEIGHT; y++) {
-        for (x = 0; x < MAP_WIDTH; x++) {
-            ch = fgetc(file);
-            while (ch == '\r' || ch == '\n') {  // Skip newline and carriage return characters
-                ch = fgetc(file);
-            }
+	FILE *file = fopen(filename, "r");
+	if (!file) {
+		fprintf(stderr, "Error opening file %s\n", filename);
+		return (-1);
+	}
 
-            if (ch == EOF) {
-                fprintf(stderr, "Error reading file %s: unexpected EOF\n", filename);
-                fclose(file);
-                return (-1);
-            }
+	for (y = 0; y < MAP_HEIGHT; y++)
+	{
+		for (x = 0; x < MAP_WIDTH; x++)
+		{
+			ch = fgetc(file);
+			while (ch == '\r' || ch == '\n')
+			{
+				ch = fgetc(file);
+			}
 
-            if (ch == '#') {  // Wall character
-                maze_map[x][y] = 1;
-            } else if (ch == '.') {  // Empty space character
-                maze_map[x][y] = 0;
-            } else {
-                fprintf(stderr, "Invalid character '%c' in map file at [%d,%d]\n", ch, x, y);
-                fclose(file);
-                return (-1);
-            }
-        }
+			if (ch == EOF)
+			{
+				fprintf(stderr, "Error reading file %s: unexpected EOF\n", filename);
+				fclose(file);
+				return (-1);
+			}
 
-        // Skip over remaining characters (newline or carriage return)
-        while ((ch = fgetc(file)) == '\r' || ch == '\n');
-        if (ch != EOF) {
-            ungetc(ch, file);  // Put the last character back if not EOF
-        }
-    }
+			if (ch == '#')
+			{
+				maze_map[x][y] = 1;
+			}
+			else if (ch == '.')
+			{
+				maze_map[x][y] = 0;
+			}
+			else
+			{
+				fprintf(stderr, "Invalid character '%c' in map file at [%d,%d]\n", ch, x, y);
+				fclose(file);
+				return (-1);
+			}
+		}
 
-    fclose(file);
-    return (0);
+		/* Skip over remaining characters (newline or carriage return) */
+		while ((ch = fgetc(file)) == '\r' || ch == '\n');
+		if (ch != EOF)
+		{
+			ungetc(ch, file);
+		}
+	}
+
+	fclose(file);
+	return (0);
 }
