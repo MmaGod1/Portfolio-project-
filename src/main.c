@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
 
     if (load_resources(argv[1]) != 0)
     {
-        cleanup(renderer);  // Pass the renderer to cleanup
+        cleanup(renderer);
         return (1);
     }
 
@@ -121,7 +121,7 @@ int main(int argc, char *argv[])
         SDL_Delay(16); /* Cap the frame rate to ~60 FPS */
     }
 
-    cleanup(renderer);  // Pass the renderer to cleanup
+    cleanup(renderer);
 
     return (0);
 }
