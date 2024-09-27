@@ -58,21 +58,21 @@ void initialize_player(Player *player)
  */
 void cleanup(SDL_Renderer *renderer, SDL_Window *window, GameStats *gameStats)
 {
-    int i;
-
-    for (i = 0; i < 4; i++)
+    // Clean up wall textures
+    for (int i = 0; i < 4; i++)
     {
-        if (gameStats->wallTextures[i].texture)
+        if (gameStats->wallTextures[i])
         {
-            SDL_DestroyTexture(gameStats->wallTextures[i].texture);
-            gameStats->wallTextures[i].texture = NULL;
+            SDL_DestroyTexture(gameStats->wallTextures[i]);
+            gameStats->wallTextures[i] = NULL;
         }
     }
 
-    if (gameStats->floorTexture.texture)
+    // Clean up floor texture
+    if (gameStats->floorTexture)
     {
-        SDL_DestroyTexture(gameStats->floorTexture.texture);
-        gameStats->floorTexture.texture = NULL;
+        SDL_DestroyTexture(gameStats->floorTexture);
+        gameStats->floorTexture = NULL;
     }
 
     SDL_DestroyRenderer(renderer);
