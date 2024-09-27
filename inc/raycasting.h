@@ -45,7 +45,7 @@ extern int showMap;                                               extern SDL_Win
 extern SDL_Renderer *renderer;
 
 /* Function prototypes */
-Texture load_texture(SDL_Renderer *renderer, const char *filename);
+SDL_Texture *load_texture(SDL_Renderer *renderer, const char *file);
 void calculate_step_and_side_dist(float rayDirX, float rayDirY,
 	float playerX, float playerY, int *mapX, int *mapY,
 	int *stepX, int *stepY, float *sideDistX, float *sideDistY);
