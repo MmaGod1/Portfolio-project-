@@ -94,18 +94,20 @@ void render_walls(Player *player)
  *          including the sky, floor, and walls.
  *
  * This function handles the rendering process, including clearing the screen,
- * drawing the sky and floor, casting rays to render the walls, and,
- * drawing a mini-map of the maze.
+ * drawing the sky and floor, casting rays to render the walls, and drawing
+ * a mini-map of the maze.
  *
- * @player: points to Player structure - the player's position and angle.
+ * @player: points to the Player structure - the player's position and angle.
+ * @showMap: boolean indicating whether to display the mini-map.
+ * @renderer: Pointer to the SDL_Renderer used for rendering.
  */
-void render(Player *player, bool showMap)
+void render(Player *player, bool showMap, SDL_Renderer *renderer)
 {
     SDL_RenderClear(renderer);
 
     draw_sky(renderer);  
     draw_floor(renderer, player, floorTexture);
-    /* Cast rays and render wall */
+    /* Cast rays and render walls */
     render_walls(player);
 
     if (showMap)
