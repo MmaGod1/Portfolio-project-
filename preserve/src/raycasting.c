@@ -16,11 +16,10 @@
  * @sideDistY: Pointer to store the initial distance to the next Y side.
  */
 void calculate_wall_dimensions(int distance, Player *player,
-	int *wallHeight, int *wallTop, int *wallBottom)
+	int rayAngle, int *wallHeight, int *wallTop, int *wallBottom)
 {
-    // Calculate the angle difference correctly
     float correctedDistance = distance * cos(player->angle - rayAngle);
-    
+
     if (correctedDistance <= 0) {
         correctedDistance = 1; // Prevent division by zero or negative
     }
