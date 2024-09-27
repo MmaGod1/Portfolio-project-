@@ -69,7 +69,7 @@ void process_keydown_event(
 	Player *player,
 	bool *running,
 	int maze_map[MAP_WIDTH][MAP_HEIGHT],
-	int *showMap
+	bool showMap
 );
 int read_next_char(FILE *file);
 int process_char(int ch, int x, int y, int maze_map[MAP_WIDTH][MAP_HEIGHT]);
