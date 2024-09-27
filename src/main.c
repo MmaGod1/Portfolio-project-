@@ -3,26 +3,30 @@
 /**
  * initialize_sdl - Initializes SDL and creates the window and renderer.
  *
+ * @window: Pointer to the SDL_Window to create.
+ * @renderer: Pointer to the SDL_Renderer to create.
+ *
  * Return: 0 on success, or 1 if an error occurs.
  */
-int initialize_sdl(void)
+int initialize_sdl(SDL_Window **window, SDL_Renderer **renderer)
 {
-    window = SDL_CreateWindow("Go-Maze",
+    *window = SDL_CreateWindow("Go-Maze",
             SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
             SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-    if (!window)
+    if (!*window)
     {
         fprintf(stderr, "Window could not be created! SDL_Error: %s\n",
                 SDL_GetError());
         SDL_Quit();
         return (1);
     }
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    if (!renderer)
+    
+    *renderer = SDL_CreateRenderer(*window, -1, SDL_RENDERER_ACCELERATED);
+    if (!*renderer)
     {
         fprintf(stderr, "Renderer could not be created! SDL_Error: %s\n",
                 SDL_GetError());
-        SDL_DestroyWindow(window);
+        SDL_DestroyWindow(*window);
         SDL_Quit();
         return (1);
     }
@@ -44,15 +48,14 @@ void initialize_player(Player *player)
 }
 
 /**
- * cleanup - Frees allocated textures and quits SDL.
+ * cleanup - Cleans up resources used by the game.
  *
- * @renderer: The SDL_Renderer to be destroyed.
- * @floorTexture: The floor texture to be destroyed.
+ * @renderer: The SDL_Renderer to clean up.
+ * @window: The SDL_Window to clean up.
  *
- * This function releases all dynamically allocated textures and SDL resources,
- * ensuring no memory leaks occur before the program exits.
+ * Return: void
  */
-void cleanup(SDL_Renderer *renderer, SDL_Texture *floorTexture)
+void cleanup(SDL_Renderer *renderer, SDL_Window *window)
 {
     int i;
 
@@ -64,11 +67,10 @@ void cleanup(SDL_Renderer *renderer, SDL_Texture *floorTexture)
             wallTextures[i].texture = NULL;
         }
     }
-
-    if (floorTexture != NULL)
+    if (floorTexture.texture)
     {
-        SDL_DestroyTexture(floorTexture);
-        floorTexture = NULL;
+        SDL_DestroyTexture(floorTexture.texture);
+        floorTexture.texture = NULL;
     }
 
     /* Clean up and quit SDL */
@@ -76,7 +78,6 @@ void cleanup(SDL_Renderer *renderer, SDL_Texture *floorTexture)
     SDL_DestroyWindow(window);
     SDL_Quit();
 }
-
 /**
  * main - Entry point of the Go-Maze game.
  *
@@ -94,8 +95,9 @@ int main(int argc, char *argv[])
     Player player;
     bool running = true;
     bool showMap = 1; /* 1 = show mini-map, 0 = hide mini-map */
+    SDL_Window *window = NULL; /* Initialize window */
+    SDL_Renderer *renderer = NULL; /* Initialize renderer */
     SDL_Texture *floorTexture = NULL; /* Initialize floorTexture */
-    SDL_Renderer *renderer = NULL; /* Declare renderer */
 
     if (argc != 2)
     {
@@ -107,18 +109,18 @@ int main(int argc, char *argv[])
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
     {
         fprintf(stderr, "SDL could not initialize! SDL_Error: %s\n",
-                SDL_GetError());
+			SDL_GetError());
         return (1);
     }
 
-    if (initialize_sdl(&renderer) != 0)
+    if (initialize_sdl(&window, &renderer) != 0)
         return (1);
 
     initialize_player(&player);
 
     if (load_resources(renderer, argv[1], &floorTexture) != 0)
     {
-        cleanup(renderer, floorTexture);
+        cleanup(renderer, window);
         return (1);
     }
 
@@ -130,7 +132,7 @@ int main(int argc, char *argv[])
         SDL_Delay(16); /* Cap the frame rate to ~60 FPS */
     }
 
-    cleanup(renderer, floorTexture);
+    cleanup(renderer, window);
 
     return (0);
 }
