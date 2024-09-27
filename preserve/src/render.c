@@ -41,7 +41,7 @@ void render_single_wall(int x, int wallHeight, int wallTop,
 	int texWidth = wallTextures[wallTextureIndex].width;
 
 	int texX = (int)(wallX * texWidth) % texWidth;
-	Texture wallTextures[4];
+	/*Texture wallTextures[4];*/
 	srcRect.x = texX;
 	srcRect.y = 0;
 	srcRect.w = 1;
