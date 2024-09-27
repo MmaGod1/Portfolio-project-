@@ -22,17 +22,11 @@ void draw_sky(void)
 }
 
 /**
- * draw_mini_map - Renders a mini-map in the game window.
+ * draw_floor - Renders the floor based on player's position and angle.
+ * @player: Pointer to Player structure with position and angle info.
  *
- * This function draws a mini-map showing the maze layout and the player's
- * position. It highlights walls in red, free spaces in white, and marks
- * the player's position in green. Additionally, it visualizes the player's
- * line of sight with blue rays.
- *
- * @player: Player structure -- the player's position and angle.
- * @showMap: Boolean flag indicating whether to display the mini-map.
- *
- * Return: void
+ * Loops through the lower half of the screen, calculating floor texture 
+ * coordinates and rendering them using SDL_RenderCopy.
  */
 void draw_floor(Player *player)
 {
