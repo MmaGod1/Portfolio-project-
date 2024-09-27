@@ -125,7 +125,7 @@ int main(int argc, char *argv[])
     /* Game loop */
     while (running)
     {
-       while SDL_PollEvent(&event)
+       while (SDL_PollEvent(&event))
        {
           void process_quit_event(event, running);
           if (event.type == SDL_KEYDOWN)
