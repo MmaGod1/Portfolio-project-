@@ -95,6 +95,7 @@ int main(int argc, char *argv[])
     SDL_Window *window = NULL;
     SDL_Renderer *renderer = NULL;
     GameStats gameStats;
+   SDL_Event event;
 
     if (argc != 2)
     {
@@ -124,7 +125,7 @@ int main(int argc, char *argv[])
     /* Game loop */
     while (running)
     {
-        handle_input(&player, &running, maze_map, showMap);
+        process_keydown_event(event, &player, &running, maze_map, &showMap);
         render(&player, showMap, renderer, &gameStats);
         SDL_Delay(16); /* Cap the frame rate to ~60 FPS */
     }
