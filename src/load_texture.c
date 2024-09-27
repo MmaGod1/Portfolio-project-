@@ -34,7 +34,7 @@ SDL_Texture *load_texture(SDL_Renderer *renderer, const char *file)
         return NULL;
     }
 
-    return texture; // Ensure this returns SDL_Texture*
+    return (texture);
 }
 
 
