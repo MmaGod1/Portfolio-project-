@@ -94,31 +94,41 @@ void perform_DDA(int stepX, int stepY, float *sideDistX,
  *
  * Return: The perpendicular distance from the player to the wall
  * hit by the ray.
- */
-float cast_ray(float playerX, float playerY, float rayAngle)
+ */float cast_ray(float playerX, float playerY, float rayAngle)
 {
-	float rayDirX = cos(rayAngle);
-	float rayDirY = sin(rayAngle);
-	int mapX = (int)playerX;
-	int mapY = (int)playerY;
-	float sideDistX, sideDistY;
-	int stepX, stepY, hit = 0, side;
-	float perpWallDist;
+    float rayDirX = cos(rayAngle);
+    float rayDirY = sin(rayAngle);
+    int mapX = (int)playerX;
+    int mapY = (int)playerY;
+    float sideDistX, sideDistY;
+    int stepX, stepY, hit = 0, side;
+    float perpWallDist;
 
-	calculate_step_and_side_dist(rayDirX, rayDirY, playerX,
-		playerY, &mapX, &mapY, &stepX, &stepY,
-		&sideDistX, &sideDistY);
+    calculate_step_and_side_dist(rayDirX, rayDirY, playerX, playerY, &mapX, &mapY, &stepX, &stepY, &sideDistX, &sideDistY);
+    
+    // Debug output for initial step calculations
+    printf("Initial Map: (%d, %d), Step: (%d, %d), Side Distances: (%f, %f)\n", mapX, mapY, stepX, stepY, sideDistX, sideDistY);
 
-	perform_DDA(stepX, stepY, &sideDistX, &sideDistY,
-		&mapX, &mapY, &hit, &side, rayAngle);
+    perform_DDA(stepX, stepY, &sideDistX, &sideDistY, &mapX, &mapY, &hit, &side, rayAngle);
 
-	if (side == 0)
-		perpWallDist = (mapX - playerX + (1 - stepX) / 2) / rayDirX;
-	else
-		perpWallDist = (mapY - playerY + (1 - stepY) / 2) / rayDirY;
+    if (hit)
+    {
+        if (side == 0)
+            perpWallDist = (mapX - playerX + (1 - stepX) / 2) / rayDirX;
+        else
+            perpWallDist = (mapY - playerY + (1 - stepY) / 2) / rayDirY;
 
-	return (perpWallDist);
+        printf("Hit detected at distance: %f\n", perpWallDist);
+    }
+    else
+    {
+        printf("No hit detected.\n");
+        perpWallDist = 10;
+    }
+
+    return perpWallDist;
 }
+
 
 /**
  * get_wall_hit_coordinates - Determines the coordinates of the wall hit
