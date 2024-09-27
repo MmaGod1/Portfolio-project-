@@ -89,7 +89,8 @@ int main(int argc, char *argv[])
     Player player;
     bool running = true;
     bool showMap = 1; /* 1 = show mini-map, 0 = hide mini-map */
-    
+    SDL_Texture *floorTexture = NULL; /* Initialize floorTexture */
+
     if (argc != 2)
     {
         fprintf(stderr, "Usage: %s <mapfile>\n", argv[0]);
@@ -99,7 +100,8 @@ int main(int argc, char *argv[])
     /* Initialize SDL */
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
     {
-        fprintf(stderr, "SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
+        fprintf(stderr, "SDL could not initialize! SDL_Error: %s\n",
+			SDL_GetError());
         return (1);
     }
 
@@ -108,7 +110,7 @@ int main(int argc, char *argv[])
 
     initialize_player(&player);
 
-    if (load_resources(renderer, argv[1]) != 0)
+    if (load_resources(renderer, argv[1], &floorTexture) != 0)
     {
         cleanup(renderer);
         return (1);
