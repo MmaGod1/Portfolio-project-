@@ -89,6 +89,7 @@ int main(int argc, char *argv[])
     Player player;
     bool running = true;
     bool showMap = 1; /* 1 = show mini-map, 0 = hide mini-map */
+    
     if (argc != 2)
     {
         fprintf(stderr, "Usage: %s <mapfile>\n", argv[0]);
@@ -116,8 +117,8 @@ int main(int argc, char *argv[])
     /* Game loop */
     while (running)
     {
-        handle_input(&player, &running, maze_map);
-        render(&player);
+        handle_input(&player, &running, maze_map, &showMap);
+        render(&player, showMap);
         SDL_Delay(16); /* Cap the frame rate to ~60 FPS */
     }
 
