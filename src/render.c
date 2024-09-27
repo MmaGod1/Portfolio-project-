@@ -25,36 +25,42 @@ void calculate_wall_dimensions(int distance, Player *player,
 		*wallBottom = SCREEN_HEIGHT - 1;
 }
 
+
 /**
  * render_single_wall - Render a single wall slice based on the player's view.
  *
+ * @gameStats: Pointer to the GameStats structure containing game data, 
+ *             including textures and the renderer.
  * @x: The x position on the screen to render the wall slice.
- * @wallHeight: The height of the wall slice.
- * @wallTop: The top position of the wall slice.
- * @wallX: The x coordinate of the wall texture.
- * @wallTextureIndex: The index of the wall texture.
+ * @wallHeight: The height of the wall slice to be rendered.
+ * @wallTop: The top position on the screen for the wall slice.
+ * @wallX: The x coordinate on the texture corresponding to the wall slice.
+ * @wallTextureIndex: The index of the wall texture to use for rendering.
+ *
+ * This function calculates the appropriate texture coordinates and 
+ * dimensions for rendering a wall slice based on the player's perspective.
+ * It then uses SDL_RenderCopy to draw the slice on the screen.
  */
-void render_single_wall(int x, int wallHeight, int wallTop,
-	float wallX, int wallTextureIndex)
+void render_single_wall(GameStats *gameStats, int x, int wallHeight, int wallTop, float wallX, int wallTextureIndex)
 {
-	SDL_Rect srcRect, dstRect;
-	int texWidth = wallTextures[wallTextureIndex].width;
+    SDL_Rect srcRect, dstRect;
+    int texWidth = gameStats->wallTextures[wallTextureIndex].width;
 
-	int texX = (int)(wallX * texWidth) % texWidth;
+    int texX = (int)(wallX * texWidth) % texWidth;
 
-	srcRect.x = texX;
-	srcRect.y = 0;
-	srcRect.w = 1;
-	srcRect.h = wallTextures[wallTextureIndex].height;
+    srcRect.x = texX;
+    srcRect.y = 0;
+    srcRect.w = 1;
+    srcRect.h = gameStats->wallTextures[wallTextureIndex].height;
 
-	dstRect.x = x;
-	dstRect.y = wallTop;
-	dstRect.w = 1;
-	dstRect.h = wallHeight;
+    dstRect.x = x;
+    dstRect.y = wallTop;
+    dstRect.w = 1;
+    dstRect.h = wallHeight;
 
-	/* Render wall slice */
-	SDL_RenderCopy(renderer, wallTextures[wallTextureIndex].texture,
-		&srcRect, &dstRect);
+    /* Render wall slice */
+    SDL_RenderCopy(gameStats->renderer, gameStats->wallTextures[wallTextureIndex].texture,
+                   &srcRect, &dstRect);
 }
 
 /**
