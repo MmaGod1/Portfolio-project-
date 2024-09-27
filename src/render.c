@@ -86,8 +86,7 @@ void render_walls(GameStats *gameStats, Player *player)
         if (distance > 10.0)
             distance = 10.0;
 
-        calculate_wall_dimensions(distance, player, &wallHeight, &wallTop, &wallBottom);
-
+        calculate_wall_dimensions(distance, player, rayAngle, &wallHeight, &wallTop, &wallBottom);
         wallX = get_wall_hit_coordinates(player->x, player->y, rayAngle, &mapX, &mapY);
         wallTextureIndex = maze_map[mapX][mapY] - 1;
 
