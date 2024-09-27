@@ -74,6 +74,6 @@ int load_map(const char *filename, int maze_map[MAP_WIDTH][MAP_HEIGHT]);
 int load_resources(SDL_Renderer *renderer, char *mapfile);
 int initialize_sdl(void);
 void initialize_player(Player *player);
-void cleanup(void);
+void cleanup(SDL_Renderer *renderer);
 
 #endif /* RAYCASTING_H */
