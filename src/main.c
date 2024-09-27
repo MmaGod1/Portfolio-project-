@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
 
     initialize_player(&player);
 
-    if (load_resources(argv[1]) != 0)
+    if (load_resources(renderer, argv[1]) != 0)
     {
         cleanup(renderer);
         return (1);
