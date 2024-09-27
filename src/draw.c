@@ -25,7 +25,7 @@ void draw_sky(void)
  * draw_floor - Renders the floor based on player's position and angle.
  * @player: Pointer to Player structure with position and angle info.
  *
- * Loops through the lower half of the screen, calculating floor texture 
+ * Loops through the lower half of the screen, calculating floor texture
  * coordinates and rendering them using SDL_RenderCopy.
  */
 void draw_floor(Player *player)
