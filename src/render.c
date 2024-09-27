@@ -10,19 +10,19 @@
  * @wallTop: Pointer to store the top position of the wall.
  * @wallBottom: Pointer to store the bottom position of the wall.
  */
-void calculate_wall_dimensions(int distance, Player *player,
-	int *wallHeight, int *wallTop, int *wallBottom)
+void calculate_wall_dimensions(int distance, Player *player, 
+    int *wallHeight, int *wallTop, int *wallBottom, float rayAngle)
 {
-	float correctedDistance = distance * cos(rayAngle - player->angle);
-	*wallHeight = (int)(SCREEN_HEIGHT / correctedDistance);
-	*wallTop = (SCREEN_HEIGHT / 2) - (*wallHeight / 2);
-	*wallBottom = (SCREEN_HEIGHT / 2) + (*wallHeight / 2);
+    float correctedDistance = distance * cos(rayAngle - player->angle);
+    *wallHeight = (int)(SCREEN_HEIGHT / correctedDistance);
+    *wallTop = (SCREEN_HEIGHT / 2) - (*wallHeight / 2);
+    *wallBottom = (SCREEN_HEIGHT / 2) + (*wallHeight / 2);
 
-	/* Ensure values are within screen bounds */
-	if (*wallTop < 0)
-		*wallTop = 0;
-	if (*wallBottom >= SCREEN_HEIGHT)
-		*wallBottom = SCREEN_HEIGHT - 1;
+    /* Ensure values are within screen bounds */
+    if (*wallTop < 0)
+        *wallTop = 0;
+    if (*wallBottom >= SCREEN_HEIGHT)
+        *wallBottom = SCREEN_HEIGHT - 1;
 }
 
 
@@ -73,30 +73,44 @@ void render_single_wall(GameStats *gameStats, int x, int wallHeight, int wallTop
  *
  * @player: Pointer to the Player structure containing player's attributes.
  */
-void render_walls(GameStats *gameStats, Player *player)
+void render_walls(Player *player)
 {
     int x, mapX, mapY, wallHeight, wallTop, wallBottom;
     int wallTextureIndex;
     float rayAngle, distance, wallX;
+    float correctedDistance;
 
     for (x = 0; x < SCREEN_WIDTH; x++)
     {
+        /* Calculate the current ray angle based on FOV */
         rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
+
+        /* Normalize the ray angle to stay between 0 and 2 * PI */
+        if (rayAngle < 0)
+            rayAngle += 2 * M_PI;
+        if (rayAngle > 2 * M_PI)
+            rayAngle -= 2 * M_PI;
+
+        /* Cast the ray to get the distance to the wall */
         distance = cast_ray(player->x, player->y, rayAngle);
 
+        /* Cap the maximum distance to avoid overly large wall heights */
         if (distance > 10.0)
             distance = 10.0;
 
-        calculate_wall_dimensions(distance, player,
-                &wallHeight, &wallTop, &wallBottom);
-        wallX = get_wall_hit_coordinates(player->x,
-                player->y, rayAngle, &mapX, &mapY);
-        wallTextureIndex = maze_map[mapX][mapY] - 1;
+        /* Calculate wall dimensions and correct for fisheye */
+        calculate_wall_dimensions(distance, player, &wallHeight, &wallTop, &wallBottom, rayAngle);
 
-        render_single_wall(gameStats, x, wallHeight, wallTop, wallX, wallTextureIndex);
+        /* Get the X coordinate of the wall texture to be used */
+        wallX = get_wall_hit_coordinates(player->x, player->y, rayAngle, &mapX, &mapY);
+
+        /* Determine which wall texture to use based on the map location */
+        wallTextureIndex = maze_map[mapX][mapY] - 1;  /* Assuming map value corresponds to texture index */
+
+        /* Render a single vertical slice of the wall */
+        render_single_wall(x, wallHeight, wallTop, wallX, wallTextureIndex);
     }
 }
-
 
 /**
  * render - Clears the renderer and draws the current frame of the game,
