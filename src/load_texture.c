@@ -1,38 +1,42 @@
 #include "raycasting.h"
 
 /**
- * load_texture - Loads a texture from a file and creates an SDL texture.
- * @renderer: The SDL_Renderer used to create the texture.
- * @filename: The path to the image file to load.
+ * load_texture - Loads an image from a file and creates an SDL texture.
+ * @renderer: The SDL_Renderer used for creating the texture.
+ * @file: The path to the image file to be loaded.
  *
- * This function loads an image from the specified filename into an SDL_Surface
- * and then creates an SDL_Texture from that surface. It also frees the surface
- * once the texture has been created. If the image cannot be loaded, it logs
- * an error and returns a Texture with a NULL pointer and zero dimensions.
+ * This function loads an image from the specified file, converts it into
+ * an SDL texture using the provided renderer, and returns a pointer to
+ * the created texture. If the image loading or texture creation fails, 
+ * it returns NULL and logs an error message.
  *
- * Return: Texture structure containing the loaded texture and its dimensions.
+ * Return: A pointer to the created SDL_Texture on success, or NULL on failure.
  */
-Texture load_texture(SDL_Renderer *renderer, const char *filename)
+SDL_Texture *load_texture(SDL_Renderer *renderer, const char *file)
 {
-	Texture texture, temp;
-	SDL_Surface *surface = IMG_Load(filename);
+    SDL_Texture *texture = NULL;
+    SDL_Surface *surface = IMG_Load(file);
 
-	if (!surface)
-	{
-		fprintf(stderr, "Error loading texture: %s\n", IMG_GetError());
-		temp.texture = NULL;
-		temp.width = 0;
-		temp.height = 0;
+    if (!surface)
+    {
+        fprintf(stderr, "Unable to load image %s! SDL_image Error: %s\n",
+            file, IMG_GetError());
+        return NULL;
+    }
 
-		return (temp);
-	}
+    texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_FreeSurface(surface);
 
-	texture.texture = SDL_CreateTextureFromSurface(renderer, surface);
-	texture.width = surface->w;
-	texture.height = surface->h;
-	SDL_FreeSurface(surface);
-	return (texture);
+    if (!texture)
+    {
+        fprintf(stderr, "Unable to create texture from %s! SDL Error: %s\n",
+            file, SDL_GetError());
+        return NULL;
+    }
+
+    return texture; // Ensure this returns SDL_Texture*
 }
+
 
 /**
  * load_resources - Loads the map and textures required for the game.
@@ -43,20 +47,20 @@ Texture load_texture(SDL_Renderer *renderer, const char *filename)
  * Return: 0 on success, or 1 if an error occurs.
  */
 int load_resources(SDL_Renderer *renderer, char *mapfile, 
-	SDL_Texture **floorTexture)
+    SDL_Texture **floorTexture)
 {
-	if (load_map(mapfile, maze_map) != 0)
-	{
-		fprintf(stderr, "Failed to load map\n");
-		return (1);
-	}
+    if (load_map(mapfile, maze_map) != 0)
+    {
+        fprintf(stderr, "Failed to load map\n");
+        return (1);
+    }
 
-	/* Load textures */
-	wallTextures[0] = load_texture(renderer, "./images/wall1.jpg");
-	wallTextures[1] = load_texture(renderer, "./images/wall2.jpg");
-	wallTextures[2] = load_texture(renderer, "./images/wall3.jpg");
-	wallTextures[3] = load_texture(renderer, "./images/wall4.jpg");
-	*floorTexture = load_texture(renderer, "./images/floor.jpg");
+    /* Load textures */
+    wallTextures[0] = load_texture(renderer, "./images/wall1.jpg");
+    wallTextures[1] = load_texture(renderer, "./images/wall2.jpg");
+    wallTextures[2] = load_texture(renderer, "./images/wall3.jpg");
+    wallTextures[3] = load_texture(renderer, "./images/wall4.jpg");
+    *floorTexture = load_texture(renderer, "./images/floor.jpg");
 
-	return (0);
+    return (0);
 }
