@@ -71,7 +71,6 @@ void process_movement(Player *player,
 	}
 }
 
-int showMap = 1;  /* 1 to show map, 0 to hide map */
 
 /**
  * process_quit_event - Handles the quit event.

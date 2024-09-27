@@ -53,7 +53,8 @@ void calculate_step_and_side_dist(float rayDirX, float rayDirY,
  * @mapX: Pointer to the current x-coordinate in the map.
  * @mapY: Pointer to the current y-coordinate in the map.
  * @hit: Pointer to an integer indicating if a wall has been hit.
- * @side: Pointer to an integer indicating which side was hit (0 for x, 1 for y).
+ * @side: Pointer to an integer indicating which side was
+ *		hit (0 for x, 1 for y).
  * @rayAngle: The angle of the ray being cast.
  */
 void perform_DDA(int stepX, int stepY, float *sideDistX,
