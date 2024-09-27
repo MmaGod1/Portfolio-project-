@@ -13,17 +13,25 @@
 void calculate_wall_dimensions(int distance, Player *player, 
     int *wallHeight, int *wallTop, int *wallBottom)
 {
-    // Corrected distance calculation
     float correctedDistance = distance * cos(player->angle);
+    
+    if (correctedDistance <= 0) 
+    {
+        correctedDistance = 1; // Prevent division by zero or negative distance
+    }
+
     *wallHeight = (int)(SCREEN_HEIGHT / correctedDistance);
     *wallTop = (SCREEN_HEIGHT / 2) - (*wallHeight / 2);
     *wallBottom = (SCREEN_HEIGHT / 2) + (*wallHeight / 2);
 
-    /* Ensure values are within screen bounds */
     if (*wallTop < 0)
         *wallTop = 0;
     if (*wallBottom >= SCREEN_HEIGHT)
         *wallBottom = SCREEN_HEIGHT - 1;
+
+    // Debug prints
+    printf("Distance: %d, Corrected: %f, WallHeight: %d, WallTop: %d, WallBottom: %d\n", 
+            distance, correctedDistance, *wallHeight, *wallTop, *wallBottom);
 }
 
 /**
