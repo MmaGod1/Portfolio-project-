@@ -66,7 +66,13 @@ void render(Player *player, bool showMap);
 void process_rotation(Player *player, int direction);
 void process_movement(Player *player, int maze_map[MAP_WIDTH][MAP_HEIGHT], float moveStep, float moveAngle);
 void process_quit_event(SDL_Event event, bool *running);
-void process_keydown_event(SDL_Event event, Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIGHT]);
+void process_keydown_event(
+	SDL_Event event,
+	Player *player,
+	bool *running,
+	int maze_map[MAP_WIDTH][MAP_HEIGHT],
+	int *showMap
+);
 void handle_input(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIGHT]);
 int read_next_char(FILE *file);
 int process_char(int ch, int x, int y, int maze_map[MAP_WIDTH][MAP_HEIGHT]);
