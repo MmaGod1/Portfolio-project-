@@ -52,32 +52,35 @@ void initialize_player(Player *player)
  *
  * @renderer: The SDL_Renderer to clean up.
  * @window: The SDL_Window to clean up.
+ * @gameStats: Pointer to the GameStats structure containing textures.
  *
  * Return: void
  */
-void cleanup(SDL_Renderer *renderer, SDL_Window *window)
+void cleanup(SDL_Renderer *renderer, SDL_Window *window, GameStats *gameStats)
 {
     int i;
 
     for (i = 0; i < 4; i++)
     {
-        if (wallTextures[i].texture)
+        if (gameStats->wallTextures[i].texture)
         {
-            SDL_DestroyTexture(wallTextures[i].texture);
-            wallTextures[i].texture = NULL;
+            SDL_DestroyTexture(gameStats->wallTextures[i].texture);
+            gameStats->wallTextures[i].texture = NULL;
         }
     }
-    if (floorTexture.texture)
+
+    if (gameStats->floorTexture.texture)
     {
-        SDL_DestroyTexture(floorTexture.texture);
-        floorTexture.texture = NULL;
+        SDL_DestroyTexture(gameStats->floorTexture.texture);
+        gameStats->floorTexture.texture = NULL;
     }
 
-    /* Clean up and quit SDL */
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
 }
+
+
 /**
  * main - Entry point of the Go-Maze game.
  *
@@ -95,9 +98,9 @@ int main(int argc, char *argv[])
     Player player;
     bool running = true;
     bool showMap = 1; /* 1 = show mini-map, 0 = hide mini-map */
-    SDL_Window *window = NULL; /* Initialize window */
-    SDL_Renderer *renderer = NULL; /* Initialize renderer */
-    SDL_Texture *floorTexture = NULL; /* Initialize floorTexture */
+    SDL_Window *window = NULL;
+    SDL_Renderer *renderer = NULL;
+    GameStats gameStats;
 
     if (argc != 2)
     {
@@ -108,8 +111,7 @@ int main(int argc, char *argv[])
     /* Initialize SDL */
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
     {
-        fprintf(stderr, "SDL could not initialize! SDL_Error: %s\n",
-			SDL_GetError());
+        fprintf(stderr, "SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
         return (1);
     }
 
@@ -118,9 +120,10 @@ int main(int argc, char *argv[])
 
     initialize_player(&player);
 
-    if (load_resources(renderer, argv[1], &floorTexture) != 0)
+    gameStats.renderer = renderer;
+    if (load_resources(&gameStats, argv[1]) != 0)
     {
-        cleanup(renderer, window);
+        cleanup(renderer, window, &gameStats);
         return (1);
     }
 
@@ -132,7 +135,6 @@ int main(int argc, char *argv[])
         SDL_Delay(16); /* Cap the frame rate to ~60 FPS */
     }
 
-    cleanup(renderer, window);
-
+    cleanup(renderer, window, &gameStats);
     return (0);
 }
