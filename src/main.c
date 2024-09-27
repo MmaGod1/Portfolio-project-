@@ -127,9 +127,9 @@ int main(int argc, char *argv[])
     {
        while (SDL_PollEvent(&event))
        {
-          void process_quit_event(event, running);
+          void process_quit_event(event, &running);
           if (event.type == SDL_KEYDOWN)
-             process_keydown_event(event, &player, &running, maze_map, &showMap);
+             process_keydown_event(event, &player, &running, maze_map, showMap);
        }
         render(&player, showMap, renderer, &gameStats);
         SDL_Delay(16); /* Cap the frame rate to ~60 FPS */
