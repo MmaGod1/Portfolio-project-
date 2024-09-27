@@ -90,6 +90,7 @@ int main(int argc, char *argv[])
     bool running = true;
     bool showMap = 1; /* 1 = show mini-map, 0 = hide mini-map */
     SDL_Texture *floorTexture = NULL; /* Initialize floorTexture */
+    SDL_Renderer *renderer = NULL; /* Declare renderer */
 
     if (argc != 2)
     {
@@ -101,18 +102,18 @@ int main(int argc, char *argv[])
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
     {
         fprintf(stderr, "SDL could not initialize! SDL_Error: %s\n",
-			SDL_GetError());
+                SDL_GetError());
         return (1);
     }
 
-    if (initialize_sdl() != 0)
+    if (initialize_sdl(&renderer) != 0) // Pass a reference to renderer
         return (1);
 
     initialize_player(&player);
 
-    if (load_resources(renderer, argv[1], &floorTexture) != 0)
+    if (load_resources(renderer, argv[1], &floorTexture) != 0) // Pass renderer and floorTexture
     {
-        cleanup(renderer);
+        cleanup(renderer, floorTexture);
         return (1);
     }
 
@@ -120,11 +121,11 @@ int main(int argc, char *argv[])
     while (running)
     {
         handle_input(&player, &running, maze_map, showMap);
-        render(&player, showMap);
+        render(&player, showMap, renderer); // Pass renderer
         SDL_Delay(16); /* Cap the frame rate to ~60 FPS */
     }
 
-    cleanup(renderer);
+    cleanup(renderer, floorTexture); // Pass renderer and floorTexture
 
     return (0);
 }
