@@ -46,7 +46,7 @@ void render_single_wall(GameStats *gameStats, int x, int wallHeight, int wallTop
     SDL_Rect srcRect, dstRect;
     int texWidth, texHeight;
 
-    // Query texture to get width and height
+    // Proper usage of SDL_QueryTexture
     SDL_QueryTexture(gameStats->wallTextures[wallTextureIndex].texture, NULL, NULL, &texWidth, &texHeight);
 
     int texX = (int)(wallX * texWidth) % texWidth;
@@ -64,7 +64,6 @@ void render_single_wall(GameStats *gameStats, int x, int wallHeight, int wallTop
     /* Render wall slice */
     SDL_RenderCopy(gameStats->renderer, gameStats->wallTextures[wallTextureIndex].texture, &srcRect, &dstRect);
 }
-
 
 /**
  * render_walls - Render the walls of the maze based on the player's position.
