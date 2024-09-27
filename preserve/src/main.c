@@ -93,6 +93,8 @@ int main(int argc, char *argv[])
 {
 	Player player;
 	bool running = true;
+	float wallX, rayAngle;
+	int mapX, mapY;
 
 	if (argc != 2)
 	{
@@ -122,6 +124,10 @@ int main(int argc, char *argv[])
 	while (running)
 	{
 		handle_input(&player, &running, maze_map);
+
+		rayAngle = player.rotation_angle;
+		wallX = get_wall_hit_coordinates(player.x, player.y, rayAngle, &mapX, &mapY);
+
 		render(&player);
 		SDL_Delay(16); /* Cap the frame rate to ~60 FPS */
 	}
