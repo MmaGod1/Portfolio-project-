@@ -94,7 +94,9 @@ void perform_DDA(int stepX, int stepY, float *sideDistX,
  *
  * Return: The perpendicular distance from the player to the wall
  * hit by the ray.
- */float cast_ray(float playerX, float playerY, float rayAngle)
+ */
+
+float cast_ray(float playerX, float playerY, float rayAngle)
 {
     float rayDirX = cos(rayAngle);
     float rayDirY = sin(rayAngle);
@@ -105,9 +107,6 @@ void perform_DDA(int stepX, int stepY, float *sideDistX,
     float perpWallDist;
 
     calculate_step_and_side_dist(rayDirX, rayDirY, playerX, playerY, &mapX, &mapY, &stepX, &stepY, &sideDistX, &sideDistY);
-    
-    // Debug output for initial step calculations
-    printf("Initial Map: (%d, %d), Step: (%d, %d), Side Distances: (%f, %f)\n", mapX, mapY, stepX, stepY, sideDistX, sideDistY);
 
     perform_DDA(stepX, stepY, &sideDistX, &sideDistY, &mapX, &mapY, &hit, &side, rayAngle);
 
@@ -117,18 +116,14 @@ void perform_DDA(int stepX, int stepY, float *sideDistX,
             perpWallDist = (mapX - playerX + (1 - stepX) / 2) / rayDirX;
         else
             perpWallDist = (mapY - playerY + (1 - stepY) / 2) / rayDirY;
-
-        printf("Hit detected at distance: %f\n", perpWallDist);
     }
     else
     {
-        printf("No hit detected.\n");
-        perpWallDist = 10;
+        perpWallDist = 10; // Default distance if no hit detected
     }
 
     return perpWallDist;
 }
-
 
 /**
  * get_wall_hit_coordinates - Determines the coordinates of the wall hit
@@ -142,34 +137,30 @@ void perform_DDA(int stepX, int stepY, float *sideDistX,
  *
  * Return: The fractional X-coordinate of the wall hit relative to its width.
  */
-float get_wall_hit_coordinates(float playerX,
-	float playerY, float rayAngle, int *mapX, int *mapY)
+float get_wall_hit_coordinates(float playerX, float playerY, float rayAngle, int *mapX, int *mapY)
 {
-	float rayDirX = cos(rayAngle);
-	float rayDirY = sin(rayAngle);
-	float sideDistX, sideDistY, wallX;
-	int stepX, stepY;
-	int hit = 0;
-	int side;
+    float rayDirX = cos(rayAngle);
+    float rayDirY = sin(rayAngle);
+    float sideDistX, sideDistY, wallX;
+    int stepX, stepY;
+    int hit = 0;
+    int side;
 
-	*mapX = (int)playerX;
-	*mapY = (int)playerY;
-	calculate_step_and_side_dist(rayDirX, rayDirY, playerX,
-		playerY, mapX, mapY, &stepX, &stepY,
-		&sideDistX, &sideDistY);
+    *mapX = (int)playerX;
+    *mapY = (int)playerY;
+    calculate_step_and_side_dist(rayDirX, rayDirY, playerX, playerY, mapX, mapY, &stepX, &stepY, &sideDistX, &sideDistY);
 
-	perform_DDA(stepX, stepY, &sideDistX, &sideDistY, mapX,
-		mapY, &hit, &side, rayAngle);
+    perform_DDA(stepX, stepY, &sideDistX, &sideDistY, mapX, mapY, &hit, &side, rayAngle);
 
-	if (side == 0)
-	{
-		wallX = playerY + ((sideDistX - fabs(1 / rayDirX)) * rayDirY);
-	}
-	else
-	{
-		wallX = playerX + ((sideDistY - fabs(1 / rayDirY)) * rayDirX);
-	}
-	wallX -= floor(wallX);
+    if (side == 0)
+    {
+        wallX = playerY + ((sideDistX - fabs(1 / rayDirX)) * rayDirY);
+    }
+    else
+    {
+        wallX = playerX + ((sideDistY - fabs(1 / rayDirY)) * rayDirX);
+    }
+    wallX -= floor(wallX);
 
-	return (wallX);
+    return wallX;
 }
