@@ -120,7 +120,7 @@ void process_keydown_event(
 			*running = false;
 			break;
 		case SDLK_m:  /* Toggle mini-map */
-			*showMap = !(*showMap);
+			showMap = !showMap;
 			break;
 		case SDLK_LEFT:  /* Rotate left */
 			process_rotation(player, -1);
