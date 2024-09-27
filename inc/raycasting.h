@@ -56,7 +56,7 @@ float cast_ray(float playerX, float playerY, float rayAngle);
 void draw_sky(SDL_Renderer *renderer);
 void draw_mini_map(SDL_Renderer *renderer, Player *player, bool showMap);
 void draw_map_tiles(SDL_Renderer *renderer, int mapStartX, int mapStartY, int tileSize);
-void draw_floor(SDL_Renderer *renderer, Player *player);
+void draw_floor(SDL_Renderer *renderer, Player *player, Texture floorTexture);
 float get_wall_hit_coordinates(float playerX, float playerY, float rayAngle, int *mapX, int *mapY);
 void calculate_wall_dimensions(int distance, Player *player,int *wallHeight, int *wallTop, int *wallBottom);
 void render_single_wall(int x, int wallHeight, int wallTop,float wallX, int wallTextureIndex);
