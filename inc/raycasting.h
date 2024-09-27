@@ -37,10 +37,10 @@ typedef struct {
 } Texture;
 
 /*typedef struct {
-    SDL_Texture *wallTextures[4]; /* Array for wall textures */
-   /* SDL_Texture *floorTexture;      /* Pointer for the floor texture */
-    /*SDL_Texture *renderer;         /* Pointer for the renderer */
-/*} GameStats;
+    SDL_Texture *wallTextures[4];
+    SDL_Texture *floorTexture;
+    SDL_Texture *renderer;
+} GameStats;
 */
 
 typedef struct {
