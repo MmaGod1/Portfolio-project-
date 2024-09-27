@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
 {
     Player player;
     bool running = true;
-
+    bool showMap = 1 /* 1 = show mini-map, 0 = hide mini-map */
     if (argc != 2)
     {
         fprintf(stderr, "Usage: %s <mapfile>\n", argv[0]);
