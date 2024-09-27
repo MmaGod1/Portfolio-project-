@@ -10,8 +10,15 @@
  * @wallTop: Pointer to store the top position of the wall.
  * @wallBottom: Pointer to store the bottom position of the wall.
  */
-void calculate_wall_dimensions(int distance, Player *player, float rayAngle, int *wallHeight, int *wallTop, int *wallBottom) {
+void calculate_wall_dimensions(int distance, Player *player, float rayAngle, int *wallHeight, int *wallTop, int *wallBottom)
+{
     float correctedDistance = distance * cos(player->angle - rayAngle);
+    printf("Distance: %d, Corrected: %f\n", distance, correctedDistance); // Debugging line
+
+    if (correctedDistance <= 0) {
+        correctedDistance = 0.01; // Prevent division by zero
+    }
+    
     *wallHeight = (int)(SCREEN_HEIGHT / correctedDistance);
     *wallTop = (SCREEN_HEIGHT / 2) - (*wallHeight / 2);
     *wallBottom = (SCREEN_HEIGHT / 2) + (*wallHeight / 2);
