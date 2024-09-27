@@ -106,18 +106,23 @@ void render_walls(GameStats *gameStats, Player *player)
  * drawing the sky and floor, casting rays to render the walls, and drawing
  * a mini-map of the maze.
  *
- * @player: points to the Player structure - the player's position and angle.
- * @showMap: boolean indicating whether to display the mini-map.
+ * @player: Pointer to the Player structure, which contains the player's
+ *          position and angle.
+ * @showMap: Boolean indicating whether to display the mini-map.
  * @renderer: Pointer to the SDL_Renderer used for rendering.
+ * @gameStats: Pointer to the GameStats structure containing textures and
+ *             renderer information.
+ *
+ * Return: void
  */
-void render(Player *player, bool showMap, SDL_Renderer *renderer)
+void render(Player *player, bool showMap, SDL_Renderer *renderer, GameStats *gameStats)
 {
     SDL_RenderClear(renderer);
 
     draw_sky(renderer);  
-    draw_floor(renderer, player, floorTexture);
+    draw_floor(renderer, player, gameStats->floorTexture.texture);
     /* Cast rays and render walls */
-    render_walls(player);
+    render_walls(gameStats, player); // Pass gameStats to render_walls
 
     if (showMap)
     {
