@@ -36,13 +36,6 @@ typedef struct {
 	int width, height;
 } Texture;
 
-/*typedef struct {
-    SDL_Texture *wallTextures[4];
-    SDL_Texture *floorTexture;
-    SDL_Texture *renderer;
-} GameStats;
-*/
-
 typedef struct {
     Texture wallTextures[4];
     Texture floorTexture;
@@ -78,7 +71,6 @@ void process_keydown_event(
 	int maze_map[MAP_WIDTH][MAP_HEIGHT],
 	int *showMap
 );
-void handle_input(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIGHT], bool showMap);
 int read_next_char(FILE *file);
 int process_char(int ch, int x, int y, int maze_map[MAP_WIDTH][MAP_HEIGHT]);
 int load_map(const char *filename, int maze_map[MAP_WIDTH][MAP_HEIGHT]);
