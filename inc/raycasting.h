@@ -62,7 +62,7 @@ void calculate_wall_dimensions(int distance, Player *player,int *wallHeight, int
 void render_single_wall(int x, int wallHeight, int wallTop,float wallX, int wallTextureIndex);
 void render_walls(Player *player);
 void render_walls(Player *player);
-void render(Player *player);
+void render(Player *player, bool showMap);
 void process_rotation(Player *player, int direction);
 void process_movement(Player *player, int maze_map[MAP_WIDTH][MAP_HEIGHT], float moveStep, float moveAngle);
 void process_quit_event(SDL_Event event, bool *running);
