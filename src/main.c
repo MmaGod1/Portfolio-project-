@@ -127,7 +127,7 @@ int main(int argc, char *argv[])
     {
        while (SDL_PollEvent(&event))
        {
-          void process_quit_event(event, &running);
+          process_quit_event(event, running);
           if (event.type == SDL_KEYDOWN)
              process_keydown_event(event, &player, &running, maze_map, showMap);
        }
