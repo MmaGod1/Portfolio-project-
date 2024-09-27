@@ -13,9 +13,9 @@
 void calculate_wall_dimensions(int distance, Player *player, float rayAngle, int *wallHeight, int *wallTop, int *wallBottom)
 {
     float correctedDistance = distance * cos(rayAngle - player->angle);
-    printf("Distance: %d, Corrected: %f\n", distance, correctedDistance); // Debugging line
-
-    if (correctedDistance <= 0) {
+    
+    if (correctedDistance <= 0)
+    {
         correctedDistance = 0.01; // Prevent division by zero
     }
 
@@ -82,7 +82,7 @@ void render_walls(GameStats *gameStats, Player *player)
     {
         rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
         
-        /* Normalize the ray angle to stay between 0 and 2 * PI */
+        // Normalize the ray angle to stay between 0 and 2 * PI
         if (rayAngle < 0)
             rayAngle += 2 * M_PI;
         if (rayAngle > 2 * M_PI)
@@ -93,7 +93,7 @@ void render_walls(GameStats *gameStats, Player *player)
         if (distance > 10.0)
             distance = 10.0;
 
-        // Calculate wall dimensions and log debug information
+        // Calculate wall dimensions
         calculate_wall_dimensions(distance, player, rayAngle, &wallHeight, &wallTop, &wallBottom);
 
         // Calculate the wall texture coordinate
@@ -104,7 +104,6 @@ void render_walls(GameStats *gameStats, Player *player)
         render_single_wall(gameStats, x, wallHeight, wallTop, wallX, wallTextureIndex);
     }
 }
-
 
 /**
  * render - Clears the renderer and draws the current frame of the game,
