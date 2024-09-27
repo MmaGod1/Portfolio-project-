@@ -15,31 +15,23 @@
  * @sideDistX: Pointer to store the initial distance to the next X side.
  * @sideDistY: Pointer to store the initial distance to the next Y side.
  */
-void calculate_step_and_side_dist(float rayDirX, float rayDirY,
-	float playerX, float playerY, int *mapX, int *mapY,
-	int *stepX, int *stepY, float *sideDistX, float *sideDistY)
+void calculate_wall_dimensions(int distance, Player *player,
+	int *wallHeight, int *wallTop, int *wallBottom)
 {
-	if (rayDirX < 0)
-	{
-		*stepX = -1;
-		*sideDistX = (playerX - *mapX) * fabs(1 / rayDirX);
-	}
-	else
-	{
-		*stepX = 1;
-		*sideDistX = (*mapX + 1.0 - playerX) * fabs(1 / rayDirX);
-	}
+    // Calculate the angle difference correctly
+    float correctedDistance = distance * cos(player->angle - rayAngle);
+    
+    if (correctedDistance <= 0) {
+        correctedDistance = 1; // Prevent division by zero or negative
+    }
 
-	if (rayDirY < 0)
-	{
-		*stepY = -1;
-		*sideDistY = (playerY - *mapY) * fabs(1 / rayDirY);
-	}
-	else
-	{
-		*stepY = 1;
-		*sideDistY = (*mapY + 1.0 - playerY) * fabs(1 / rayDirY);
-	}
+    *wallHeight = (int)(SCREEN_HEIGHT / correctedDistance);
+    *wallTop = (SCREEN_HEIGHT / 2) - (*wallHeight / 2);
+    *wallBottom = (SCREEN_HEIGHT / 2) + (*wallHeight / 2);
+
+    // Ensure values are within screen bounds
+    if (*wallTop < 0) *wallTop = 0;
+    if (*wallBottom >= SCREEN_HEIGHT) *wallBottom = SCREEN_HEIGHT - 1;
 }
 
 /**
