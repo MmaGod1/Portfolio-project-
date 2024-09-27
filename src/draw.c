@@ -30,7 +30,7 @@ void draw_sky(SDL_Renderer *renderer)
  * Loops through the lower half of the screen, calculating floor texture
  * coordinates and rendering them using SDL_RenderCopy.
  */
-void draw_floor(SDL_Renderer *renderer, Player *player)
+void draw_floor(SDL_Renderer *renderer, Player *player, Texture floorTexture)
 {
 	int y, x, texX, texY;
 	float rayAngle, floorX, floorY, floorDist;
