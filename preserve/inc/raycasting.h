@@ -60,8 +60,10 @@ void draw_mini_map(Player *player, bool showMap);
 void draw_map_tiles(int mapStartX, int mapStartY, int tileSize);
 void draw_floor(Player *player);
 float get_wall_hit_coordinates(float playerX, float playerY, float rayAngle, int *mapX, int *mapY);
-void calculate_wall_dimensions(int distance, Player *player,int *wallHeight, int *wallTop, int *wallBottom);
-void render_single_wall(int x, int wallHeight, int wallTop,float wallX, int wallTextureIndex);
+void calculate_wall_dimensions(int distance, Player *player, 
+    int *wallHeight, int *wallTop, int *wallBottom);
+
+void render_walls(GameStats *gameStats, Player *player);
 void render_walls(Player *player);
 void render_walls(Player *player);
 void render(Player *player);
