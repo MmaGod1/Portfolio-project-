@@ -38,10 +38,12 @@ Texture load_texture(SDL_Renderer *renderer, const char *filename)
  * load_resources - Loads the map and textures required for the game.
  * @renderer: The SDL_Renderer used for creating textures.
  * @mapfile: The name of the map file to load.
+ * @floorTexture: Pointer to store the loaded floor texture.
  *
  * Return: 0 on success, or 1 if an error occurs.
  */
-int load_resources(SDL_Renderer *renderer, char *mapfile)
+int load_resources(SDL_Renderer *renderer, char *mapfile, 
+	SDL_Texture **floorTexture)
 {
 	if (load_map(mapfile, maze_map) != 0)
 	{
@@ -54,7 +56,7 @@ int load_resources(SDL_Renderer *renderer, char *mapfile)
 	wallTextures[1] = load_texture(renderer, "./images/wall2.jpg");
 	wallTextures[2] = load_texture(renderer, "./images/wall3.jpg");
 	wallTextures[3] = load_texture(renderer, "./images/wall4.jpg");
-	floorTexture = load_texture(renderer, "./images/floor.jpg");
+	*floorTexture = load_texture(renderer, "./images/floor.jpg");
 
 	return (0);
 }
