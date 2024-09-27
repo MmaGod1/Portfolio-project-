@@ -8,14 +8,13 @@ CFLAGS = -Wall -Werror -Wextra -pedantic -Iinc -g
 SRCDIR = src
 INCDIR = inc
 OBJDIR = build
-BINDIR = bin
 
 # Source files and object files
 SRCS = $(wildcard $(SRCDIR)/*.c)
 OBJS = $(SRCS:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
 
 # Executable target
-TARGET = $(BINDIR)/raycasting_game
+TARGET = maze
 
 # SDL2 libraries
 SDL_LIB = -lSDL2 -lSDL2_image -lm
@@ -25,7 +24,6 @@ all: $(TARGET)
 
 # Build the executable
 $(TARGET): $(OBJS)
-	@mkdir -p $(BINDIR)
 	$(CC) $(CFLAGS) -o $@ $^ $(SDL_LIB)
 
 # Build object files
@@ -35,7 +33,7 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.c
 
 # Clean up object files and executable
 clean:
-	rm -rf $(OBJDIR) $(BINDIR)
+	rm -rf $(OBJDIR) $(TARGET)
 
 # Phony targets
 .PHONY: all clean
