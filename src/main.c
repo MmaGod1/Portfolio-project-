@@ -44,11 +44,15 @@ void initialize_player(Player *player)
 }
 
 /**
- * cleanup - Cleans up SDL resources.
+ * cleanup - Frees allocated textures and quits SDL.
  *
- * @renderer: The SDL_Renderer used to create the textures.
+ * @renderer: The SDL_Renderer to be destroyed.
+ * @floorTexture: The floor texture to be destroyed.
+ *
+ * This function releases all dynamically allocated textures and SDL resources,
+ * ensuring no memory leaks occur before the program exits.
  */
-void cleanup(SDL_Renderer *renderer)
+void cleanup(SDL_Renderer *renderer, SDL_Texture *floorTexture)
 {
     int i;
 
@@ -60,10 +64,11 @@ void cleanup(SDL_Renderer *renderer)
             wallTextures[i].texture = NULL;
         }
     }
-    if (floorTexture.texture)
+
+    if (floorTexture != NULL)
     {
-        SDL_DestroyTexture(floorTexture.texture);
-        floorTexture.texture = NULL;
+        SDL_DestroyTexture(floorTexture);
+        floorTexture = NULL;
     }
 
     /* Clean up and quit SDL */
@@ -106,12 +111,12 @@ int main(int argc, char *argv[])
         return (1);
     }
 
-    if (initialize_sdl(&renderer) != 0) // Pass a reference to renderer
+    if (initialize_sdl(&renderer) != 0)
         return (1);
 
     initialize_player(&player);
 
-    if (load_resources(renderer, argv[1], &floorTexture) != 0) // Pass renderer and floorTexture
+    if (load_resources(renderer, argv[1], &floorTexture) != 0)
     {
         cleanup(renderer, floorTexture);
         return (1);
@@ -121,11 +126,11 @@ int main(int argc, char *argv[])
     while (running)
     {
         handle_input(&player, &running, maze_map, showMap);
-        render(&player, showMap, renderer); // Pass renderer
+        render(&player, showMap, renderer);
         SDL_Delay(16); /* Cap the frame rate to ~60 FPS */
     }
 
-    cleanup(renderer, floorTexture); // Pass renderer and floorTexture
+    cleanup(renderer, floorTexture);
 
     return (0);
 }
