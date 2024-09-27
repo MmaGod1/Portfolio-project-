@@ -94,29 +94,28 @@ void perform_DDA(int stepX, int stepY, float *sideDistX,
  * Return: The perpendicular distance from the player to the wall
  * hit by the ray.
  */
-float cast_ray(float playerX, float playerY, float rayAngle)
+void perform_DDA(int stepX, int stepY, float *sideDistX,
+	float *sideDistY, int *mapX, int *mapY, int *hit,
+	int *side, float rayDirX, float rayDirY)
 {
-	float rayDirX = cos(rayAngle);
-	float rayDirY = sin(rayAngle);
-	int mapX = (int)playerX;
-	int mapY = (int)playerY;
-	float sideDistX, sideDistY;
-	int stepX, stepY, hit = 0, side;
-	float perpWallDist;
+	while (*hit == 0)
+	{
+		if (*sideDistX < *sideDistY)
+		{
+			*sideDistX += fabs(1 / rayDirX);
+			*mapX += stepX;
+			*side = 0;
+		}
+		else
+		{
+			*sideDistY += fabs(1 / rayDirY);
+			*mapY += stepY;
+			*side = 1;
+		}
 
-	calculate_step_and_side_dist(rayDirX, rayDirY, playerX,
-		playerY, &mapX, &mapY, &stepX, &stepY,
-		&sideDistX, &sideDistY);
-
-	perform_DDA(stepX, stepY, &sideDistX, &sideDistY,
-		&mapX, &mapY, &hit, &side, rayAngle);
-
-	if (side == 0)
-		perpWallDist = (mapX - playerX + (1 - stepX) / 2) / rayDirX;
-	else
-		perpWallDist = (mapY - playerY + (1 - stepY) / 2) / rayDirY;
-
-	return (perpWallDist);
+		if (maze_map[*mapX][*mapY] == 1)
+			*hit = 1;
+	}
 }
 
 /**
@@ -140,6 +139,7 @@ float get_wall_hit_coordinates(float playerX,
 	int stepX, stepY;
 	int hit = 0;
 	int side;
+	float perpWallDist;
 
 	*mapX = (int)playerX;
 	*mapY = (int)playerY;
@@ -148,17 +148,24 @@ float get_wall_hit_coordinates(float playerX,
 		&sideDistX, &sideDistY);
 
 	perform_DDA(stepX, stepY, &sideDistX, &sideDistY, mapX,
-		mapY, &hit, &side, rayAngle);
+		mapY, &hit, &side, rayDirX, rayDirY);
 
+	/* Calculate perpendicular wall distance */
+	if (side == 0)
+		perpWallDist = (mapX - playerX + (1 - stepX) / 2) / rayDirX;
+	else
+		perpWallDist = (mapY - playerY + (1 - stepY) / 2) / rayDirY;
+
+	/* Calculate the exact point where the wall was hit */
 	if (side == 0)
 	{
-		wallX = playerY + ((sideDistX - fabs(1 / rayDirX)) * rayDirY);
+		wallX = playerY + perpWallDist * rayDirY;
 	}
 	else
 	{
-		wallX = playerX + ((sideDistY - fabs(1 / rayDirY)) * rayDirX);
+		wallX = playerX + perpWallDist * rayDirX;
 	}
-	wallX -= floor(wallX);
+	wallX -= floor(wallX);  /* Normalize wallX to [0, 1] */
 
-	return (wallX);
+	return wallX;
 }
