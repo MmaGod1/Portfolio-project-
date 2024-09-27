@@ -40,9 +40,9 @@ SDL_Texture *load_texture(SDL_Renderer *renderer, const char *file)
 
 /**
  * load_resources - Loads the map and textures required for the game.
- * @renderer: The SDL_Renderer used for creating textures.
+ * @gameStats: A pointer to the GameStats structure containing 
+ *             the renderer and textures.
  * @mapfile: The name of the map file to load.
- * @floorTexture: A pointer to the SDL_Texture pointer for the floor texture.
  *
  * This function loads the maze map and the textures for the walls and 
  * floor. It populates the wallTextures array and sets the floorTexture 
@@ -50,7 +50,7 @@ SDL_Texture *load_texture(SDL_Renderer *renderer, const char *file)
  *
  * Return: 0 on success, or 1 if an error occurs.
  */
-int load_resources(SDL_Renderer *renderer, char *mapfile, SDL_Texture **floorTexture)
+int load_resources(GameStats *gameStats, char *mapfile)
 {
     if (load_map(mapfile, maze_map) != 0)
     {
@@ -59,12 +59,12 @@ int load_resources(SDL_Renderer *renderer, char *mapfile, SDL_Texture **floorTex
     }
 
     /* Load textures */
-    wallTextures[0].texture = load_texture(renderer, "./images/wall1.jpg");
-    wallTextures[1].texture = load_texture(renderer, "./images/wall2.jpg");
-    wallTextures[2].texture = load_texture(renderer, "./images/wall3.jpg");
-    wallTextures[3].texture = load_texture(renderer, "./images/wall4.jpg");
+    gameStats->wallTextures[0].texture = load_texture(gameStats->renderer, "./images/wall1.jpg");
+    gameStats->wallTextures[1].texture = load_texture(gameStats->renderer, "./images/wall2.jpg");
+    gameStats->wallTextures[2].texture = load_texture(gameStats->renderer, "./images/wall3.jpg");
+    gameStats->wallTextures[3].texture = load_texture(gameStats->renderer, "./images/wall4.jpg");
     
-    *floorTexture = load_texture(renderer, "./images/floor.jpg");
+    gameStats->floorTexture.texture = load_texture(gameStats->renderer, "./images/floor.jpg");
 
     return (0);
 }
