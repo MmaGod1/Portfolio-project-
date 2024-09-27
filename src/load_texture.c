@@ -6,36 +6,44 @@
  * @file: The path to the image file to be loaded.
  *
  * This function loads an image from the specified file, converts it into
- * an SDL texture using the provided renderer, and returns a pointer to
- * the created texture. If the image loading or texture creation fails, 
- * it returns NULL and logs an error message.
+ * an SDL texture using the provided renderer, and returns a Texture struct
+ * that includes the created texture and its dimensions. If the image loading 
+ * or texture creation fails, it returns a Texture struct with a NULL texture 
+ * and zero dimensions.
  *
- * Return: A pointer to the created SDL_Texture on success, or NULL on failure.
+ * Return: A Texture struct containing the created SDL_Texture and its width
+ * and height.
  */
-SDL_Texture *load_texture(SDL_Renderer *renderer, const char *file)
-{
-    SDL_Texture *texture = NULL;
+Texture load_texture(SDL_Renderer *renderer, const char *file) {
+    Texture tex;
+    tex.texture = NULL;
     SDL_Surface *surface = IMG_Load(file);
 
-    if (!surface)
-    {
+    if (!surface) {
         fprintf(stderr, "Unable to load image %s! SDL_image Error: %s\n",
             file, IMG_GetError());
-        return NULL;
+        tex.width = 0;
+        tex.height = 0;
+        return tex;
     }
 
-    texture = SDL_CreateTextureFromSurface(renderer, surface);
+    tex.texture = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_FreeSurface(surface);
 
-    if (!texture)
-    {
+    if (!tex.texture) {
         fprintf(stderr, "Unable to create texture from %s! SDL Error: %s\n",
             file, SDL_GetError());
-        return NULL;
+        tex.width = 0;
+        tex.height = 0;
+        return tex;
     }
 
-    return (texture);
+    SDL_QueryTexture(tex.texture, NULL, NULL, &tex.width, &tex.height);
+    
+    return (tex);
 }
+
+
 
 /**
  * load_resources - Loads the map and textures required for the game.
