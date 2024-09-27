@@ -48,15 +48,37 @@ void initialize_player(Player *player)
 	player->rotSpeed = 0.05;
 }
 
+/**
+ * load_resources - Loads the map and textures required for the game.
+ *
+ * @mapfile: The name of the map file to load.
+ *
+ * Return: 0 on success, or 1 if an error occurs.
+ */
+int load_resources(char *mapfile)
+{
+	if (load_map(mapfile, maze_map) != 0)
+	{
+		fprintf(stderr, "Failed to load map\n");
+		return (1);
+	}
+
+	/* Load textures */
+	wallTextures[0] = load_texture("./images/wall1.jpg");
+	wallTextures[1] = load_texture("./images/wall2.jpg");
+	wallTextures[2] = load_texture("./images/wall3.jpg");
+	wallTextures[3] = load_texture("./images/wall4.jpg");
+	floorTexture = load_texture("./images/floor.jpg");
+
+	return (0);
+}
 
 /**
  * cleanup - Cleans up SDL resources.
  */
 void cleanup(void)
 {
-	int i;
-	Texture floorTexture;
-
+	int i; // Declare 'i' here
 	for (i = 0; i < 4; i++)
 	{
 		if (wallTextures[i].texture)
@@ -125,6 +147,11 @@ int main(int argc, char *argv[])
 		render(&player);
 		SDL_Delay(16); /* Cap the frame rate to ~60 FPS */
 	}
+
+	cleanup();
+
+	return (0);
+}
 
 	cleanup();
 
