@@ -115,7 +115,7 @@ void render(Player *player, bool showMap, SDL_Renderer *renderer, GameStats *gam
 {
     SDL_RenderClear(renderer);
     draw_sky(renderer);
-    draw_floor(renderer, player, gameStats->floorTexture.texture);
+    draw_floor(renderer, player, gameStats->floorTexture);
     render_walls(gameStats, player);
 
     if (showMap)
