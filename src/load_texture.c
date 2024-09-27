@@ -37,7 +37,6 @@ SDL_Texture *load_texture(SDL_Renderer *renderer, const char *file)
     return (texture);
 }
 
-
 /**
  * load_resources - Loads the map and textures required for the game.
  * @gameStats: A pointer to the GameStats structure containing 
