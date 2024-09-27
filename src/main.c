@@ -2,7 +2,7 @@
 
 SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
-Texture wallTextures[4]; 
+Texture wallTextures[4];
 Texture floorTexture;
 
 /**
