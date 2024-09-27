@@ -46,9 +46,10 @@ void render_single_wall(GameStats *gameStats, int x, int wallHeight, int wallTop
     SDL_Rect srcRect, dstRect;
     int texWidth, texHeight, texX;
 
-    /* Query the texture to get its width and height */
-    texWidth = gameStats->wallTextures[wallTextureIndex]->width;
-    texHeight = gameStats->wallTextures[wallTextureIndex]->height;
+    texWidth = gameStats->wallTextures[wallTextureIndex].width;  
+    texHeight = gameStats->wallTextures[wallTextureIndex].height; 
+
+    SDL_QueryTexture(gameStats->wallTextures[wallTextureIndex].texture, NULL, NULL, &texWidth, &texHeight);
 
     texX = (int)(wallX * texWidth) % texWidth;
 
@@ -62,8 +63,7 @@ void render_single_wall(GameStats *gameStats, int x, int wallHeight, int wallTop
     dstRect.w = 1;
     dstRect.h = wallHeight;
 
-    /* Render wall slice */
-    SDL_RenderCopy(gameStats->renderer, gameStats->wallTextures[wallTextureIndex]->texture, &srcRect, &dstRect);
+    SDL_RenderCopy(gameStats->renderer, gameStats->wallTextures[wallTextureIndex].texture, &srcRect, &dstRect);
 }
 
 /**
