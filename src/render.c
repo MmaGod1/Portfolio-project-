@@ -73,28 +73,28 @@ void render_single_wall(GameStats *gameStats, int x, int wallHeight, int wallTop
  *
  * @player: Pointer to the Player structure containing player's attributes.
  */
-void render_walls(Player *player)
+void render_walls(GameStats *gameStats, Player *player)
 {
-	int x, mapX, mapY, wallHeight, wallTop, wallBottom;
-	int wallTextureIndex;
-	float rayAngle, distance, wallX;
+    int x, mapX, mapY, wallHeight, wallTop, wallBottom;
+    int wallTextureIndex;
+    float rayAngle, distance, wallX;
 
-	for (x = 0; x < SCREEN_WIDTH; x++)
-	{
-		rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
-		distance = cast_ray(player->x, player->y, rayAngle);
+    for (x = 0; x < SCREEN_WIDTH; x++)
+    {
+        rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
+        distance = cast_ray(player->x, player->y, rayAngle);
 
-		if (distance > 10.0)
-			distance = 10.0;
+        if (distance > 10.0)
+            distance = 10.0;
 
-		calculate_wall_dimensions(distance, player,
-				&wallHeight, &wallTop, &wallBottom);
-		wallX = get_wall_hit_coordinates(player->x,
-				player->y, rayAngle, &mapX, &mapY);
-		wallTextureIndex = maze_map[mapX][mapY] - 1;
+        calculate_wall_dimensions(distance, player,
+                &wallHeight, &wallTop, &wallBottom);
+        wallX = get_wall_hit_coordinates(player->x,
+                player->y, rayAngle, &mapX, &mapY);
+        wallTextureIndex = maze_map[mapX][mapY] - 1;
 
-		render_single_wall(x, wallHeight, wallTop, wallX, wallTextureIndex);
-	}
+        render_single_wall(gameStats, x, wallHeight, wallTop, wallX, wallTextureIndex);
+    }
 }
 
 
