@@ -45,7 +45,7 @@ extern int showMap;                                               extern SDL_Win
 extern SDL_Renderer *renderer;
 
 /* Function prototypes */
-Texture load_texture(const char *filename);
+Texture load_texture(SDL_Renderer *renderer, const char *filename);
 void calculate_step_and_side_dist(float rayDirX, float rayDirY,
 	float playerX, float playerY, int *mapX, int *mapY,
 	int *stepX, int *stepY, float *sideDistX, float *sideDistY);
@@ -53,10 +53,10 @@ void perform_DDA(int stepX, int stepY, float *sideDistX,
                   float *sideDistY, int *mapX, int *mapY,
                   int *hit, int *side, float rayAngle);
 float cast_ray(float playerX, float playerY, float rayAngle);
-void draw_sky(void);
-void draw_mini_map(Player *player, bool showMap);
-void draw_map_tiles(int mapStartX, int mapStartY, int tileSize);
-void draw_floor(Player *player);
+void draw_sky(SDL_Renderer *renderer);
+void draw_mini_map(SDL_Renderer *renderer, Player *player, bool showMap);
+void draw_map_tiles(SDL_Renderer *renderer, int mapStartX, int mapStartY, int tileSize);
+void draw_floor(SDL_Renderer *renderer, Player *player);
 float get_wall_hit_coordinates(float playerX, float playerY, float rayAngle, int *mapX, int *mapY);
 void calculate_wall_dimensions(int distance, Player *player,int *wallHeight, int *wallTop, int *wallBottom);
 void render_single_wall(int x, int wallHeight, int wallTop,float wallX, int wallTextureIndex);
@@ -71,7 +71,7 @@ void handle_input(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEI
 int read_next_char(FILE *file);
 int process_char(int ch, int x, int y, int maze_map[MAP_WIDTH][MAP_HEIGHT]);
 int load_map(const char *filename, int maze_map[MAP_WIDTH][MAP_HEIGHT]);
-int load_resources(char *mapfile);
+int load_resources(SDL_Renderer *renderer, char *mapfile);
 int initialize_sdl(void);
 void initialize_player(Player *player);
 void cleanup(void);
