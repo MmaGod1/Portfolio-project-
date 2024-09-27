@@ -96,6 +96,7 @@ void process_quit_event(SDL_Event event, bool *running)
  * @player: Pointer to the Player structure containing position and angle.
  * @running: Pointer to a boolean indicating if the game is running.
  * @maze_map: 2D array representing the maze layout for collision detection.
+ * @showMap: Pointer to an integer indicating if the mini-map is shown (1) or hidden (0).
  *
  * This function handles key presses for movement, rotation, and toggling
  * the mini-map, delegating movement and rotation to other helper functions.
@@ -103,10 +104,11 @@ void process_quit_event(SDL_Event event, bool *running)
  * Return: void
  */
 void process_keydown_event(
-		SDL_Event event,
-		Player *player,
-		bool *running,
-		int maze_map[MAP_WIDTH][MAP_HEIGHT]
+	SDL_Event event,
+	Player *player,
+	bool *running,
+	int maze_map[MAP_WIDTH][MAP_HEIGHT],
+	int *showMap
 )
 {
 	float moveStep = player->moveSpeed;
@@ -118,7 +120,7 @@ void process_keydown_event(
 			*running = false;
 			break;
 		case SDLK_m:  /* Toggle mini-map */
-			showMap = !showMap;
+			*showMap = !(*showMap);
 			break;
 		case SDLK_LEFT:  /* Rotate left */
 			process_rotation(player, -1);
@@ -140,33 +142,5 @@ void process_keydown_event(
 			break;
 		default:
 			break;
-	}
-}
-
-/**
- * handle_input - Processes player input and updates the player's state.
- * @player: Pointer to the Player structure containing position and angle.
- * @running: Pointer to a boolean indicating if the game is running.
- * @maze_map: 2D array representing the maze layout for collision detection.
- *
- * This function processes all user inputs and updates the player's state.
- * It handles quit events, key presses for movement, rotation, and toggling
- * the mini-map. Key press is handled by the process_keydown_event function.
- *
- * Return: void
- */
-void handle_input(Player *player,
-bool *running, int maze_map[MAP_WIDTH][MAP_HEIGHT])
-{
-	SDL_Event event;
-
-	while (SDL_PollEvent(&event))
-	{
-		process_quit_event(event, running);
-
-		if (event.type == SDL_KEYDOWN)
-		{
-			process_keydown_event(event, player, running, maze_map);
-		}
 	}
 }
