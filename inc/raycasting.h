@@ -36,13 +36,13 @@ typedef struct {
 	int width, height;
 } Texture;
 
-extern int maze_map[MAP_WIDTH][MAP_HEIGHT];
+typedef struct {
+    SDL_Texture *wallTextures[4]; /* Array for wall textures */
+    SDL_Texture *floorTexture;      /* Pointer for the floor texture */
+} GameStats;
 
-extern Texture wallTextures[4];
-extern Texture floorTexture;
+
 extern int maze_map[MAP_WIDTH][MAP_HEIGHT];
-extern int showMap;                                               extern SDL_Window *window;
-extern SDL_Renderer *renderer;
 
 /* Function prototypes */
 SDL_Texture *load_texture(SDL_Renderer *renderer, const char *file);
@@ -77,7 +77,7 @@ void handle_input(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEI
 int read_next_char(FILE *file);
 int process_char(int ch, int x, int y, int maze_map[MAP_WIDTH][MAP_HEIGHT]);
 int load_map(const char *filename, int maze_map[MAP_WIDTH][MAP_HEIGHT]);
-int load_resources(SDL_Renderer *renderer, char *mapfile, SDL_Texture **floorTexture);
+int load_resources(GameStats *gameStats, char *mapfile);
 int initialize_sdl(SDL_Window **window, SDL_Renderer **renderer);
 void initialize_player(Player *player);
 void cleanup(SDL_Renderer *renderer, SDL_Window *window);
