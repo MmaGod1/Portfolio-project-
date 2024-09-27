@@ -78,8 +78,8 @@ int read_next_char(FILE *file);
 int process_char(int ch, int x, int y, int maze_map[MAP_WIDTH][MAP_HEIGHT]);
 int load_map(const char *filename, int maze_map[MAP_WIDTH][MAP_HEIGHT]);
 int load_resources(SDL_Renderer *renderer, char *mapfile, SDL_Texture **floorTexture);
-int initialize_sdl(void);
+int initialize_sdl(SDL_Window **window, SDL_Renderer **renderer);
 void initialize_player(Player *player);
-void cleanup(SDL_Renderer *renderer, SDL_Texture *floorTexture);
+void cleanup(SDL_Renderer *renderer, SDL_Window *window);
 
 #endif /* RAYCASTING_H */
