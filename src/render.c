@@ -93,13 +93,18 @@ void render_walls(GameStats *gameStats, Player *player)
         if (distance > 10.0)
             distance = 10.0;
 
+        // Calculate wall dimensions and log debug information
         calculate_wall_dimensions(distance, player, rayAngle, &wallHeight, &wallTop, &wallBottom);
+
+        // Calculate the wall texture coordinate
         wallX = get_wall_hit_coordinates(player->x, player->y, rayAngle, &mapX, &mapY);
         wallTextureIndex = maze_map[mapX][mapY] - 1;
 
+        // Render the wall slice with calculated dimensions
         render_single_wall(gameStats, x, wallHeight, wallTop, wallX, wallTextureIndex);
     }
 }
+
 
 /**
  * render - Clears the renderer and draws the current frame of the game,
