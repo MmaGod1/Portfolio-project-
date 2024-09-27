@@ -73,7 +73,7 @@ void process_keydown_event(
 	int maze_map[MAP_WIDTH][MAP_HEIGHT],
 	int *showMap
 );
-void handle_input(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIGHT]);
+void handle_input(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIGHT], bool showMap);
 int read_next_char(FILE *file);
 int process_char(int ch, int x, int y, int maze_map[MAP_WIDTH][MAP_HEIGHT]);
 int load_map(const char *filename, int maze_map[MAP_WIDTH][MAP_HEIGHT]);
