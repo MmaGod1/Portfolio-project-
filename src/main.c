@@ -1,12 +1,5 @@
 #include "raycasting.h"
 
-/**SDL_Window *window = NULL;
-SDL_Renderer *renderer = NULL;
-Texture wallTextures[4];
-Texture floorTexture;
-int showMap = 1;   1 to show map, 0 to hide map 
-**/
-
 /**
  * initialize_sdl - Initializes SDL and creates the window and renderer.
  *
@@ -14,26 +7,26 @@ int showMap = 1;   1 to show map, 0 to hide map
  */
 int initialize_sdl(void)
 {
-	window = SDL_CreateWindow("Go-Maze",
-			SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-			SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-	if (!window)
-	{
-		fprintf(stderr, "Window could not be created! SDL_Error: %s\n",
-				SDL_GetError());
-		SDL_Quit();
-		return (1);
-	}
-	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-	if (!renderer)
-	{
-		fprintf(stderr, "Renderer could not be created! SDL_Error: %s\n",
-				SDL_GetError());
-		SDL_DestroyWindow(window);
-		SDL_Quit();
-		return (1);
-	}
-	return (0);
+    window = SDL_CreateWindow("Go-Maze",
+            SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+            SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    if (!window)
+    {
+        fprintf(stderr, "Window could not be created! SDL_Error: %s\n",
+                SDL_GetError());
+        SDL_Quit();
+        return (1);
+    }
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    if (!renderer)
+    {
+        fprintf(stderr, "Renderer could not be created! SDL_Error: %s\n",
+                SDL_GetError());
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+        return (1);
+    }
+    return (0);
 }
 
 /**
@@ -43,39 +36,40 @@ int initialize_sdl(void)
  */
 void initialize_player(Player *player)
 {
-	player->x = 2.0;
-	player->y = 2.0;
-	player->angle = 0.0;
-	player->moveSpeed = 0.05;
-	player->rotSpeed = 0.05;
+    player->x = 2.0;
+    player->y = 2.0;
+    player->angle = 0.0;
+    player->moveSpeed = 0.05;
+    player->rotSpeed = 0.05;
 }
-
 
 /**
  * cleanup - Cleans up SDL resources.
+ *
+ * @renderer: The SDL_Renderer used to create the textures.
  */
-void cleanup(void)
+void cleanup(SDL_Renderer *renderer)
 {
-	int i;
+    int i;
 
-	for (i = 0; i < 4; i++)
-	{
-		if (wallTextures[i].texture)
-		{
-			SDL_DestroyTexture(wallTextures[i].texture);
-			wallTextures[i].texture = NULL;
-		}
-	}
-	if (floorTexture.texture)
-	{
-		SDL_DestroyTexture(floorTexture.texture);
-		floorTexture.texture = NULL;
-	}
+    for (i = 0; i < 4; i++)
+    {
+        if (wallTextures[i].texture)
+        {
+            SDL_DestroyTexture(wallTextures[i].texture);
+            wallTextures[i].texture = NULL;
+        }
+    }
+    if (floorTexture.texture)
+    {
+        SDL_DestroyTexture(floorTexture.texture);
+        floorTexture.texture = NULL;
+    }
 
-	/* Clean up and quit SDL */
-	SDL_DestroyRenderer(renderer);
-	SDL_DestroyWindow(window);
-	SDL_Quit();
+    /* Clean up and quit SDL */
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
 }
 
 /**
@@ -92,42 +86,42 @@ void cleanup(void)
  */
 int main(int argc, char *argv[])
 {
-	Player player;
-	bool running = true;
+    Player player;
+    bool running = true;
 
-	if (argc != 2)
-	{
-		fprintf(stderr, "Usage: %s <mapfile>\n", argv[0]);
-		return (1);
-	}
+    if (argc != 2)
+    {
+        fprintf(stderr, "Usage: %s <mapfile>\n", argv[0]);
+        return (1);
+    }
 
-	/* Initialize SDL */
-	if (SDL_Init(SDL_INIT_VIDEO) < 0)
-	{
-		fprintf(stderr, "SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
-		return (1);
-	}
+    /* Initialize SDL */
+    if (SDL_Init(SDL_INIT_VIDEO) < 0)
+    {
+        fprintf(stderr, "SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
+        return (1);
+    }
 
-	if (initialize_sdl() != 0)
-		return (1);
+    if (initialize_sdl() != 0)
+        return (1);
 
-	initialize_player(&player);
+    initialize_player(&player);
 
-	if (load_resources(argv[1]) != 0)
-	{
-		cleanup();
-		return (1);
-	}
+    if (load_resources(argv[1]) != 0)
+    {
+        cleanup(renderer);  // Pass the renderer to cleanup
+        return (1);
+    }
 
-	/* Game loop */
-	while (running)
-	{
-		handle_input(&player, &running, maze_map);
-		render(&player);
-		SDL_Delay(16); /* Cap the frame rate to ~60 FPS */
-	}
+    /* Game loop */
+    while (running)
+    {
+        handle_input(&player, &running, maze_map);
+        render(&player);
+        SDL_Delay(16); /* Cap the frame rate to ~60 FPS */
+    }
 
-	cleanup();
+    cleanup(renderer);  // Pass the renderer to cleanup
 
-	return (0);
+    return (0);
 }
