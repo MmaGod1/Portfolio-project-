@@ -80,6 +80,6 @@ int load_map(const char *filename, int maze_map[MAP_WIDTH][MAP_HEIGHT]);
 int load_resources(SDL_Renderer *renderer, char *mapfile, SDL_Texture **floorTexture);
 int initialize_sdl(void);
 void initialize_player(Player *player);
-void cleanup(SDL_Renderer *renderer);
+void cleanup(SDL_Renderer *renderer, SDL_Texture *floorTexture);
 
 #endif /* RAYCASTING_H */
