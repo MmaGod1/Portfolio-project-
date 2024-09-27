@@ -99,7 +99,7 @@ void render_walls(Player *player)
  *
  * @player: points to Player structure - the player's position and angle.
  */
-void render(Player *player)
+void render(Player *player, bool showMap)
 {
     SDL_RenderClear(renderer);
 
