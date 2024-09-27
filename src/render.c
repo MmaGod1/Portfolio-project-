@@ -45,28 +45,52 @@ void calculate_wall_dimensions(int distance, Player *player,
 void render_single_wall(GameStats *gameStats, int x, int wallHeight, int wallTop, float wallX, int wallTextureIndex)
 {
     SDL_Rect srcRect, dstRect;
-    int texWidth, texHeight, texX;
-
-    texWidth = gameStats->wallTextures[wallTextureIndex].width;  
-    texHeight = gameStats->wallTextures[wallTextureIndex].height; 
-
-    SDL_QueryTexture(gameStats->wallTextures[wallTextureIndex].texture, NULL, NULL, &texWidth, &texHeight);
+    int texWidth = gameStats->wallTextures[wallTextureIndex].width;  
+    int texHeight = gameStats->wallTextures[wallTextureIndex].height; 
 
     texX = (int)(wallX * texWidth) % texWidth;
 
-    srcRect.x = texX;
-    srcRect.y = 0;
-    srcRect.w = 1;
-    srcRect.h = texHeight;
+    srcRect.x = texX;          // X coordinate on texture
+    srcRect.y = 0;             // Start from the top of the texture
+    srcRect.w = 1;             // Width of the slice (1 pixel)
+    srcRect.h = texHeight;     // Full height of the texture
 
-    dstRect.x = x;
-    dstRect.y = wallTop;
-    dstRect.w = 1;
-    dstRect.h = wallHeight;
+    dstRect.x = x;             // X position on screen
+    dstRect.y = wallTop;       // Top position for the wall slice
+    dstRect.w = 1;             // Width of 1 pixel
+    dstRect.h = wallHeight;    // Calculated wall height
 
     SDL_RenderCopy(gameStats->renderer, gameStats->wallTextures[wallTextureIndex].texture, &srcRect, &dstRect);
 }
 
+void render_walls(GameStats *gameStats, Player *player)
+{
+    int x, wallHeight, wallTop, wallBottom;
+    int wallTextureIndex;
+    float rayAngle, distance, wallX;
+
+    for (x = 0; x < SCREEN_WIDTH; x++)
+    {
+        rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
+
+        // Normalize ray angle
+        if (rayAngle < 0)
+            rayAngle += 2 * M_PI;
+        if (rayAngle > 2 * M_PI)
+            rayAngle -= 2 * M_PI;
+
+        distance = cast_ray(player->x, player->y, rayAngle);
+        if (distance > 10.0)
+            distance = 10.0;
+
+        calculate_wall_dimensions(distance, player, &wallHeight, &wallTop, &wallBottom);
+
+        wallX = get_wall_hit_coordinates(player->x, player->y, rayAngle, &mapX, &mapY);
+        wallTextureIndex = maze_map[mapX][mapY] - 1;
+
+        render_single_wall(gameStats, x, wallHeight, wallTop, wallX, wallTextureIndex);
+    }
+}
 /**
  * render_walls - Render the walls of the maze based on the player's position.
  *
