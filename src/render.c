@@ -104,9 +104,8 @@ void render(Player *player, bool showMap)
     SDL_RenderClear(renderer);
 
     draw_sky(renderer);  
-    draw_floor(renderer, player);
-
-    /* Cast rays and render walls */
+    draw_floor(renderer, player, floorTexture);
+    /* Cast rays and render wall */
     render_walls(player);
 
     if (showMap)
