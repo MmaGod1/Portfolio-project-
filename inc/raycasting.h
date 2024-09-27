@@ -51,7 +51,7 @@ typedef struct {
 extern int maze_map[MAP_WIDTH][MAP_HEIGHT];
 
 /* Function prototypes */
-SDL_Texture *load_texture(SDL_Renderer *renderer, const char *file);
+Texture *load_texture(SDL_Renderer *renderer, const char *file);
 void calculate_step_and_side_dist(float rayDirX, float rayDirY,
 	float playerX, float playerY, int *mapX, int *mapY,
 	int *stepX, int *stepY, float *sideDistX, float *sideDistY);
