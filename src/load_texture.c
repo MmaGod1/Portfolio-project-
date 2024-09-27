@@ -55,16 +55,16 @@ int load_resources(GameStats *gameStats, char *mapfile)
     if (load_map(mapfile, maze_map) != 0)
     {
         fprintf(stderr, "Failed to load map\n");
-        return (1);
+        return 1;
     }
 
-    /* Load textures */
-    gameStats->wallTextures[0].texture = load_texture(gameStats->renderer, "./images/wall1.jpg");
-    gameStats->wallTextures[1].texture = load_texture(gameStats->renderer, "./images/wall2.jpg");
-    gameStats->wallTextures[2].texture = load_texture(gameStats->renderer, "./images/wall3.jpg");
-    gameStats->wallTextures[3].texture = load_texture(gameStats->renderer, "./images/wall4.jpg");
-    
-    gameStats->floorTexture.texture = load_texture(gameStats->renderer, "./images/floor.jpg");
+    // Load textures
+    gameStats->wallTextures[0] = load_texture(gameStats->renderer, "./images/wall1.jpg");
+    gameStats->wallTextures[1] = load_texture(gameStats->renderer, "./images/wall2.jpg");
+    gameStats->wallTextures[2] = load_texture(gameStats->renderer, "./images/wall3.jpg");
+    gameStats->wallTextures[3] = load_texture(gameStats->renderer, "./images/wall4.jpg");
 
-    return (0);
+    gameStats->floorTexture = load_texture(gameStats->renderer, "./images/floor.jpg");
+
+    return 0;
 }
