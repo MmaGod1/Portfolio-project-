@@ -88,6 +88,7 @@ void render_walls(Player *player)
 	}
 }
 
+
 /**
  * render - Clears the renderer and draws the current frame of the game,
  *          including the sky, floor, and walls.
@@ -100,18 +101,18 @@ void render_walls(Player *player)
  */
 void render(Player *player)
 {
-	SDL_RenderClear(renderer);
+    SDL_RenderClear(renderer);
 
-	draw_sky();
-	draw_floor(player);
+    draw_sky(renderer);  
+    draw_floor(renderer, player);
 
-	/* Cast rays and render walls */
-	render_walls(player);
+    /* Cast rays and render walls */
+    render_walls(player);
 
-	if (showMap)
-	{
-		draw_mini_map(player, showMap);
-	}
+    if (showMap)
+    {
+        draw_mini_map(renderer, player, showMap);
+    }
 
-	SDL_RenderPresent(renderer);
+    SDL_RenderPresent(renderer);
 }
