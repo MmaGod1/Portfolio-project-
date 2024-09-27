@@ -108,7 +108,7 @@ void process_keydown_event(
 	Player *player,
 	bool *running,
 	int maze_map[MAP_WIDTH][MAP_HEIGHT],
-	int *showMap
+	bool showMap
 )
 {
 	float moveStep = player->moveSpeed;
