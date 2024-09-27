@@ -36,13 +36,18 @@ typedef struct {
 	int width, height;
 } Texture;
 
-typedef struct {
+/*typedef struct {
     SDL_Texture *wallTextures[4]; /* Array for wall textures */
-    SDL_Texture *floorTexture;      /* Pointer for the floor texture */
-    SDL_Renderer *renderer;         /* Pointer for the renderer */
+   /* SDL_Texture *floorTexture;      /* Pointer for the floor texture */
+    /*SDL_Texture *renderer;         /* Pointer for the renderer */
+/*} GameStats;
+*/
+
+typedef struct {
+    Texture wallTextures[4];
+    Texture floorTexture;
+    SDL_Renderer *renderer;
 } GameStats;
-
-
 extern int maze_map[MAP_WIDTH][MAP_HEIGHT];
 
 /* Function prototypes */
