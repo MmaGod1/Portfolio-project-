@@ -67,7 +67,7 @@ float get_wall_hit_coordinates(float playerX, float playerY, float rayAngle, int
 void calculate_wall_dimensions(int distance, Player *player,int *wallHeight, int *wallTop, int *wallBottom);
 void render_walls(GameStats *gameStats, Player *player);
 void render_single_wall(GameStats *gameStats, int x, int wallHeight, int wallTop, float wallX, int wallTextureIndex);
-void render(Player *player, bool showMap, SDL_Renderer *renderer);
+void render(Player *player, bool showMap, SDL_Renderer *renderer, GameStats *gameStats);
 void process_rotation(Player *player, int direction);
 void process_movement(Player *player, int maze_map[MAP_WIDTH][MAP_HEIGHT], float moveStep, float moveAngle);
 void process_quit_event(SDL_Event event, bool *running);
