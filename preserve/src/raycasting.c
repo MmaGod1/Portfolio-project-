@@ -133,33 +133,36 @@ float cast_ray(float playerX, float playerY, float rayAngle)
  * Return: The fractional X-coordinate of the wall hit relative to its width.
  */
 float get_wall_hit_coordinates(float playerX,
-	float playerY, float rayAngle, int *mapX, int *mapY)
+                                float playerY, float rayAngle, int *mapX, int *mapY)
 {
-	float rayDirX = cos(rayAngle);
-	float rayDirY = sin(rayAngle);
-	float sideDistX, sideDistY, wallX;
-	int stepX, stepY;
-	int hit = 0;
-	int side;
+    float rayDirX = cos(rayAngle);
+    float rayDirY = sin(rayAngle);
+    float sideDistX, sideDistY;
+    int stepX, stepY;
+    int hit = 0;
+    int side;
 
-	*mapX = (int)playerX;
-	*mapY = (int)playerY;
-	calculate_step_and_side_dist(rayDirX, rayDirY, playerX,
-		playerY, mapX, mapY, &stepX, &stepY,
-		&sideDistX, &sideDistY);
+    *mapX = (int)playerX;
+    *mapY = (int)playerY;
 
-	perform_DDA(stepX, stepY, &sideDistX, &sideDistY, mapX,
-		mapY, &hit, &side, rayAngle);
+    // Calculate initial side distances and steps
+    calculate_step_and_side_dist(rayDirX, rayDirY, playerX, playerY, mapX, mapY, &stepX, &stepY, &sideDistX, &sideDistY);
 
-	if (side == 0)
-	{
-		wallX = playerY + ((sideDistX - fabs(1 / rayDirX)) * rayDirY);
-	}
-	else
-	{
-		wallX = playerX + ((sideDistY - fabs(1 / rayDirY)) * rayDirX);
-	}
-	wallX -= floor(wallX);
+    // Perform DDA to find the wall hit
+    perform_DDA(stepX, stepY, &sideDistX, &sideDistY, mapX, mapY, &hit, &side, rayAngle);
 
-	return (wallX);
+    // Calculate wall hit coordinates based on the side hit
+    float wallX;
+    if (side == 0) // hit a vertical wall
+    {
+        wallX = playerY + (sideDistX - fabs(1 / rayDirX)) * rayDirY; 
+    }
+    else // hit a horizontal wall
+    {
+        wallX = playerX + (sideDistY - fabs(1 / rayDirY)) * rayDirX;
+    }
+    
+    wallX -= floor(wallX); // Get the fractional part relative to the wall's width
+
+    return wallX; // Return the normalized wall hit coordinate
 }
