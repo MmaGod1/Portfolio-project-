@@ -55,7 +55,6 @@ void draw_mini_map(SDL_Renderer *renderer, Player *player, bool showMap);
 void draw_map_tiles(SDL_Renderer *renderer, int mapStartX, int mapStartY, int tileSize);
 void draw_floor(SDL_Renderer *renderer, Player *player, Texture floorTexture);
 float get_wall_hit_coordinates(float playerX, float playerY, float rayAngle, int *mapX, int *mapY);
-void calculate_wall_dimensions(int distance, Player *player, float rayAngle, int *wallHeight, int *wallTop, int *wallBottom);
 void render_walls(GameStats *gameStats, Player *player);
 void render_single_wall(GameStats *gameStats, int x, int wallHeight, int wallTop, float wallX, int wallTextureIndex);
 void render(Player *player, bool showMap, SDL_Renderer *renderer, GameStats *gameStats);
