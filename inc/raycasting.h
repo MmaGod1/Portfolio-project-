@@ -106,9 +106,9 @@ static void initialize_step_and_side(float rayDirX, float rayDirY,
                                       int *stepX, int *stepY,
                                       float *sideDistX, float *sideDistY);
 
-static int perform_dda(GameStats *gameStats, int *mapX, int *mapY,
-                        int stepX, int stepY, float sideDistX,
-                        float sideDistY);
+static int perform_dda(GameStats *gameStats, float rayDirX, float rayDirY,
+                        int *mapX, int *mapY, int stepX, int stepY,
+                        float sideDistX, float sideDistY);
 
 float get_wall_hit_coordinates(GameStats *gameStats, float playerX, 
                                float playerY, float rayAngle, 
