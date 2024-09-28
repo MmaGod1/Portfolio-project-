@@ -1,4 +1,18 @@
 #include "raycasting.h"
+#include <math.h>
+
+/**
+ * normalize_angle - Normalize an angle to be within the range [0, 2 * PI).
+ *
+ * @angle: The angle in radians to be normalized.
+ * @return: The normalized angle.
+ */
+float normalize_angle(float angle)
+{
+    while (angle < 0) angle += 2 * M_PI;
+    while (angle >= 2 * M_PI) angle -= 2 * M_PI;
+    return angle;
+}
 
 /**
  * calculate_wall_dimensions - Calculate the wall dimensions
@@ -13,12 +27,14 @@
  */
 void calculate_wall_dimensions(float distance, Player *player, float rayAngle, int *wallHeight, int *wallTop, int *wallBottom)
 {
+    // Normalize ray angle
+    rayAngle = normalize_angle(rayAngle);
+
     // Correct the distance to avoid fisheye effect
     float correctedDistance = distance * cos(rayAngle - player->angle);
 
     // Avoid division by zero or extremely small distances
-    if (correctedDistance < 0.1f)
-    {
+    if (correctedDistance < 0.1f) {
         correctedDistance = 0.1f;
     }
 
@@ -66,7 +82,6 @@ void render_single_wall(GameStats *gameStats, int x, int wallHeight, int wallTop
     SDL_RenderCopy(gameStats->renderer, gameStats->wallTextures[wallTextureIndex].texture, &srcRect, &dstRect);
 }
 
-
 /**
  * render_walls - Render the walls of the maze based on the player's position.
  *
@@ -83,9 +98,8 @@ void render_walls(GameStats *gameStats, Player *player)
 
     for (x = 0; x < SCREEN_WIDTH; x++)
     {
-        rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
-        
-        // No need to normalize the ray angle as long as FOV and player angle are correct
+        // Normalize ray angle based on player angle and FOV
+        rayAngle = normalize_angle(player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH));
 
         // Cast the ray to get the distance to the wall
         distance = cast_ray(player->x, player->y, rayAngle);
