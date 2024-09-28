@@ -86,9 +86,22 @@ void handle_input(Player *player, bool *running, GameStats *gameStats);
 
 
 
+void initialize_ray(float rayAngle, float *rayDirX, float *rayDirY, 
+                    int *stepX, int *stepY, float playerX, float playerY,
+                    int *mapX, int *mapY, float *sideDistX, 
+                    float *sideDistY, float *deltaDistX, 
+                    float *deltaDistY);
+
+float calculate_distance(int stepX, int stepY, int *mapX, int *mapY, 
+                         float playerX, float playerY, 
+                         float rayDirX, float rayDirY, 
+                         GameStats *gameStats);
 
 float cast_ray(GameStats *gameStats, float playerX, float playerY, 
                 float rayAngle);
+
+
+
 float get_wall_hit_coordinates(GameStats *gameStats, float playerX, 
                                float playerY, float rayAngle, 
                                int *mapX, int *mapY);
