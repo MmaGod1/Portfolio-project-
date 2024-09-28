@@ -42,14 +42,6 @@ typedef struct GameStats
 } GameStats;
 
 
-extern SDL_Window *window;
-extern SDL_Renderer *renderer;
-extern Texture wallTextures[4];
-extern Texture floorTexture;
-extern int showMap;  /* 1 to show map, 0 to hide map */
-extern int maze_map[MAP_WIDTH][MAP_HEIGHT]; /*Maze map (1 = wall, 0 = empty space)*/
-
-
 Texture load_texture(const char *filename);
 float cast_ray(float playerX, float playerY, float rayAngle);
 void draw_sky(void);
