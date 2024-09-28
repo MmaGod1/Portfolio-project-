@@ -1,4 +1,4 @@
-void renderWalls(Player *player)
+void render_walls(Player *player)
 {
     for (int x = 0; x < SCREEN_WIDTH; x++)
     {
@@ -32,4 +32,21 @@ void renderWalls(Player *player)
         /* Render wall slice */
         SDL_RenderCopy(renderer, wallTextures[wallTextureIndex].texture, &srcRect, &dstRect);
     }
+}
+
+
+
+void render(Player *player)
+{
+    SDL_RenderClear(renderer);
+
+    draw_sky();
+    draw_floor(player);
+
+    render_walls(player);
+
+    if (showMap)
+        draw_mini_map(player, showMap);
+
+    SDL_RenderPresent(renderer);
 }
