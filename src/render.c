@@ -104,7 +104,7 @@ void render_walls(GameStats *gameStats, Player *player) {
         float rayAngle = normalize_angle(player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH));
         
         // Cast the ray to get the distance to the wall
-        float distance = castRay(player->x, player->y, rayAngle);
+        float distance = cast_ray(player->x, player->y, rayAngle);
         
         // Correct the distance to avoid fisheye effect
         if (distance < 0.1) distance = 0.1;
@@ -115,7 +115,7 @@ void render_walls(GameStats *gameStats, Player *player) {
         calculate_wall_dimensions(distance, player, rayAngle, &wallHeight, &wallTop, &wallBottom);
 
         // Get the wall hit coordinate and texture index
-        float wallX = getWallHitCoordinates(player->x, player->y, rayAngle, &mapX, &mapY);
+        float wallX = get_wall_hit_coordinates(player->x, player->y, rayAngle, &mapX, &mapY);
         int wallTextureIndex = maze_map[mapX][mapY] - 1;
 
         // Ensure valid texture index
