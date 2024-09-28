@@ -59,28 +59,35 @@ void calculate_wall_dimensions(float distance, Player *player, float rayAngle, i
  * @wallX: The x coordinate on the texture corresponding to the wall slice.
  * @wallTextureIndex: The index of the wall texture to use for rendering.
  */
-void render_single_wall(GameStats *gameStats, int x, int wallHeight, int wallTop, float wallX, int wallTextureIndex)
+void render_walls(GameStats *gameStats, Player *player)
 {
-    SDL_Rect srcRect, dstRect;
-    int texWidth, texHeight, texX;
+    int x, mapX, mapY, wallHeight, wallTop, wallBottom;
+    float rayAngle, distance, wallX;
 
-    texWidth = gameStats->wallTextures[wallTextureIndex].width;  
-    texHeight = gameStats->wallTextures[wallTextureIndex].height; 
+    for (x = 0; x < SCREEN_WIDTH; x++)
+    {
+        // Normalize ray angle
+        rayAngle = normalize_angle(player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH));
 
-    texX = (int)(wallX * texWidth) % texWidth;
+        // Cast the ray to get the distance to the wall
+        distance = cast_ray(player->x, player->y, rayAngle);
 
-    srcRect.x = texX;          
-    srcRect.y = 0;             
-    srcRect.w = 1;             
-    srcRect.h = texHeight;     
+        // Calculate wall dimensions based on distance
+        calculate_wall_dimensions(distance, player, rayAngle, &wallHeight, &wallTop, &wallBottom);
 
-    dstRect.x = x;             
-    dstRect.y = wallTop;       
-    dstRect.w = 1;             
-    dstRect.h = wallHeight;    
+        // Get wall hit coordinates
+        wallX = get_wall_hit_coordinates(player->x, player->y, rayAngle, &mapX, &mapY);
 
-    SDL_RenderCopy(gameStats->renderer, gameStats->wallTextures[wallTextureIndex].texture, &srcRect, &dstRect);
-}
+        // Get the wall texture index (ensure it's valid)
+        wallTextureIndex = maze_map[mapX][mapY] - 1; 
+        if (wallTextureIndex < 0) {
+            wallTextureIndex = 0; // or handle error
+        }
+
+        // Render the wall slice
+        render_single_wall(gameStats, x, wallHeight, wallTop, wallX, wallTextureIndex);
+    }
+} 
 
 /**
  * render_walls - Render the walls of the maze based on the player's position.
