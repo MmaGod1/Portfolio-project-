@@ -1,73 +1,36 @@
 #include "raycasting.h"
 #include <math.h>
+#include <stdbool.h>
 
-/**
- * normalize_angle - Normalize an angle to be within the range [0, 2 * PI).
- *
- * @angle: The angle in radians to be normalized.
- * @return: The normalized angle.
- */
-float normalize_angle(float angle)
-{
+#define EPSILON 0.1f // Small value to avoid division by zero
+
+float normalize_angle(float angle) {
     while (angle < 0) angle += 2 * M_PI;
     while (angle >= 2 * M_PI) angle -= 2 * M_PI;
     return angle;
 }
 
-/**
- * calculate_wall_dimensions - Calculate the wall dimensions
- * and correct for fisheye effect.
- *
- * @distance: The distance to the wall (float for precision).
- * @player: Pointer to the Player structure containing player's attributes.
- * @rayAngle: The angle of the ray being cast.
- * @wallHeight: Pointer to store the calculated wall height.
- * @wallTop: Pointer to store the top position of the wall.
- * @wallBottom: Pointer to store the bottom position of the wall.
- */
-void calculate_wall_dimensions(float distance, Player *player, float rayAngle, int *wallHeight, int *wallTop, int *wallBottom)
-{
-    // Normalize ray angle
+void calculate_wall_dimensions(float distance, Player *player, float rayAngle, int *wallHeight, int *wallTop, int *wallBottom) {
     rayAngle = normalize_angle(rayAngle);
-
-    // Correct the distance to avoid fisheye effect
     float correctedDistance = distance * cos(rayAngle - player->angle);
 
     // Avoid division by zero or extremely small distances
-    if (correctedDistance < 0.1f) {
-        correctedDistance = 0.1f;
-    }
+    correctedDistance = fmax(correctedDistance, EPSILON);
 
-    // Calculate the wall height based on the corrected distance
     *wallHeight = (int)(SCREEN_HEIGHT / correctedDistance);
     *wallTop = (SCREEN_HEIGHT / 2) - (*wallHeight / 2);
     *wallBottom = (SCREEN_HEIGHT / 2) + (*wallHeight / 2);
 
     // Ensure values are within screen bounds
-    if (*wallTop < 0) *wallTop = 0;
-    if (*wallBottom >= SCREEN_HEIGHT) *wallBottom = SCREEN_HEIGHT - 1;
+    *wallTop = fmax(*wallTop, 0);
+    *wallBottom = fmin(*wallBottom, SCREEN_HEIGHT - 1);
 }
 
-/**
- * render_single_wall - Render a single wall slice based on the player's view.
- *
- * @gameStats: Pointer to the GameStats structure containing game data, 
- *             including textures and the renderer.
- * @x: The x position on the screen to render the wall slice.
- * @wallHeight: The height of the wall slice to be rendered.
- * @wallTop: The top position on the screen for the wall slice.
- * @wallX: The x coordinate on the texture corresponding to the wall slice.
- * @wallTextureIndex: The index of the wall texture to use for rendering.
- */
-void render_single_wall(GameStats *gameStats, int x, int wallHeight, int wallTop, float wallX, int wallTextureIndex)
-{
+void render_single_wall(GameStats *gameStats, int x, int wallHeight, int wallTop, float wallX, int wallTextureIndex, float lightIntensity) {
     SDL_Rect srcRect, dstRect;
-    int texWidth, texHeight, texX;
-
-    texWidth = gameStats->wallTextures[wallTextureIndex].width;  
-    texHeight = gameStats->wallTextures[wallTextureIndex].height; 
-
-    texX = (int)(wallX * texWidth) % texWidth;
+    int texWidth = gameStats->wallTextures[wallTextureIndex].width;  
+    int texHeight = gameStats->wallTextures[wallTextureIndex].height; 
+    int texX = (int)(wallX * texWidth) % texWidth;
 
     srcRect.x = texX;          
     srcRect.y = 0;             
@@ -79,65 +42,37 @@ void render_single_wall(GameStats *gameStats, int x, int wallHeight, int wallTop
     dstRect.w = 1;             
     dstRect.h = wallHeight;    
 
+    // Adjust texture transparency based on light intensity
+    SDL_SetTextureAlphaMod(gameStats->wallTextures[wallTextureIndex].texture, (Uint8)(255 * lightIntensity));
     SDL_RenderCopy(gameStats->renderer, gameStats->wallTextures[wallTextureIndex].texture, &srcRect, &dstRect);
 }
 
-/**
- * render_walls - Render the walls of the maze based on the player's position.
- *
- * This function calculates the wall dimensions and renders them on the screen.
- *
- * @gameStats: Pointer to the GameStats structure containing game data.
- * @player: Pointer to the Player structure containing player's attributes.
- */
-void render_walls(GameStats *gameStats, Player *player)
-{
-    int x, mapX, mapY, wallHeight, wallTop, wallBottom;
-    int wallTextureIndex;
+void render_walls(GameStats *gameStats, Player *player) {
+    int x, wallHeight, wallTop, wallBottom;
     float rayAngle, distance, wallX;
 
-    for (x = 0; x < SCREEN_WIDTH; x++)
-    {
-        // Normalize ray angle based on player angle and FOV
+    for (x = 0; x < SCREEN_WIDTH; x++) {
         rayAngle = normalize_angle(player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH));
-
-        // Cast the ray to get the distance to the wall
         distance = cast_ray(player->x, player->y, rayAngle);
-
-        // Calculate wall dimensions based on distance
         calculate_wall_dimensions(distance, player, rayAngle, &wallHeight, &wallTop, &wallBottom);
 
-        // Get the wall hit coordinate and texture index
-        wallX = get_wall_hit_coordinates(player->x, player->y, rayAngle, &mapX, &mapY);
-        wallTextureIndex = maze_map[mapX][mapY] - 1;
+        wallX = get_wall_hit_coordinates(player->x, player->y, rayAngle);
+        int wallTextureIndex = maze_map[(int)wallX][(int)wallX] - 1;
 
-        // Render the wall slice with the calculated dimensions and texture coordinates
-        render_single_wall(gameStats, x, wallHeight, wallTop, wallX, wallTextureIndex);
+        // Calculate light intensity based on distance (simple example)
+        float lightIntensity = fmax(0, 1.0f - (distance / MAX_DISTANCE));
+
+        render_single_wall(gameStats, x, wallHeight, wallTop, wallX, wallTextureIndex, lightIntensity);
     }
 }
 
-/**
- * render - Clears the renderer and draws the current frame of the game,
- *          including the sky, floor, and walls.
- *
- * This function handles the rendering process, including clearing the screen,
- * drawing the sky and floor, casting rays to render the walls, and drawing
- * a mini-map of the maze.
- *
- * @player: points to the Player structure - the player's position and angle.
- * @showMap: boolean indicating whether to display the mini-map.
- * @renderer: Pointer to the SDL_Renderer used for rendering.
- * @gameStats: Pointer to the GameStats structure containing texture information.
- */
-void render(Player *player, bool showMap, SDL_Renderer *renderer, GameStats *gameStats)
-{
+void render(Player *player, bool showMap, SDL_Renderer *renderer, GameStats *gameStats) {
     SDL_RenderClear(renderer);
     draw_sky(renderer);
     draw_floor(renderer, player, gameStats->floorTexture);
     render_walls(gameStats, player);
 
-    if (showMap)
-    {
+    if (showMap) {
         draw_mini_map(renderer, player, showMap);
     }
 
