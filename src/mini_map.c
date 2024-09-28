@@ -19,9 +19,12 @@ void draw_map(GameStats *gameStats, bool showMap)
             rect.w = tileSize;
             rect.h = tileSize;
 
-            if (gameStats->maze_map[x][y] == 1) {
+            if (gameStats->maze_map[x][y] == 1)
+            {
                 SDL_SetRenderDrawColor(gameStats->renderer, 255, 0, 0, 255); 
-            } else {
+            }
+            else
+            {
                 SDL_SetRenderDrawColor(gameStats->renderer, 255, 255, 255, 255); 
             }
 
@@ -44,7 +47,8 @@ void draw_player_and_los(GameStats *gameStats, Player *player)
     SDL_RenderFillRect(gameStats->renderer, &playerRect);
 
     SDL_SetRenderDrawColor(gameStats->renderer, 0, 0, 255, 255);  
-    for (int i = 0; i < SCREEN_WIDTH; i++) {
+    for (int i = 0; i < SCREEN_WIDTH; i++)
+    {
         float rayAngle = player->angle - (FOV / 2) + (FOV * i / SCREEN_WIDTH);
         float endX = mapPlayerX + cos(rayAngle) * (mapWidth / 4);
         float endY = mapPlayerY + sin(rayAngle) * (mapHeight / 4);
