@@ -31,9 +31,10 @@ void render_walls(GameStats *gameStats, Player *player)
             wallBottom = SCREEN_HEIGHT - 1;
         }
 
-        float wallX = get_wall_hit_coordinates(player->x, player->y, 
-                                                rayAngle, &mapX, 
-                                                &mapY);
+        float wallX = get_wall_hit_coordinates(gameStats, player->x, 
+                                        player->y, rayAngle, 
+                                        &mapX, &mapY);
+
         int wallTextureIndex = gameStats->maze_map[mapX][mapY] - 1;
 
         int texX = (int)(wallX * gameStats->wallTextures[wallTextureIndex].width) % 
