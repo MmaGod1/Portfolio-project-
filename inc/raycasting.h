@@ -64,7 +64,7 @@ void render_walls(GameStats *gameStats, Player *player);
 
 void render_single_wall(GameStats *gameStats,
 int x, int wallHeight, int wallTop,
-float wallX, int wallTextureIndex, float lightIntensity);
+float wallX, int wallTextureIndex);
 
 void render(Player *player, bool showMap, SDL_Renderer *renderer, GameStats *gameStats);
 void process_rotation(Player *player, int direction);
