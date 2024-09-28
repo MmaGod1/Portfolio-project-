@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
     bool running = true;
     while (running) {
         handle_input(&player,  &running, maze_map);
-
+      render(&player);
         SDL_Delay(16);  /* Cap the frame rate to ~60 FPS */
     }
 
