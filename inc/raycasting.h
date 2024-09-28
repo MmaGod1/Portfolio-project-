@@ -44,6 +44,7 @@ typedef struct {
 extern int maze_map[MAP_WIDTH][MAP_HEIGHT];
 
 /* Function prototypes */
+float normalize_angle(float angle);
 Texture load_texture(SDL_Renderer *renderer, const char *file);
 void calculate_wall_dimensions(float distance, Player *player, float rayAngle, int *wallHeight, int *wallTop, int *wallBottom);
 void perform_DDA(int stepX, int stepY, float *sideDistX,
