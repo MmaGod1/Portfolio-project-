@@ -90,32 +90,34 @@ void render_single_wall(GameStats *gameStats, int x, int wallHeight, int wallTop
  * @gameStats: Pointer to the GameStats structure containing game data.
  * @player: Pointer to the Player structure containing player's attributes.
  */
-void render_walls(GameStats *gameStats, Player *player)
-{
+/**
+ * render_walls - Render the walls of the maze based on the player's position.
+ *
+ * This function calculates the wall dimensions and renders them on the screen.
+ *
+ * @gameStats: Pointer to the GameStats structure containing game data.
+ * @player: Pointer to the Player structure containing player's attributes.
+ */
+void render_walls(GameStats *gameStats, Player *player) {
     int x, mapX, mapY, wallHeight, wallTop, wallBottom;
     float rayAngle, distance, wallX;
     int wallTextureIndex;
 
-    for (x = 0; x < SCREEN_WIDTH; x++)
-    {
+    for (x = 0; x < SCREEN_WIDTH; x++) {
+        // Normalize ray angle based on player angle and FOV
         rayAngle = normalize_angle(player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH));
 
         // Cast the ray to get the distance to the wall
-        distance = cast_ray(player->x, player->y, rayAngle);
-        printf("Ray angle: %f, Distance: %f\n", rayAngle, distance);  // Debug output
+        distance = castRay(player->x, player->y, rayAngle);
 
+        // Calculate wall dimensions based on distance
         calculate_wall_dimensions(distance, player, rayAngle, &wallHeight, &wallTop, &wallBottom);
 
-        wallX = get_wall_hit_coordinates(player->x, player->y, rayAngle, &mapX, &mapY);
+        // Get the wall hit coordinate and texture index
+        wallX = getWallHitCoordinates(player->x, player->y, rayAngle, &mapX, &mapY);
         wallTextureIndex = maze_map[mapX][mapY] - 1;
-        
-        if (wallTextureIndex < 0) {
-            wallTextureIndex = 0; // or handle error
-        }
 
-        printf("MapX: %d, MapY: %d, WallHeight: %d, WallTop: %d, WallBottom: %d\n",
-               mapX, mapY, wallHeight, wallTop, wallBottom);  // Debug output
-
+        // Render the wall slice with the calculated dimensions and texture coordinates
         render_single_wall(gameStats, x, wallHeight, wallTop, wallX, wallTextureIndex);
     }
 }
