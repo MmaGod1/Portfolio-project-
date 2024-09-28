@@ -3,6 +3,7 @@
 #include <stdbool.h>
 
 #define EPSILON 0.1f // Small value to avoid division by zero
+#define MAX_DISTANCE 1000.0f // Define MAX_DISTANCE
 
 float normalize_angle(float angle) {
     while (angle < 0) angle += 2 * M_PI;
@@ -47,22 +48,30 @@ void render_single_wall(GameStats *gameStats, int x, int wallHeight, int wallTop
     SDL_RenderCopy(gameStats->renderer, gameStats->wallTextures[wallTextureIndex].texture, &srcRect, &dstRect);
 }
 
-void render_walls(GameStats *gameStats, Player *player) {
-    int x, wallHeight, wallTop, wallBottom;
+void render_walls(GameStats *gameStats, Player *player)
+{
+    int x, mapX, mapY, wallHeight, wallTop, wallBottom;
+    int wallTextureIndex;
     float rayAngle, distance, wallX;
 
-    for (x = 0; x < SCREEN_WIDTH; x++) {
+    for (x = 0; x < SCREEN_WIDTH; x++)
+    {
+        // Normalize ray angle based on player angle and FOV
         rayAngle = normalize_angle(player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH));
+
+        // Cast the ray to get the distance to the wall
         distance = cast_ray(player->x, player->y, rayAngle);
+
+        // Calculate wall dimensions based on distance
         calculate_wall_dimensions(distance, player, rayAngle, &wallHeight, &wallTop, &wallBottom);
 
-        wallX = get_wall_hit_coordinates(player->x, player->y, rayAngle);
-        int wallTextureIndex = maze_map[(int)wallX][(int)wallX] - 1;
+        // Get the wall hit coordinate and texture index
+        wallX = get_wall_hit_coordinates(player->x, player->y, rayAngle, &mapX, &mapY); // Fixed
 
-        // Calculate light intensity based on distance (simple example)
-        float lightIntensity = fmax(0, 1.0f - (distance / MAX_DISTANCE));
+        wallTextureIndex = maze_map[mapX][mapY] - 1;
 
-        render_single_wall(gameStats, x, wallHeight, wallTop, wallX, wallTextureIndex, lightIntensity);
+        // Render the wall slice with the calculated dimensions and texture coordinates
+        render_single_wall(gameStats, x, wallHeight, wallTop, wallX, wallTextureIndex);
     }
 }
 
