@@ -100,15 +100,15 @@ float cast_ray(GameStats *gameStats, float playerX, float playerY,
 
 
 
-static void initialize_step_and_side(float rayDirX, float rayDirY,
-                                      float playerX, float playerY,
+static void initialize_side_distances(float playerX, float playerY,
+                                      float rayDirX, float rayDirY,
                                       int *mapX, int *mapY,
                                       int *stepX, int *stepY,
                                       float *sideDistX, float *sideDistY);
 
-static int perform_dda(GameStats *gameStats, float rayDirX, float rayDirY,
-                        int *mapX, int *mapY, int stepX, int stepY,
-                        float sideDistX, float sideDistY);
+static int perform_dda(GameStats *gameStats, int *mapX, int *mapY,
+                       float *sideDistX, float *sideDistY,
+                       int stepX, int stepY, float deltaDistX, float deltaDistY);
 
 float get_wall_hit_coordinates(GameStats *gameStats, float playerX, 
                                float playerY, float rayAngle, 
