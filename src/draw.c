@@ -1,6 +1,6 @@
 #include "raycasting.h"
 
-void draw_sky()
+void draw_sky(void)
 {
     SDL_SetRenderDrawColor(renderer, 135, 206, 235, 255);
     SDL_Rect skyRect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT / 2};
