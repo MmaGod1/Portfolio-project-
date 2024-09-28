@@ -80,7 +80,7 @@ if (floorTexture.texture)
     SDL_DestroyTexture(floorTexture.texture);
     floorTexture.texture = NULL;
 }
-    /* Clean up and quit SDL "/
+    /* Clean up and quit SDL */
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
