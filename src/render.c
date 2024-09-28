@@ -4,30 +4,32 @@
  * calculate_wall_dimensions - Calculate the wall dimensions
  * and correct for fisheye effect.
  *
- * @distance: The distance to the wall.
+ * @distance: The distance to the wall (float for precision).
  * @player: Pointer to the Player structure containing player's attributes.
+ * @rayAngle: The angle of the ray being cast.
  * @wallHeight: Pointer to store the calculated wall height.
  * @wallTop: Pointer to store the top position of the wall.
  * @wallBottom: Pointer to store the bottom position of the wall.
  */
-void calculate_wall_dimensions(int distance, Player *player, float rayAngle, int *wallHeight, int *wallTop, int *wallBottom)
+void calculate_wall_dimensions(float distance, Player *player, float rayAngle, int *wallHeight, int *wallTop, int *wallBottom)
 {
+    // Correct the distance to avoid fisheye effect
     float correctedDistance = distance * cos(rayAngle - player->angle);
-    
-    if (correctedDistance <= 0)
+
+    // Avoid division by zero or extremely small distances
+    if (correctedDistance < 0.1f)
     {
-        correctedDistance = 0.01; // Prevent division by zero
+        correctedDistance = 0.1f;
     }
 
+    // Calculate the wall height based on the corrected distance
     *wallHeight = (int)(SCREEN_HEIGHT / correctedDistance);
     *wallTop = (SCREEN_HEIGHT / 2) - (*wallHeight / 2);
     *wallBottom = (SCREEN_HEIGHT / 2) + (*wallHeight / 2);
 
     // Ensure values are within screen bounds
-    if (*wallTop < 0)
-        *wallTop = 0;
-    if (*wallBottom >= SCREEN_HEIGHT)
-        *wallBottom = SCREEN_HEIGHT - 1;
+    if (*wallTop < 0) *wallTop = 0;
+    if (*wallBottom >= SCREEN_HEIGHT) *wallBottom = SCREEN_HEIGHT - 1;
 }
 
 /**
@@ -83,22 +85,19 @@ void render_walls(GameStats *gameStats, Player *player)
     {
         rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
         
-        // Normalize the ray angle to stay between 0 and 2 * PI
-        if (rayAngle < 0)
-            rayAngle += 2 * M_PI;
-        if (rayAngle > 2 * M_PI)
-            rayAngle -= 2 * M_PI;
+        // No need to normalize the ray angle as long as FOV and player angle are correct
 
+        // Cast the ray to get the distance to the wall
         distance = cast_ray(player->x, player->y, rayAngle);
 
-        // Calculate wall dimensions
+        // Calculate wall dimensions based on distance
         calculate_wall_dimensions(distance, player, rayAngle, &wallHeight, &wallTop, &wallBottom);
 
-        // Calculate the wall texture coordinate
+        // Get the wall hit coordinate and texture index
         wallX = get_wall_hit_coordinates(player->x, player->y, rayAngle, &mapX, &mapY);
         wallTextureIndex = maze_map[mapX][mapY] - 1;
 
-        // Render the wall slice with calculated dimensions
+        // Render the wall slice with the calculated dimensions and texture coordinates
         render_single_wall(gameStats, x, wallHeight, wallTop, wallX, wallTextureIndex);
     }
 }
