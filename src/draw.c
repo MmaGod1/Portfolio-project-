@@ -1,6 +1,6 @@
 #include "raycasting.h"
 
-void drawSky()
+void draw_sky()
 {
     SDL_SetRenderDrawColor(renderer, 135, 206, 235, 255);
     SDL_Rect skyRect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT / 2};
@@ -9,7 +9,7 @@ void drawSky()
 
 
 
-void drawMiniMap(Player *player, bool showMap)
+void draw_mini_map(Player *player, bool showMap)
 {
     if (!showMap) return;
 
