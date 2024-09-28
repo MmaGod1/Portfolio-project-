@@ -50,7 +50,7 @@ void calculate_step_and_side_dist(float rayDirX, float rayDirY,
 	int *stepX, int *stepY, float *sideDistX, float *sideDistY);
 void perform_DDA(int stepX, int stepY, float *sideDistX,
                   float *sideDistY, int *mapX, int *mapY,
-                  int *hit, int *side, float rayAngle);
+                  int *hit, int *side);
 float cast_ray(float playerX, float playerY, float rayAngle);
 void draw_sky(SDL_Renderer *renderer);
 void draw_mini_map(SDL_Renderer *renderer, Player *player, bool showMap);
