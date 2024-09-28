@@ -71,7 +71,7 @@ int load_map(GameStats *gameStats, const char *filename);
 
 
 Texture load_texture(GameStats *gameStats, const char *filename);
-int load_game_textures(GameStats *gameStats),
+int load_game_textures(GameStats *gameStats);
 
 
 void process_movement(Player *player, SDL_Keycode key, float *newX, float *newY);
