@@ -41,8 +41,14 @@ int showMap = 1;  /* 1 to show map, 0 to hide map */
 
 
 
-Texture loadTexture(const char *filename);
+Texture load_texture(const char *filename);
 float cast_ray(float playerX, float playerY, float rayAngle);
-
+void draw_sky();
+void draw_mini_map(Player *player, bool showMap);
+float get_wall_hit_coordinates(float playerX, float playerY, float rayAngle, int *mapX, int *mapY) {
+void draw_floor(Player *player);
+void render_walls(Player *player);
+void render(Player *player);
+void handleInput(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIGHT]);
 
 #endif
