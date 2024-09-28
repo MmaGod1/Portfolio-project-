@@ -1,3 +1,5 @@
+#include "raycasting.h"
+
 void render_walls(Player *player)
 {
     for (int x = 0; x < SCREEN_WIDTH; x++)
