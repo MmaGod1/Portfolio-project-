@@ -1,7 +1,8 @@
 #include "raycasting.h"
 
-
-float get_wall_hit_coordinates(float playerX, float playerY, float rayAngle, int *mapX, int *mapY)
+float get_wall_hit_coordinates(GameStats *gameStats, float playerX, 
+                               float playerY, float rayAngle, 
+                               int *mapX, int *mapY)
 {
     float rayDirX = cos(rayAngle);
     float rayDirY = sin(rayAngle);
@@ -15,7 +16,6 @@ float get_wall_hit_coordinates(float playerX, float playerY, float rayAngle, int
 
     int stepX, stepY, side, hit = 0;
 
-    /* Determine step direction and initial side distances */
     if (rayDirX < 0)
     {
         stepX = -1;
@@ -38,33 +38,38 @@ float get_wall_hit_coordinates(float playerX, float playerY, float rayAngle, int
         sideDistY = (*mapY + 1.0 - playerY) * deltaDistY;
     }
 
-    /* Perform Digital Differential Analyzer */
     while (hit == 0)
     {
         if (sideDistX < sideDistY)
         {
             sideDistX += deltaDistX;
             *mapX += stepX;
-            side = 0;  /* Hit a vertical wall */
+            side = 0;
         }
         else
         {
             sideDistY += deltaDistY;
             *mapY += stepY;
-            side = 1;  /* Hit a horizontal wall */
+            side = 1;
         }
 
-        /* Check for wall hit */
-        if (*mapX >= 0 && *mapX < MAP_WIDTH && *mapY >= 0 && *mapY < MAP_HEIGHT && maze_map[*mapX][*mapY] == 1)
+        if (*mapX >= 0 && *mapX < MAP_WIDTH && *mapY >= 0 && 
+            *mapY < MAP_HEIGHT && gameStats->maze_map[*mapX][*mapY] == 1)
+        {
             hit = 1;
+        }
     }
 
-    /* Calculate the exact position of where the wall was hit */
     if (side == 0)
+    {
         wallX = playerY + ((sideDistX - deltaDistX) * rayDirY);
+    }
     else
+    {
         wallX = playerX + ((sideDistY - deltaDistY) * rayDirX);
-  wallX -= floor(wallX);  /* Keep only the fractional part */
+    }
 
-    return (wallX);  /* Return the hit coordinate on the wall */
+    wallX -= floor(wallX);
+
+    return (wallX);
 }
