@@ -56,7 +56,7 @@ int initialize_game(GameStats *gameStats, Player *player, char *mapFile)
     if (load_map(gameStats, mapFile) != 0)
     {
         fprintf(stderr, "Failed to load map\n");
-        cleanup(gameStats);
+        clean_up(gameStats);
         return (1);
     }
 
