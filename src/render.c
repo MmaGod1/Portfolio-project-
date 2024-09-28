@@ -89,39 +89,7 @@ void render_walls(GameStats *gameStats, Player *player)
         render_single_wall(gameStats, x, wallHeight, wallTop, wallX, wallTextureIndex);
     }
 }
-/**
- * render_walls - Render the walls of the maze based on the player's position.
- *
- * This function calculates the wall dimensions and renders them on the screen.
- *
- * @gameStats: Pointer to the GameStats structure containing game data.
- * @player: Pointer to the Player structure containing player's attributes.
- */
-void render_walls(GameStats *gameStats, Player *player)
-{
-    int x, mapX, mapY, wallHeight, wallTop, wallBottom;
-    int wallTextureIndex;
-    float rayAngle, distance, wallX;
 
-    for (x = 0; x < SCREEN_WIDTH; x++)
-    {
-        // Normalize ray angle based on player angle and FOV
-        rayAngle = normalize_angle(player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH));
-
-        // Cast the ray to get the distance to the wall
-        distance = cast_ray(player->x, player->y, rayAngle);
-
-        // Calculate wall dimensions based on distance
-        calculate_wall_dimensions(distance, player, rayAngle, &wallHeight, &wallTop, &wallBottom);
-
-        // Get the wall hit coordinate and texture index
-        wallX = get_wall_hit_coordinates(player->x, player->y, rayAngle, &mapX, &mapY);
-        wallTextureIndex = maze_map[mapX][mapY] - 1;
-
-        // Render the wall slice with the calculated dimensions and texture coordinates
-        render_single_wall(gameStats, x, wallHeight, wallTop, wallX, wallTextureIndex);
-    }
-}
 
 /**
  * render - Clears the renderer and draws the current frame of the game,
