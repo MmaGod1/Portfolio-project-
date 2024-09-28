@@ -92,7 +92,7 @@ void initialize_ray(float playerX, float playerY, float rayAngle,
 float perform_ray_cast(GameStats *gameStats, int *mapX, int *mapY,
                        int stepX, int stepY, float sideDistX,
                        float sideDistY, float deltaDistX, float deltaDistY,
-                       float playerX, float playerY);
+                       float playerX, float playerY, float rayAngle);
 
 float cast_ray(GameStats *gameStats, float playerX, float playerY, 
                 float rayAngle);
