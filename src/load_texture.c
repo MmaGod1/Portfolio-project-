@@ -1,6 +1,6 @@
 #include "raycasting.h"
 
-Texture loadTexture(const char *filename)
+Texture load_texture(const char *filename)
 {
     SDL_Surface *surface = IMG_Load(filename);
     if (!surface)
