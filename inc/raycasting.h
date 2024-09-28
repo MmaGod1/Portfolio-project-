@@ -62,8 +62,13 @@ void draw_mini_map(GameStats *gameStats, Player *player, bool showMap);
 
 
 
-
+int open_map_file(const char *filename, FILE **file);
+int read_character(FILE *file, int *ch);
+int process_character(GameStats *gameStats, int ch, int x, int y);
 int load_map(GameStats *gameStats, const char *filename);
+
+
+
 Texture load_texture(GameStats *gameStats, const char *filename);
 
 
