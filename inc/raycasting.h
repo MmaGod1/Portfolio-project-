@@ -45,9 +45,7 @@ extern int maze_map[MAP_WIDTH][MAP_HEIGHT];
 
 /* Function prototypes */
 Texture load_texture(SDL_Renderer *renderer, const char *file);
-void calculate_step_and_side_dist(float rayDirX, float rayDirY,
-	float playerX, float playerY, int *mapX, int *mapY,
-	int *stepX, int *stepY, float *sideDistX, float *sideDistY);
+void calculate_wall_dimensions(float distance, Player *player, float rayAngle, int *wallHeight, int *wallTop, int *wallBottom);
 void perform_DDA(int stepX, int stepY, float *sideDistX,
                   float *sideDistY, int *mapX, int *mapY,
                   int *hit, int *side);
