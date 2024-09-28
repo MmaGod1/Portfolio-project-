@@ -61,29 +61,30 @@ void perform_DDA(int stepX, int stepY, float *sideDistX,
 	float *sideDistY, int *mapX, int *mapY, int *hit,
 	int *side, float rayAngle)
 {
-	float rayDirX = cos(rayAngle); /* Calculate ray direction in X */
-	float rayDirY = sin(rayAngle); /* Calculate ray direction in Y */
+	float rayDirX = cos(rayAngle);
+	float rayDirY = sin(rayAngle);
 
 	while (*hit == 0)
 	{
+		// Move to the next grid square
 		if (*sideDistX < *sideDistY)
 		{
 			*sideDistX += fabs(1 / rayDirX);
 			*mapX += stepX;
-			*side = 0;
+			*side = 0; // Hit on X side
 		}
 		else
 		{
 			*sideDistY += fabs(1 / rayDirY);
 			*mapY += stepY;
-			*side = 1;
+			*side = 1; // Hit on Y side
 		}
 
+		// Check if the ray hit a wall
 		if (maze_map[*mapX][*mapY] == 1)
 			*hit = 1;
 	}
 }
-
 /**
  * cast_ray - Casts a ray from the player's position to determine
  * the distance to the nearest wall.
@@ -106,10 +107,13 @@ float cast_ray(float playerX, float playerY, float rayAngle)
     int stepX, stepY, hit = 0, side;
     float perpWallDist;
 
+    // Step and side distance calculation
     calculate_step_and_side_dist(rayDirX, rayDirY, playerX, playerY, &mapX, &mapY, &stepX, &stepY, &sideDistX, &sideDistY);
 
+    // Perform DDA to find the wall
     perform_DDA(stepX, stepY, &sideDistX, &sideDistY, &mapX, &mapY, &hit, &side, rayAngle);
 
+    // Calculate perpendicular wall distance
     if (hit)
     {
         if (side == 0)
