@@ -32,7 +32,7 @@ stepX = -1;
         sideDistY = (playerY - mapY) * deltaDistY;
 }
 else
-p{
+{
         stepY = 1;
         sideDistY = (mapY + 1.0 - playerY) * deltaDistY;
     }
