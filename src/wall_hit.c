@@ -1,55 +1,61 @@
 #include "raycasting.h"
 
-static void initialize_step_and_side(float rayDirX, float rayDirY,
-                                      float playerX, float playerY,
+/**
+ * initialize_side_distances - Initializes the side distances and steps
+ */
+static void initialize_side_distances(float playerX, float playerY,
+                                      float rayDirX, float rayDirY,
                                       int *mapX, int *mapY,
                                       int *stepX, int *stepY,
                                       float *sideDistX, float *sideDistY)
 {
-    *mapX = (int)playerX;
-    *mapY = (int)playerY;
+    float deltaDistX = fabs(1 / rayDirX);
+    float deltaDistY = fabs(1 / rayDirY);
 
     if (rayDirX < 0)
     {
         *stepX = -1;
-        *sideDistX = (playerX - *mapX) * fabs(1 / rayDirX);
+        *sideDistX = (playerX - *mapX) * deltaDistX;
     }
     else
     {
         *stepX = 1;
-        *sideDistX = (*mapX + 1.0 - playerX) * fabs(1 / rayDirX);
+        *sideDistX = (*mapX + 1.0 - playerX) * deltaDistX;
     }
 
     if (rayDirY < 0)
     {
         *stepY = -1;
-        *sideDistY = (playerY - *mapY) * fabs(1 / rayDirY);
+        *sideDistY = (playerY - *mapY) * deltaDistY;
     }
     else
     {
         *stepY = 1;
-        *sideDistY = (*mapY + 1.0 - playerY) * fabs(1 / rayDirY);
+        *sideDistY = (*mapY + 1.0 - playerY) * deltaDistY;
     }
 }
 
-static int perform_dda(GameStats *gameStats, float rayDirX, float rayDirY,
-                        int *mapX, int *mapY, int stepX, int stepY,
-                        float sideDistX, float sideDistY)
+/**
+ * perform_dda - Performs DDA (Digital Differential Analysis) for raycasting
+ */
+static int perform_dda(GameStats *gameStats, int *mapX, int *mapY,
+                       float *sideDistX, float *sideDistY,
+                       int stepX, int stepY, float deltaDistX, float deltaDistY)
 {
     int hit = 0;
     int side;
 
     while (hit == 0)
     {
-        if (sideDistX < sideDistY)
+        if (*sideDistX < *sideDistY)
         {
-            sideDistX += fabs(1 / rayDirX);
+            *sideDistX += deltaDistX;
             *mapX += stepX;
             side = 0;
         }
         else
         {
-            sideDistY += fabs(1 / rayDirY);
+            *sideDistY += deltaDistY;
             *mapY += stepY;
             side = 1;
         }
@@ -60,9 +66,13 @@ static int perform_dda(GameStats *gameStats, float rayDirX, float rayDirY,
             hit = 1;
         }
     }
-    return side;
+
+    return (side);
 }
 
+/**
+ * get_wall_hit_coordinates - Determines wall hit position during raycasting
+ */
 float get_wall_hit_coordinates(GameStats *gameStats, float playerX,
                                float playerY, float rayAngle,
                                int *mapX, int *mapY)
@@ -70,14 +80,17 @@ float get_wall_hit_coordinates(GameStats *gameStats, float playerX,
     float rayDirX = cos(rayAngle);
     float rayDirY = sin(rayAngle);
 
-    int stepX, stepY;
-    float sideDistX, sideDistY;
+    *mapX = (int)playerX;
+    *mapY = (int)playerY;
 
-    initialize_step_and_side(rayDirX, rayDirY, playerX, playerY, mapX, mapY,
+    float sideDistX, sideDistY;
+    int stepX, stepY;
+
+    initialize_side_distances(playerX, playerY, rayDirX, rayDirY, mapX, mapY,
                               &stepX, &stepY, &sideDistX, &sideDistY);
 
-    int side = perform_dda(gameStats, rayDirX, rayDirY, mapX, mapY,
-                            stepX, stepY, sideDistX, sideDistY);
+    int side = perform_dda(gameStats, mapX, mapY, &sideDistX, &sideDistY,
+                           stepX, stepY, fabs(1 / rayDirX), fabs(1 / rayDirY));
 
     float wallX;
     if (side == 0)
@@ -90,5 +103,6 @@ float get_wall_hit_coordinates(GameStats *gameStats, float playerX,
     }
 
     wallX -= floor(wallX);
+
     return (wallX);
 }
