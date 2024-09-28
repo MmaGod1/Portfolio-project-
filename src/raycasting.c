@@ -129,10 +129,10 @@ float get_wall_hit_coordinates(float playerX, float playerY, float rayAngle, int
 
     if (side == 0) {
         // Wall hit on the X side: calculate based on Y position
-        wallX = playerY + ((mapX - playerX + (1 - stepX) / 2) / rayDirX) * rayDirY;
+        wallX = playerY + (((*mapX) - playerX + (1 - stepX) / 2) / rayDirX) * rayDirY;
     } else {
         // Wall hit on the Y side: calculate based on X position
-        wallX = playerX + ((mapY - playerY + (1 - stepY) / 2) / rayDirY) * rayDirX;
+        wallX = playerX + (((*mapY) - playerY + (1 - stepY) / 2) / rayDirY) * rayDirX;
     }
     wallX -= floor(wallX);  // Get the fractional part of the hit position
 
