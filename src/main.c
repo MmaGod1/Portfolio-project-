@@ -1,11 +1,5 @@
 #include "raycasting.h"
 
-SDL_Window *window = NULL;
-SDL_Renderer *renderer = NULL;
-Texture wallTextures[4];
-Texture floorTexture;
-int showMap = 1;  /* 1 to show map, 0 to hide map */
-
 
 int main(int argc, char* argv[])
 {
