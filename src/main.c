@@ -1,6 +1,14 @@
 #include "raycasting.h"
 
-
+/**
+ * initialize_sdl - Initializes SDL and creates the window and renderer.
+ *
+ * @gameStats: Pointer to the GameStats struct containing SDL resources.
+ *
+ * Sets up SDL, creates the game window, and initializes the renderer.
+ * 
+ * Return: 0 on success, 1 on failure.
+ */
 int initialize_sdl(GameStats *gameStats)
 {
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -38,6 +46,19 @@ int initialize_sdl(GameStats *gameStats)
 }
 
 
+
+
+/**
+ * initialize_game - Initializes game resources, player, and loads the map.
+ *
+ * @gameStats: Pointer to the GameStats struct containing game state.
+ * @player: Pointer to the Player struct containing player information.
+ * @mapFile: Path to the map file to load.
+ *
+ * Resets game stats, sets up SDL, initializes the player, loads the map and textures.
+ * 
+ * Return: 0 on success, 1 on failure.
+ */
 int initialize_game(GameStats *gameStats, Player *player, char *mapFile)
 {
     memset(gameStats, 0, sizeof(GameStats));
@@ -65,6 +86,17 @@ int initialize_game(GameStats *gameStats, Player *player, char *mapFile)
     return (0);
 }
 
+
+/**
+ * main - Entry point of the program, initializes the game and handles the game loop.
+ *
+ * @argc: Argument count.
+ * @argv: Argument vector containing the map file path.
+ *
+ * Initializes game resources, processes user input, renders the game, and cleans up.
+ * 
+ * Return: 0 on success, 1 on failure.
+ */
 int main(int argc, char *argv[])
 {
     if (argc != 2)
