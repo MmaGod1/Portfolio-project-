@@ -1,23 +1,19 @@
 #include "raycasting.h"
 
-int load_map(GameStats *gameStats, const char *filename)
+Texture loadTexture(GameStats *gameStats, const char *filename)
 {
-    FILE *file = fopen(filename, "r");
-    if (!file)
+    SDL_Surface *surface = IMG_Load(filename);
+    if (!surface)
     {
-        fprintf(stderr, "Error opening map file: %s\n", filename);
-        return (-1);
+        fprintf(stderr, "Error loading texture: %s\n", IMG_GetError());
+        return (Texture){NULL, 0, 0};
     }
-
-    // Assuming MAP_WIDTH and MAP_HEIGHT are defined properly
-    for (int y = 0; y < MAP_HEIGHT; y++)
-    {
-        for (int x = 0; x < MAP_WIDTH; x++)
-        {
-            fscanf(file, "%d", &gameStats->maze_map[x][y]);
-        }
-    }
-
-    fclose(file);
-    return (0);
+    
+    Texture texture;
+    texture.texture = SDL_CreateTextureFromSurface(gameStats->renderer, surface);
+    SDL_FreeSurface(surface);
+    texture.width = surface->w;
+    texture.height = surface->h;
+    
+    return texture;
 }
