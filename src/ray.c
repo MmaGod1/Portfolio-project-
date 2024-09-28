@@ -1,6 +1,6 @@
 #include "raycasting.h"
 
-float castRay(float playerX, float playerY, float rayAngle)
+float cast_ray(float playerX, float playerY, float rayAngle)
 {
 int stepX, stepY, side;
 float sideDistX, sideDistY;
