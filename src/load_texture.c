@@ -17,3 +17,20 @@ Texture load_texture(GameStats *gameStats, const char *filename)
     
     return texture;
 }
+
+
+int load_game_textures(GameStats *gameStats)
+{
+    gameStats->wallTextures[0] = load_texture(gameStats, 
+        "./images/wall1.jpg");
+    gameStats->wallTextures[1] = load_texture(gameStats, 
+        "./images/wall2.jpg");
+    gameStats->wallTextures[2] = load_texture(gameStats, 
+        "./images/wall3.jpg");
+    gameStats->wallTextures[3] = load_texture(gameStats, 
+        "./images/wall4.jpg");
+    gameStats->floorTexture = load_texture(gameStats, 
+        "./images/floor.jpg");
+
+    return (0);
+}
