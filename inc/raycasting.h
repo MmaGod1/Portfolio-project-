@@ -38,7 +38,7 @@ SDL_Renderer *renderer;
 Texture wallTextures[4];
 Texture floorTexture;
 int showMap = 1;  /* 1 to show map, 0 to hide map */
-
+int maze_map[MAP_WIDTH][MAP_HEIGHT]; /*Maze map (1 = wall, 0 = empty space)*/
 
 
 Texture load_texture(const char *filename);
@@ -49,6 +49,9 @@ float get_wall_hit_coordinates(float playerX, float playerY, float rayAngle, int
 void draw_floor(Player *player);
 void render_walls(Player *player);
 void render(Player *player);
-void handleInput(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIGHT]);
+void handle_input(Player *player, bool *running, int maze_map[MAP_WIDTH][MAP_HEIGHT]);
+int load_map(const char *filename, int maze_map[MAP_WIDTH][MAP_HEIGHT]);
+
+
 
 #endif
