@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
         SDL_Delay(16);
     }
 
-    cleanup(&gameStats);
+    clean_up(&gameStats);
 
     return (0);
 }
