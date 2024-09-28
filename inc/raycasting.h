@@ -31,6 +31,16 @@ typedef struct {
 } Player;
 
 
+typedef struct GameStats 
+{
+    SDL_Window *window;
+    SDL_Renderer *renderer;
+    Texture wallTextures[4];
+    Texture floorTexture;
+    int showMap;
+    int maze_map[MAP_WIDTH][MAP_HEIGHT];
+} GameStats;
+
 
 extern SDL_Window *window;
 extern SDL_Renderer *renderer;
