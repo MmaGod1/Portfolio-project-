@@ -1,9 +1,8 @@
 #include "raycasting.h"
 
-SDL_Window *window;
-SDL_Renderer *renderer;
-
-Texture wallTextures[4];
+SDL_Window *window = NULL;
+SDL_Renderer *renderer = NULL;
+Texture *wallTextures[4] = NULL;
 Texture floorTexture;
 int showMap = 1;  /* 1 to show map, 0 to hide map */
 int maze_map[MAP_WIDTH][MAP_HEIGHT]; /*Maze map (1 = wall, 0 = empty space)*/
