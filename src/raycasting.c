@@ -16,30 +16,30 @@
  * @sideDistY: Pointer to store the initial distance to the next Y side.
  */
 void calculate_step_and_side_dist(float rayDirX, float rayDirY,
-	float playerX, float playerY, int *mapX, int *mapY,
-	int *stepX, int *stepY, float *sideDistX, float *sideDistY)
+    float playerX, float playerY, int *mapX, int *mapY,
+    int *stepX, int *stepY, float *sideDistX, float *sideDistY)
 {
-	if (rayDirX < 0)
-	{
-		*stepX = -1;
-		*sideDistX = (playerX - *mapX) * fabs(1 / rayDirX);
-	}
-	else
-	{
-		*stepX = 1;
-		*sideDistX = (*mapX + 1.0 - playerX) * fabs(1 / rayDirX);
-	}
+    if (rayDirX < 0)
+    {
+        *stepX = -1;
+        *sideDistX = (playerX - *mapX) / rayDirX;
+    }
+    else
+    {
+        *stepX = 1;
+        *sideDistX = (*mapX + 1.0 - playerX) / rayDirX;
+    }
 
-	if (rayDirY < 0)
-	{
-		*stepY = -1;
-		*sideDistY = (playerY - *mapY) * fabs(1 / rayDirY);
-	}
-	else
-	{
-		*stepY = 1;
-		*sideDistY = (*mapY + 1.0 - playerY) * fabs(1 / rayDirY);
-	}
+    if (rayDirY < 0)
+    {
+        *stepY = -1;
+        *sideDistY = (playerY - *mapY) / rayDirY;
+    }
+    else
+    {
+        *stepY = 1;
+        *sideDistY = (*mapY + 1.0 - playerY) / rayDirY;
+    }
 }
 
 /**
@@ -58,33 +58,33 @@ void calculate_step_and_side_dist(float rayDirX, float rayDirY,
  * @rayAngle: The angle of the ray being cast.
  */
 void perform_DDA(int stepX, int stepY, float *sideDistX,
-	float *sideDistY, int *mapX, int *mapY, int *hit,
-	int *side, float rayAngle)
+    float *sideDistY, int *mapX, int *mapY, int *hit,
+    int *side, float rayAngle)
 {
-	float rayDirX = cos(rayAngle);
-	float rayDirY = sin(rayAngle);
+    float rayDirX = cos(rayAngle);
+    float rayDirY = sin(rayAngle);
 
-	while (*hit == 0)
-	{
-		// Move to the next grid square
-		if (*sideDistX < *sideDistY)
-		{
-			*sideDistX += fabs(1 / rayDirX);
-			*mapX += stepX;
-			*side = 0; // Hit on X side
-		}
-		else
-		{
-			*sideDistY += fabs(1 / rayDirY);
-			*mapY += stepY;
-			*side = 1; // Hit on Y side
-		}
+    while (*hit == 0)
+    {
+        if (*sideDistX < *sideDistY)
+        {
+            *sideDistX += 1.0 / rayDirX;
+            *mapX += stepX;
+            *side = 0;
+        }
+        else
+        {
+            *sideDistY += 1.0 / rayDirY;
+            *mapY += stepY;
+            *side = 1;
+        }
 
-		// Check if the ray hit a wall
-		if (maze_map[*mapX][*mapY] == 1)
-			*hit = 1;
-	}
+        if (maze_map[*mapX][*mapY] == 1)
+            *hit = 1;
+    }
 }
+
+
 /**
  * cast_ray - Casts a ray from the player's position to determine
  * the distance to the nearest wall.
@@ -107,13 +107,10 @@ float cast_ray(float playerX, float playerY, float rayAngle)
     int stepX, stepY, hit = 0, side;
     float perpWallDist;
 
-    // Step and side distance calculation
     calculate_step_and_side_dist(rayDirX, rayDirY, playerX, playerY, &mapX, &mapY, &stepX, &stepY, &sideDistX, &sideDistY);
 
-    // Perform DDA to find the wall
     perform_DDA(stepX, stepY, &sideDistX, &sideDistY, &mapX, &mapY, &hit, &side, rayAngle);
 
-    // Calculate perpendicular wall distance
     if (hit)
     {
         if (side == 0)
@@ -123,11 +120,12 @@ float cast_ray(float playerX, float playerY, float rayAngle)
     }
     else
     {
-        perpWallDist = 10; // Default distance if no hit detected
+        perpWallDist = 1000; // Large fallback value when no wall is hit
     }
 
     return perpWallDist;
 }
+
 
 /**
  * get_wall_hit_coordinates - Determines the coordinates of the wall hit
@@ -158,11 +156,11 @@ float get_wall_hit_coordinates(float playerX, float playerY, float rayAngle, int
 
     if (side == 0)
     {
-        wallX = playerY + ((sideDistX - fabs(1 / rayDirX)) * rayDirY);
+        wallX = playerY + ((sideDistX - (1.0 / rayDirX)) * rayDirY);
     }
     else
     {
-        wallX = playerX + ((sideDistY - fabs(1 / rayDirY)) * rayDirX);
+        wallX = playerX + ((sideDistY - (1.0 / rayDirY)) * rayDirX);
     }
     wallX -= floor(wallX);
 
