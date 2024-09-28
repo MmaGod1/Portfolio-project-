@@ -61,7 +61,7 @@ else
         }
     }
 
-    / *Calculate the perpendicular wall distance for correction */
+    /*Calculate the perpendicular wall distance for correction */
     float perpWallDist;
     if (side == 0)
     {
