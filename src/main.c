@@ -39,7 +39,7 @@ int main(int argc, char* argv[]) {
 
     Player player = { .x = 2.0, .y = 2.0, .angle = 0.0, .moveSpeed = 0.05, .rotSpeed = 0.05 };
 
-    if (loadMap(argv[1], maze_map) != 0) {
+    if (load_map(argv[1], maze_map) != 0) {
         fprintf(stderr, "Failed to load map\n");
         SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(window);
@@ -47,11 +47,11 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    wallTextures[0] = loadTexture("./wall1.jpg");
-    wallTextures[1] = loadTexture("./wall2.jpg");
-    wallTextures[2] = loadTexture("./wall3.jpg");
-    wallTextures[3] = loadTexture("./wall4.jpg");
-    floorTexture = loadTexture("./floor.jpg");
+    wallTextures[0] = load_texture("./wall1.jpg");
+    wallTextures[1] = load_texture("./wall2.jpg");
+    wallTextures[2] = load_texture("./wall3.jpg");
+    wallTextures[3] = load_texture("./wall4.jpg");
+    floorTexture = load_texture("./floor.jpg");
 
     /* Game loop */
     bool running = true;
