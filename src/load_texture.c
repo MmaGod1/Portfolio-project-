@@ -3,7 +3,8 @@
 Texture loadTexture(const char *filename)
 {
     SDL_Surface *surface = IMG_Load(filename);
-    if (!surface) {
+    if (!surface)
+    {
         fprintf(stderr, "Error loading texture: %s\n", IMG_GetError());
         return (Texture){NULL, 0, 0};
     }
