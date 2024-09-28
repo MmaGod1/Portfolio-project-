@@ -46,6 +46,16 @@ typedef struct GameStats
 
 
 void render(Player *player, GameStats *gameStats);
+void draw_sky(GameStats *gameStats);
+void draw_floor(GameStats *gameStats, Player *player);
+void draw_mini_map(GameStats *gameStats, Player *player, bool showMap);
+
+
+
+
+
+
+
 
 
 int load_map(GameStats *gameStats, const char *filename);
@@ -58,11 +68,6 @@ void handle_input(Player *player, bool *running, GameStats *gameStats);
 
 
 
-
-
-void draw_sky(GameStats *gameStats);
-void draw_floor(GameStats *gameStats, Player *player);
-void draw_mini_map(GameStats *gameStats, Player *player, bool showMap);
 
 
 float cast_ray(GameStats *gameStats, float playerX, float playerY, 
