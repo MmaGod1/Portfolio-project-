@@ -65,6 +65,13 @@ void draw_mini_map(GameStats *gameStats, Player *player, bool showMap);
 
 int load_map(GameStats *gameStats, const char *filename);
 Texture load_texture(GameStats *gameStats, const char *filename);
+
+
+
+void process_movement(Player *player, SDL_Keycode key, float *newX, float *newY);
+void update_player_angle(Player *player, SDL_Keycode key);
+bool check_new_position(GameStats *gameStats, float newX, float newY);
+
 void handle_input(Player *player, bool *running, GameStats *gameStats);
 
 
