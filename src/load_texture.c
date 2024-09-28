@@ -1,5 +1,14 @@
 #include "raycasting.h"
 
+
+/**
+ * load_texture - Loads a texture from a file and creates an SDL texture.
+ *
+ * @gameStats: Pointer to the GameStats struct containing the SDL renderer.
+ * @filename: The path to the image file to load.
+ *
+ * Return: A Texture struct containing the SDL texture, width, and height.
+ */
 Texture load_texture(GameStats *gameStats, const char *filename)
 {
     SDL_Surface *surface = IMG_Load(filename);
@@ -19,6 +28,15 @@ Texture load_texture(GameStats *gameStats, const char *filename)
 }
 
 
+/**
+ * load_game_textures - Loads all wall and floor textures for the game.
+ *
+ * @gameStats: Pointer to the GameStats struct containing texture arrays.
+ *
+ * Loads textures for the walls and floor from image files into the gameStats struct.
+ * 
+ * Return: 0 on success.
+ */
 int load_game_textures(GameStats *gameStats)
 {
     gameStats->wallTextures[0] = load_texture(gameStats, 
