@@ -28,11 +28,11 @@ int maze_map[MAP_WIDTH][MAP_HEIGHT] = {
         {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
 };
 
-
-int load_map(const char *filename, int maze_map[MAP_WIDTH][MAP_HEIGHT])
+int load_map(GameStats *gameStats, const char *filename)
 {
     int ch;
-  FILE *file = fopen(filename, "r");
+    FILE *file = fopen(filename, "r");
+
     if (!file)
     {
         fprintf(stderr, "Error opening file %s\n", filename);
@@ -42,7 +42,7 @@ int load_map(const char *filename, int maze_map[MAP_WIDTH][MAP_HEIGHT])
     for (int y = 0; y < MAP_HEIGHT; y++)
     {
         for (int x = 0; x < MAP_WIDTH; x++)
-          {
+        {
             ch = fgetc(file);
             while (ch == '\r' || ch == '\n')
                 ch = fgetc(file);
@@ -55,12 +55,13 @@ int load_map(const char *filename, int maze_map[MAP_WIDTH][MAP_HEIGHT])
             }
 
             if (ch == '#')
-                maze_map[x][y] = 1;
+                gameStats->maze_map[x][y] = 1;
             else if (ch == '.')
-                maze_map[x][y] = 0;
+                gameStats->maze_map[x][y] = 0;
             else
             {
-                fprintf(stderr, "Invalid character '%c' in map file at [%d,%d]\n", ch, x, y);
+                fprintf(stderr, "Invalid character '%c' in map file at [%d,%d]\n", 
+                        ch, x, y);
                 fclose(file);
                 return (-1);
             }
