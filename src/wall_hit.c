@@ -1,7 +1,7 @@
 #include "raycasting.h"
 
-float get_wall_hit_coordinates(GameStats *gameStats, float playerX, 
-                               float playerY, float rayAngle, 
+float get_wall_hit_coordinates(GameStats *gameStats, float playerX,
+                               float playerY, float rayAngle,
                                int *mapX, int *mapY)
 {
     float rayDirX = cos(rayAngle);
@@ -53,7 +53,7 @@ float get_wall_hit_coordinates(GameStats *gameStats, float playerX,
             side = 1;
         }
 
-        if (*mapX >= 0 && *mapX < MAP_WIDTH && *mapY >= 0 && 
+        if (*mapX >= 0 && *mapX < MAP_WIDTH && *mapY >= 0 &&
             *mapY < MAP_HEIGHT && gameStats->maze_map[*mapX][*mapY] == 1)
         {
             hit = 1;
