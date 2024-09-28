@@ -40,7 +40,7 @@ void initialize_ray(float playerX, float playerY, float rayAngle,
 float perform_ray_cast(GameStats *gameStats, int *mapX, int *mapY,
                        int stepX, int stepY, float sideDistX,
                        float sideDistY, float deltaDistX, float deltaDistY,
-                       float playerX, float playerY)
+                       float playerX, float playerY, float rayAngle)
 {
     int side;
     bool hit = false;
@@ -92,5 +92,5 @@ float cast_ray(GameStats *gameStats, float playerX, float playerY,
 
     return (perform_ray_cast(gameStats, &mapX, &mapY, stepX, stepY,
                              sideDistX, sideDistY, deltaDistX,
-                             deltaDistY, playerX, playerY));
+                             deltaDistY, playerX, playerY, rayAngle));
 }
