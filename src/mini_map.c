@@ -1,5 +1,14 @@
 #include "raycasting.h"
 
+
+/**
+ * draw_map - Renders the maze map on the screen if the map is enabled.
+ *
+ * @gameStats: Pointer to the GameStats struct containing the maze map and renderer.
+ * @showMap: Boolean flag to indicate whether the map should be drawn.
+ *
+ * Draws a simple 2D top-down view of the maze map using different colors for walls.
+ */
 void draw_map(GameStats *gameStats, bool showMap)
 {
     if (!showMap)
@@ -33,6 +42,16 @@ void draw_map(GameStats *gameStats, bool showMap)
     }
 }
 
+
+
+/**
+ * draw_player_and_los - Draws the player and their line of sight on the mini-map.
+ *
+ * @gameStats: Pointer to the GameStats struct containing the renderer.
+ * @player: Pointer to the Player struct containing player position and angle.
+ *
+ * Renders the player's position and the field of view (lines of sight) on the mini-map.
+ */
 void draw_player_and_los(GameStats *gameStats, Player *player)
 {
     int mapStartX = 10;    
@@ -56,6 +75,16 @@ void draw_player_and_los(GameStats *gameStats, Player *player)
     }
 }
 
+
+/**
+ * draw_mini_map - Draws the mini-map including the maze map and player's position.
+ *
+ * @gameStats: Pointer to the GameStats struct containing the maze map and renderer.
+ * @player: Pointer to the Player struct containing player information.
+ * @showMap: Boolean flag to indicate whether the map should be drawn.
+ *
+ * Combines map rendering and player position/LOS to draw the complete mini-map.
+ */
 void draw_mini_map(GameStats *gameStats, Player *player, bool showMap)
 {
     draw_map(gameStats, showMap);
