@@ -44,8 +44,13 @@ typedef struct GameStats
 
 
 
-
+void render_walls(GameStats *gameStats, Player *player);
+void render_wall_segment(GameStats *gameStats, Player *player, 
+                         float rayAngle, int x, 
+                         int wallTop, int wallHeight);
 void render(Player *player, GameStats *gameStats);
+
+
 void draw_sky(GameStats *gameStats);
 void draw_floor(GameStats *gameStats, Player *player);
 
@@ -54,11 +59,6 @@ void draw_floor(GameStats *gameStats, Player *player);
 void draw_map(GameStats *gameStats, bool showMap);
 void draw_player_and_los(GameStats *gameStats, Player *player);
 void draw_mini_map(GameStats *gameStats, Player *player, bool showMap);
-
-
-
-
-
 
 
 
@@ -76,7 +76,6 @@ Texture load_texture(GameStats *gameStats, const char *filename);
 void process_movement(Player *player, SDL_Keycode key, float *newX, float *newY);
 void update_player_angle(Player *player, SDL_Keycode key);
 bool check_new_position(GameStats *gameStats, float newX, float newY);
-
 void handle_input(Player *player, bool *running, GameStats *gameStats);
 
 
@@ -103,7 +102,6 @@ float get_wall_hit_coordinates(GameStats *gameStats, float playerX,
                                float playerY, float rayAngle, 
                                int *mapX, int *mapY);
 
-void render_walls(GameStats *gameStats, Player *player);
 
 
 #endif
