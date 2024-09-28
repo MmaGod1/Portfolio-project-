@@ -108,13 +108,13 @@ void render_walls(GameStats *gameStats, Player *player) {
         rayAngle = normalize_angle(player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH));
 
         // Cast the ray to get the distance to the wall
-        distance = castRay(player->x, player->y, rayAngle);
+        distance = cast_ray(player->x, player->y, rayAngle);
 
         // Calculate wall dimensions based on distance
         calculate_wall_dimensions(distance, player, rayAngle, &wallHeight, &wallTop, &wallBottom);
 
         // Get the wall hit coordinate and texture index
-        wallX = getWallHitCoordinates(player->x, player->y, rayAngle, &mapX, &mapY);
+        wallX = get_wall_hit_coordinates(player->x, player->y, rayAngle, &mapX, &mapY);
         wallTextureIndex = maze_map[mapX][mapY] - 1;
 
         // Render the wall slice with the calculated dimensions and texture coordinates
