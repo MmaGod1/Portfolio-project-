@@ -44,17 +44,13 @@ typedef struct GameStats
 
 
 
-void handle_input(Player *player, bool *running, GameStats *gameStats);
 
 void render(Player *player, GameStats *gameStats);
 
+
 int load_map(GameStats *gameStats, const char *filename);
-
-
-
-
-
-
+Texture load_texture(GameStats *gameStats, const char *filename);
+void handle_input(Player *player, bool *running, GameStats *gameStats);
 
 
 
