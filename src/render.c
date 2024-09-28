@@ -49,7 +49,7 @@ void render_single_wall(GameStats *gameStats, int x, int wallHeight, int wallTop
     texWidth = gameStats->wallTextures[wallTextureIndex].width;  
     texHeight = gameStats->wallTextures[wallTextureIndex].height; 
 
-    texX = (int)(wallX * texWidth) % texWidth; // Ensure texX is declared here
+    texX = (int)(wallX * texWidth) % texWidth;
 
     srcRect.x = texX;          
     srcRect.y = 0;             
@@ -63,6 +63,7 @@ void render_single_wall(GameStats *gameStats, int x, int wallHeight, int wallTop
 
     SDL_RenderCopy(gameStats->renderer, gameStats->wallTextures[wallTextureIndex].texture, &srcRect, &dstRect);
 }
+
 
 /**
  * render_walls - Render the walls of the maze based on the player's position.
@@ -89,9 +90,6 @@ void render_walls(GameStats *gameStats, Player *player)
             rayAngle -= 2 * M_PI;
 
         distance = cast_ray(player->x, player->y, rayAngle);
-
-        if (distance > 10.0)
-            distance = 10.0;
 
         // Calculate wall dimensions
         calculate_wall_dimensions(distance, player, rayAngle, &wallHeight, &wallTop, &wallBottom);
