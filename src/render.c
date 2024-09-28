@@ -63,6 +63,7 @@ void render_walls(GameStats *gameStats, Player *player)
 {
     int x, mapX, mapY, wallHeight, wallTop, wallBottom;
     float rayAngle, distance, wallX;
+    int wallTextureIndex; // Declare wallTextureIndex here
 
     for (x = 0; x < SCREEN_WIDTH; x++)
     {
@@ -87,8 +88,7 @@ void render_walls(GameStats *gameStats, Player *player)
         // Render the wall slice
         render_single_wall(gameStats, x, wallHeight, wallTop, wallX, wallTextureIndex);
     }
-} 
-
+}
 /**
  * render_walls - Render the walls of the maze based on the player's position.
  *
