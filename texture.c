@@ -505,9 +505,10 @@ int main(int argc, char* argv[]) {
 
     // Game loop
     bool running = true;
-    while (running) {
-        handleInput(&player, &running, maze_map);  // Handle player input
-        render(&player);                 // Render the scene
+    while (running)
+    {
+            handle_input(&player, &running, &gameStats);
+        render(&player);
 
         SDL_Delay(16);  // Cap the frame rate to ~60 FPS
     }
