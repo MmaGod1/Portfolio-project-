@@ -50,7 +50,7 @@ void render_walls(GameStats *gameStats, Player *player)
     }
 }
 
-void render(GameStats *gameStats, Player *player)
+void render(Player *player, GameStats *gameStats)
 {
     SDL_RenderClear(gameStats->renderer);
 
