@@ -1,7 +1,7 @@
 #include "raycasting.h"
 
-window = NULL;
-renderer = NULL;
+window;
+renderer;
 
 Texture wallTextures[4];
 Texture floorTexture;
