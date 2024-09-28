@@ -1,5 +1,12 @@
 #include "raycasting.h"
 
+/**
+ * draw_sky - Draws the sky portion of the game screen.
+ *
+ * @gameStats: Pointer to the GameStats struct containing the renderer.
+ *
+ * Fills the upper half of the screen with a sky-blue color to represent the sky.
+ */
 void draw_sky(GameStats *gameStats)
 {
     SDL_SetRenderDrawColor(gameStats->renderer, 135, 206, 235, 255);
@@ -7,6 +14,15 @@ void draw_sky(GameStats *gameStats)
     SDL_RenderFillRect(gameStats->renderer, &skyRect);
 }
 
+
+/**
+ * draw_floor - Draws the textured floor based on player's position and view angle.
+ *
+ * @gameStats: Pointer to the GameStats struct containing the renderer and floor texture.
+ * @player: Pointer to the Player struct containing player's position and view angle.
+ *
+ * Renders the floor using perspective-correct distances and textures.
+ */
 void draw_floor(GameStats *gameStats, Player *player)
 {
     for (int y = SCREEN_HEIGHT / 2; y < SCREEN_HEIGHT; y++)
