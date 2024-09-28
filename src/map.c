@@ -1,5 +1,16 @@
 #include "raycasting.h"
 
+
+/**
+ * open_map_file - Opens the map file for reading.
+ *
+ * @filename: The path to the map file.
+ * @file: Pointer to the FILE pointer to be opened.
+ *
+ * Attempts to open the specified map file in read mode.
+ * 
+ * Return: 0 on success, -1 on failure.
+ */
 int open_map_file(const char *filename, FILE **file)
 {
     *file = fopen(filename, "r");
@@ -11,6 +22,17 @@ int open_map_file(const char *filename, FILE **file)
     return (0);
 }
 
+
+/**
+ * read_character - Reads the next valid character from the map file.
+ *
+ * @file: Pointer to the FILE to read from.
+ * @ch: Pointer to store the read character.
+ *
+ * Skips newline and carriage return characters, returning the next valid character.
+ * 
+ * Return: 0 on success, 1 on EOF.
+ */
 int read_character(FILE *file, int *ch)
 {
     *ch = fgetc(file);
@@ -23,6 +45,19 @@ int read_character(FILE *file, int *ch)
     return (0);
 }
 
+
+/**
+ * process_character - Processes a character from the map and updates the maze map.
+ *
+ * @gameStats: Pointer to the GameStats struct containing the maze map.
+ * @ch: The character to process.
+ * @x: The x-coordinate in the maze map.
+ * @y: The y-coordinate in the maze map.
+ *
+ * Sets the appropriate value in the maze map based on the character read.
+ * 
+ * Return: 0 on success, -1 on failure (invalid character).
+ */
 int process_character(GameStats *gameStats, int ch, int x, int y)
 {
     if (ch == '#')
@@ -42,6 +77,17 @@ int process_character(GameStats *gameStats, int ch, int x, int y)
     return (0);
 }
 
+
+/**
+ * load_map - Loads the maze map from the specified file.
+ *
+ * @gameStats: Pointer to the GameStats struct to store the loaded map.
+ * @filename: The path to the map file.
+ *
+ * Reads the map file, processes each character, and fills the maze map array.
+ * 
+ * Return: 0 on success, -1 on failure.
+ */
 int load_map(GameStats *gameStats, const char *filename)
 {
     int ch;
