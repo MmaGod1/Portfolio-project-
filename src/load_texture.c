@@ -13,5 +13,5 @@ Texture loadTexture(const char *filename)
     SDL_FreeSurface(surface);
     texture.width = surface->w;
     texture.height = surface->h;
-    return texture;
+    return (texture);
 }
