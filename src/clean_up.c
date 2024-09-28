@@ -1,6 +1,6 @@
 #include "raycasting.h"
 
-void cleanup(GameStats *gameStats)
+void clean_up(GameStats *gameStats)
 {
     for (int i = 0; i < 4; i++)
     {
