@@ -32,9 +32,9 @@ static void initialize_step_and_side(float rayDirX, float rayDirY,
     }
 }
 
-static int perform_dda(GameStats *gameStats, int *mapX, int *mapY,
-                        int stepX, int stepY, float sideDistX,
-                        float sideDistY)
+static int perform_dda(GameStats *gameStats, float rayDirX, float rayDirY,
+                        int *mapX, int *mapY, int stepX, int stepY,
+                        float sideDistX, float sideDistY)
 {
     int hit = 0;
     int side;
@@ -72,12 +72,12 @@ float get_wall_hit_coordinates(GameStats *gameStats, float playerX,
 
     int stepX, stepY;
     float sideDistX, sideDistY;
-    
+
     initialize_step_and_side(rayDirX, rayDirY, playerX, playerY, mapX, mapY,
                               &stepX, &stepY, &sideDistX, &sideDistY);
 
-    int side = perform_dda(gameStats, mapX, mapY, stepX, stepY,
-                            sideDistX, sideDistY);
+    int side = perform_dda(gameStats, rayDirX, rayDirY, mapX, mapY,
+                            stepX, stepY, sideDistX, sideDistY);
 
     float wallX;
     if (side == 0)
