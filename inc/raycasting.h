@@ -84,18 +84,15 @@ void handle_input(Player *player, bool *running, GameStats *gameStats);
 
 
 
+void initialize_ray(float playerX, float playerY, float rayAngle,
+                    int *mapX, int *mapY, int *stepX, int *stepY,
+                    float *sideDistX, float *sideDistY,
+                    float *deltaDistX, float *deltaDistY);
 
-
-void initialize_ray(float rayAngle, float *rayDirX, float *rayDirY, 
-                    int *stepX, int *stepY, float playerX, float playerY,
-                    int *mapX, int *mapY, float *sideDistX, 
-                    float *sideDistY, float *deltaDistX, 
-                    float *deltaDistY);
-
-float calculate_distance(int stepX, int stepY, int *mapX, int *mapY, 
-                         float playerX, float playerY, 
-                         float rayDirX, float rayDirY, 
-                         GameStats *gameStats);
+float perform_ray_cast(GameStats *gameStats, int *mapX, int *mapY,
+                       int stepX, int stepY, float sideDistX,
+                       float sideDistY, float deltaDistX, float deltaDistY,
+                       float playerX, float playerY);
 
 float cast_ray(GameStats *gameStats, float playerX, float playerY, 
                 float rayAngle);
