@@ -1,7 +1,77 @@
 #include "raycasting.h"
 
 /**
+ * draw_sky - Renders the sky in the game window.
+ * @renderer: The SDL_Renderer used to render the sky.
+ *
+ * This function sets the draw color to a sky blue and fills
+ * the top half of the screen with a rectangle representing the sky.
+ *
+ * Return: void
+ */
+void draw_sky(SDL_Renderer *renderer)
+{
+	SDL_Rect skyRect;
+
+	skyRect.x = 0;
+	skyRect.y = 0;
+	skyRect.w = SCREEN_WIDTH;
+	skyRect.h = SCREEN_HEIGHT / 2;
+
+	SDL_SetRenderDrawColor(renderer, 135, 206, 235, 255);
+	SDL_RenderFillRect(renderer, &skyRect);
+}
+
+/**
+ * draw_floor - Renders the floor based on the player's position and angle.
+ * @renderer: The SDL_Renderer used to render the floor.
+ * @player: Pointer to Player structure with position and angle info.
+ *
+ * Loops through the lower half of the screen, calculating floor texture
+ * coordinates and rendering them using SDL_RenderCopy.
+ */
+void draw_floor(SDL_Renderer *renderer, Player *player, Texture floorTexture)
+{
+	int y, x, texX, texY;
+	float rayAngle, floorX, floorY, floorDist;
+	SDL_Rect srcRect, dstRect;
+
+	for (y = SCREEN_HEIGHT / 2; y < SCREEN_HEIGHT; y++)
+	{
+		floorDist = SCREEN_HEIGHT / (2.0f * y - SCREEN_HEIGHT);
+
+		for (x = 0; x < SCREEN_WIDTH; x++)
+		{
+			rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
+			floorX = player->x + cos(rayAngle) * floorDist;
+			floorY = player->y + sin(rayAngle) * floorDist;
+			texX = (int)(floorX * floorTexture.width) % floorTexture.width;
+			texY = (int)(floorY * floorTexture.height) % floorTexture.height;
+
+			if (texX < 0)
+				texX = 0;
+			if (texY < 0)
+				texY = 0;
+
+			srcRect.x = texX;
+			srcRect.y = texY;
+			srcRect.w = 1;
+			srcRect.h = 1;
+
+			dstRect.x = x;
+			dstRect.y = y;
+			dstRect.w = 1;
+			dstRect.h = 1;
+
+			SDL_RenderCopy(renderer, floorTexture.texture, &srcRect, &dstRect);
+		}
+	}
+}
+
+
+/**
  * draw_map_tiles - Draws the tiles of the mini-map based on the maze map.
+ * @renderer: The SDL_Renderer used to render the map tiles.
  * @mapStartX: The starting x-coordinate for the map on the screen.
  * @mapStartY: The starting y-coordinate for the map on the screen.
  * @tileSize: The size of each tile on the mini-map.
@@ -10,7 +80,7 @@
  * on the mini-map. Walls are drawn in red, and empty spaces are
  * drawn in white.
  */
-void draw_map_tiles(int mapStartX, int mapStartY, int tileSize)
+void draw_map_tiles(SDL_Renderer *renderer, int mapStartX, int mapStartY, int tileSize)
 {
 	int y, x;
 	SDL_Rect rect;
@@ -24,7 +94,6 @@ void draw_map_tiles(int mapStartX, int mapStartY, int tileSize)
 			rect.w = tileSize;
 			rect.h = tileSize;
 
-			/* Set the draw color based on the maze map */
 			if (maze_map[x][y] == 1)
 			{
 				SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
@@ -34,14 +103,15 @@ void draw_map_tiles(int mapStartX, int mapStartY, int tileSize)
 				SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 			}
 
-			/* Render the tile */
 			SDL_RenderFillRect(renderer, &rect);
 		}
 	}
 }
 
+
 /**
- * draw_mini_map - Draws the mini-map, including the player and their line of sight.
+ * draw_mini_map - Draws the mini-map, the player, and their line of sight.
+ * @renderer: The SDL_Renderer used to render the mini-map.
  * @player: Pointer to the player's structure containing position and angle.
  * @showMap: Boolean indicating whether to show the map or not.
  *
@@ -50,7 +120,7 @@ void draw_map_tiles(int mapStartX, int mapStartY, int tileSize)
  * The mini-map is drawn only if @showMap is true. It calls the helper function
  * draw_map_tiles to render the map's tiles.
  */
-void draw_mini_map(Player *player, bool showMap)
+void draw_mini_map(SDL_Renderer *renderer, Player *player, bool showMap)
 {
 	int mapStartX, mapStartY, mapWidth, mapHeight, tileSize;
 	SDL_Rect playerRect;
@@ -60,17 +130,14 @@ void draw_mini_map(Player *player, bool showMap)
 	if (!showMap)
 		return;
 
-	/* Position the map in the top-left corner */
 	mapStartX = 10;
 	mapStartY = 10;
 	mapWidth = 160;
 	mapHeight = 120;
 	tileSize = TILE_SIZE;
 
-	/* Draw the map tiles */
-	draw_map_tiles(mapStartX, mapStartY, tileSize);
+	draw_map_tiles(renderer, mapStartX, mapStartY, tileSize);
 
-	/* Draw the player's position on the map */
 	mapPlayerX = mapStartX + (player->x * mapWidth / MAP_WIDTH);
 	mapPlayerY = mapStartY + (player->y * mapHeight / MAP_HEIGHT);
 	SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
@@ -80,7 +147,6 @@ void draw_mini_map(Player *player, bool showMap)
 	playerRect.h = 4;
 	SDL_RenderFillRect(renderer, &playerRect);
 
-	/* Draw the player's line of sight */
 	SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
 	for (i = 0; i < SCREEN_WIDTH; i++)
 	{
