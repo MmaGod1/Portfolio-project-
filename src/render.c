@@ -1,5 +1,16 @@
 #include "raycasting.h"
 
+
+/**
+ * render_walls - Renders the walls of the maze based on raycasting.
+ *
+ * @gameStats: Pointer to the GameStats struct containing rendering data.
+ * @player: Pointer to the Player struct containing player position and angle.
+ *
+ * Loops through each screen column, casts rays to detect wall distances,
+ * calculates the wall height, and calls render_wall_segment to draw each
+ * wall segment.
+ */
 void render_walls(GameStats *gameStats, Player *player)
 {
     for (int x = 0; x < SCREEN_WIDTH; x++)
@@ -35,6 +46,20 @@ void render_walls(GameStats *gameStats, Player *player)
     }
 }
 
+
+/**
+ * render_wall_segment - Renders a segment of a wall based on the ray hit.
+ *
+ * @gameStats: Pointer to the GameStats struct containing rendering data.
+ * @player: Pointer to the Player struct containing player position.
+ * @rayAngle: The angle of the ray hitting the wall.
+ * @x: The current x-coordinate on the screen for rendering.
+ * @wallTop: The top pixel coordinate for the wall segment.
+ * @wallHeight: The height of the wall segment to be rendered.
+ *
+ * Calculates the texture coordinates and renders the specified wall segment
+ * using the appropriate wall texture from the maze map.
+ */
 void render_wall_segment(GameStats *gameStats, Player *player, 
                          float rayAngle, int x, 
                          int wallTop, int wallHeight)
@@ -58,7 +83,16 @@ void render_wall_segment(GameStats *gameStats, Player *player,
 }
 
 
-
+/**
+ * render - Main render function to draw the entire scene.
+ *
+ * @player: Pointer to the Player struct containing player position.
+ * @gameStats: Pointer to the GameStats struct containing rendering data.
+ *
+ * Clears the rendering buffer, draws the sky and floor, calls render_walls
+ * to draw walls, optionally draws the mini map, and presents the rendered
+ * frame to the screen.
+ */
 void render(Player *player, GameStats *gameStats)
 {
     SDL_RenderClear(gameStats->renderer);
