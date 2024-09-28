@@ -53,15 +53,20 @@ void render(GameStats *gameStats, Player *player)
 {
     SDL_RenderClear(gameStats->renderer);
 
-    draw_sky();
-    draw_floor(player);
+    draw_sky(gameStats);
+    draw_floor(gameStats, player);;
 
     render_walls(gameStats, player);
 
     if (gameStats->showMap)
     {
-        draw_mini_map(player, gameStats->showMap);
+        draw_mini_map(gameStats, player, gameStats->showMap);
     }
 
     SDL_RenderPresent(gameStats->renderer);
 }
+
+
+
+
+
