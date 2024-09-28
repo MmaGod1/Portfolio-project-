@@ -46,7 +46,10 @@ extern int maze_map[MAP_WIDTH][MAP_HEIGHT];
 /* Function prototypes */
 float normalize_angle(float angle);
 Texture load_texture(SDL_Renderer *renderer, const char *file);
-void calculate_wall_dimensions(float distance, Player *player, float rayAngle, int *wallHeight, int *wallTop, int *wallBottom);
+
+void calculate_wall_dimensions(float distance, Player *player,
+float rayAngle, int *wallHeight, int *wallTop, int *wallBottom);
+
 void perform_DDA(int stepX, int stepY, float *sideDistX,
                   float *sideDistY, int *mapX, int *mapY,
                   int *hit, int *side);
@@ -56,8 +59,13 @@ void draw_mini_map(SDL_Renderer *renderer, Player *player, bool showMap);
 void draw_map_tiles(SDL_Renderer *renderer, int mapStartX, int mapStartY, int tileSize);
 void draw_floor(SDL_Renderer *renderer, Player *player, Texture floorTexture);
 float get_wall_hit_coordinates(float playerX, float playerY, float rayAngle, int *mapX, int *mapY);
+
 void render_walls(GameStats *gameStats, Player *player);
-void render_single_wall(GameStats *gameStats, int x, int wallHeight, int wallTop, float wallX, int wallTextureIndex);
+
+void render_single_wall(GameStats *gameStats,
+int x, int wallHeight, int wallTop,
+float wallX, int wallTextureIndex, float lightIntensity);
+
 void render(Player *player, bool showMap, SDL_Renderer *renderer, GameStats *gameStats);
 void process_rotation(Player *player, int direction);
 void process_movement(Player *player, int maze_map[MAP_WIDTH][MAP_HEIGHT], float moveStep, float moveAngle);
