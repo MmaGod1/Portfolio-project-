@@ -93,37 +93,32 @@ void render_single_wall(GameStats *gameStats, int x, int wallHeight, int wallTop
 void render_walls(GameStats *gameStats, Player *player)
 {
     int x, mapX, mapY, wallHeight, wallTop, wallBottom;
-    int wallTextureIndex;
     float rayAngle, distance, wallX;
+    int wallTextureIndex;
 
     for (x = 0; x < SCREEN_WIDTH; x++)
     {
-        // Normalize ray angle based on player angle and FOV
         rayAngle = normalize_angle(player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH));
 
         // Cast the ray to get the distance to the wall
         distance = cast_ray(player->x, player->y, rayAngle);
-        
-        // Debugging: print distance
-        printf("Ray angle: %f, Distance: %f\n", rayAngle, distance);
+        printf("Ray angle: %f, Distance: %f\n", rayAngle, distance);  // Debug output
 
-        // Calculate wall dimensions based on distance
         calculate_wall_dimensions(distance, player, rayAngle, &wallHeight, &wallTop, &wallBottom);
 
-        // Get the wall hit coordinate and texture index
         wallX = get_wall_hit_coordinates(player->x, player->y, rayAngle, &mapX, &mapY);
-        
-        // Debugging: print wall coordinates and height
-        printf("WallX: %f, MapX: %d, MapY: %d, WallHeight: %d, WallTop: %d, WallBottom: %d\n",
-                wallX, mapX, mapY, wallHeight, wallTop, wallBottom);
-        
         wallTextureIndex = maze_map[mapX][mapY] - 1;
+        
+        if (wallTextureIndex < 0) {
+            wallTextureIndex = 0; // or handle error
+        }
 
-        // Render the wall slice with the calculated dimensions and texture coordinates
+        printf("MapX: %d, MapY: %d, WallHeight: %d, WallTop: %d, WallBottom: %d\n",
+               mapX, mapY, wallHeight, wallTop, wallBottom);  // Debug output
+
         render_single_wall(gameStats, x, wallHeight, wallTop, wallX, wallTextureIndex);
     }
 }
-
 
 /**
  * render - Clears the renderer and draws the current frame of the game,
