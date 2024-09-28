@@ -44,7 +44,6 @@ typedef struct GameStats
 
 
 
-int load_map(const char *filename, int maze_map[MAP_WIDTH][MAP_HEIGHT]);
 void handle_input(Player *player, bool *running, GameStats *gameStats);
 
 void render(Player *player, GameStats *gameStats);
