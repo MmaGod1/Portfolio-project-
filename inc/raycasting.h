@@ -42,11 +42,33 @@ typedef struct GameStats
 } GameStats;
 
 
+
+
+int load_map(const char *filename, int maze_map[MAP_WIDTH][MAP_HEIGHT]);
+void handle_input(Player *player, bool *running, GameStats *gameStats);
+Texture load_map(int maze_map[MAP_WIDTH][MAP_HEIGHT], const char *filename);
+void render(Player *player, GameStats *gameStats);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 void draw_sky(GameStats *gameStats);
 void draw_floor(GameStats *gameStats, Player *player);
 void draw_mini_map(GameStats *gameStats, Player *player, bool showMap);
-void handle_input(Player *player, bool *running, GameStats *gameStats);
-int load_map(GameStats *gameStats, const char *filename);
+
+
 float cast_ray(GameStats *gameStats, float playerX, float playerY, 
                 float rayAngle);
 float get_wall_hit_coordinates(GameStats *gameStats, float playerX, 
