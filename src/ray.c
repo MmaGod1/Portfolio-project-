@@ -1,3 +1,5 @@
+#include "raycasting.h"
+
 float cast_ray(GameStats *gameStats, float playerX, float playerY, 
                 float rayAngle)
 {
