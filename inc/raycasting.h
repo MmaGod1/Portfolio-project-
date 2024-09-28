@@ -48,6 +48,11 @@ typedef struct GameStats
 void render(Player *player, GameStats *gameStats);
 void draw_sky(GameStats *gameStats);
 void draw_floor(GameStats *gameStats, Player *player);
+
+
+
+void draw_map(GameStats *gameStats, bool showMap);
+void draw_player_and_los(GameStats *gameStats, Player *player);
 void draw_mini_map(GameStats *gameStats, Player *player, bool showMap);
 
 
