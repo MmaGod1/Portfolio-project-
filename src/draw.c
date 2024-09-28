@@ -38,3 +38,19 @@ void drawMiniMap(Player *player, bool showMap)
             SDL_RenderFillRect(renderer, &rect);
         }
     }
+    /* Draw the player's position on the map */
+    float mapPlayerX = mapStartX + (player->x * mapWidth / MAP_WIDTH);
+    float mapPlayerY = mapStartY + (player->y * mapHeight / MAP_HEIGHT);
+    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);  /* Green color for player's position */
+    SDL_Rect playerRect = { (int)mapPlayerX - 2, (int)mapPlayerY - 2, 4, 4 };  /* Small rectangle to represent the player*/
+    SDL_RenderFillRect(renderer, &playerRect);
+
+    /* Draw the player's line of sight on the map */
+    SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);  /* Blue color for line of sight */
+    for (int i = 0; i < SCREEN_WIDTH; i++) {
+        float rayAngle = player->angle - (FOV / 2) + (FOV * i / SCREEN_WIDTH);
+        float endX = mapPlayerX + cos(rayAngle) * (mapWidth / 4);
+        float endY = mapPlayerY + sin(rayAngle) * (mapHeight / 4);
+        SDL_RenderDrawLine(renderer, mapPlayerX, mapPlayerY, endX, endY);
+    }
+}
