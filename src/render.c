@@ -41,30 +41,38 @@ void render_walls(GameStats *gameStats, Player *player)
 {
     for (int x = 0; x < SCREEN_WIDTH; x++)
     {
+        // Calculate the angle of the ray for this column (current angle from the player's view)
         float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
+        
+        // Cast the ray and get the distance to the wall (along the ray's path)
         float distance = cast_ray(gameStats, player->x, player->y, rayAngle);
         
+        // Prevent small distance causing issues
         if (distance < 0.1)
         {
-            distance = 0.1; // Prevent division by zero
+            distance = 0.1; // Prevent division by zero or too small values
         }
 
-        float z = distance * cos(rayAngle - player->angle);
+        // Calculate the "range" - the projection of the distance onto the camera plane
+        float range = distance * cos(rayAngle - player->angle);
 
-        if (z <= 0)
+        // Ensure range is not zero or negative
+        if (range <= 0)
         {
-            z = 0.1; // Set to a minimum value
+            range = 0.1; // Set to a minimum value
         }
 
-        // Define the world height of the object (e.g., a wall) you're rendering
-        float objectHeight = 1.0f;  // Fixed height or retrieved from a struct like gameStats
+        // Use the actual object height (wall height) for scaling
+        float objectHeight = 1.0f;  // Height of the wall or object in the game world
 
-        // Calculate the perceived wall height based on the object height and z (distance)
-        int wallHeight = (int)(SCREEN_HEIGHT * objectHeight / z);
+        // Calculate the perceived wall height using the range (corrected distance)
+        int wallHeight = (int)(SCREEN_HEIGHT * objectHeight / range);
 
+        // Calculate where the top and bottom of the wall should be drawn
         int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
         int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
         
+        // Clamp the drawing range to avoid rendering outside the screen
         if (wallTop < 0)
         {
             wallTop = 0;
@@ -74,6 +82,7 @@ void render_walls(GameStats *gameStats, Player *player)
             wallBottom = SCREEN_HEIGHT - 1;
         }
 
+        // Render the wall segment
         render_wall_segment(gameStats, player, rayAngle, x, wallTop, wallHeight);
     }
 }
