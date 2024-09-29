@@ -2,39 +2,50 @@
 
     
 
+/**
+ * render_walls - Renders the walls of the maze based on raycasting.
+ *
+ * @gameStats: Pointer to the GameStats struct containing rendering data.
+ * @player: Pointer to the Player struct containing player position and angle.
+ */
 void render_walls(GameStats *gameStats, Player *player)
 {
     for (int x = 0; x < SCREEN_WIDTH; x++)
     {
-        // Calculate ray angle based on player angle and field of view
         float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
-        
-        // Cast the ray to find the distance to the wall
         float distance = cast_ray(gameStats, player->x, player->y, rayAngle);
         
-        // Prevent division by zero
         if (distance < 0.1)
         {
-            distance = 0.1;
+            distance = 0.1; // Prevent division by zero
         }
 
-        // Calculate the corrected distance
+        // Calculate the corrected distance to avoid fisheye effect
         float correctedDistance = distance * cos(rayAngle - player->angle);
         
-        // Calculate the height of the wall segment
+        // Ensure that corrected distance is not zero
+        if (correctedDistance <= 0)
+        {
+            correctedDistance = 0.1; // Set to a minimum value
+        }
+
         int wallHeight = (int)(SCREEN_HEIGHT / correctedDistance);
         int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
         int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
         
-        // Clamp the drawing range
-        if (wallTop < 0) wallTop = 0;
-        if (wallBottom >= SCREEN_HEIGHT) wallBottom = SCREEN_HEIGHT - 1;
+        // Clamp the drawing range to avoid rendering outside the screen
+        if (wallTop < 0)
+        {
+            wallTop = 0;
+        }
+        if (wallBottom >= SCREEN_HEIGHT)
+        {
+            wallBottom = SCREEN_HEIGHT - 1;
+        }
 
-        // Render the wall segment
         render_wall_segment(gameStats, player, rayAngle, x, wallTop, wallHeight);
     }
 }
-
 
 
 /*void render_wall_segment(GameStats *gameStats, Player *player, 
