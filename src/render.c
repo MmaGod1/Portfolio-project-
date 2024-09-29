@@ -44,29 +44,28 @@ void render_walls(GameStats *gameStats, Player *player)
         // Calculate the angle of the ray for this column (current angle from the player's view)
         float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
         
-        // Cast the ray and get the distance to the wall (along the ray's path)
+        // Cast the ray and get the raw distance to the wall (along the ray's path)
         float distance = cast_ray(gameStats, player->x, player->y, rayAngle);
         
-        // Prevent small distance causing issues
         if (distance < 0.1)
         {
             distance = 0.1; // Prevent division by zero or too small values
         }
 
-        // Calculate the "range" - the projection of the distance onto the camera plane
-        float range = distance * cos(rayAngle - player->angle);
+        // Correct the fisheye effect by dividing by cos(rayAngle - player->angle)
+        float correctedDistance = distance / cos(rayAngle - player->angle);
 
-        // Ensure range is not zero or negative
-        if (range <= 0)
+        // Ensure corrected distance is not zero or negative
+        if (correctedDistance <= 0)
         {
-            range = 0.1; // Set to a minimum value
+            correctedDistance = 0.1; // Set to a minimum value
         }
 
         // Use the actual object height (wall height) for scaling
         float objectHeight = 1.0f;  // Height of the wall or object in the game world
 
-        // Calculate the perceived wall height using the range (corrected distance)
-        int wallHeight = (int)(SCREEN_HEIGHT * objectHeight / range);
+        // Calculate the perceived wall height using the corrected distance
+        int wallHeight = (int)(SCREEN_HEIGHT * objectHeight / correctedDistance);
 
         // Calculate where the top and bottom of the wall should be drawn
         int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
@@ -86,6 +85,9 @@ void render_walls(GameStats *gameStats, Player *player)
         render_wall_segment(gameStats, player, rayAngle, x, wallTop, wallHeight);
     }
 }
+
+
+
 
 
 
