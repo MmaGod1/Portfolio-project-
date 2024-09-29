@@ -11,7 +11,8 @@
  */
 void clean_up(GameStats *gameStats)
 {
-    for (int i = 0; i < 4; i++)
+	int i;
+    for (i = 0; i < 4; i++)
     {
         if (gameStats->wallTextures[i].texture)
         {

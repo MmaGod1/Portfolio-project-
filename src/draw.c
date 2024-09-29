@@ -5,7 +5,7 @@
  *
  * @gameStats: Pointer to the GameStats struct containing the renderer.
  *
- * Fills the upper half of the screen with a sky-blue color to represent the sky.
+ * Fills the upper half of the screen with a sky-blue color to be sky.
  */
 void draw_sky(GameStats *gameStats)
 {
@@ -16,10 +16,13 @@ void draw_sky(GameStats *gameStats)
 
 
 /**
- * draw_floor - Draws the textured floor based on player's position and view angle.
+ * draw_floor - Draws the textured floor based on player's
+ *		position and view angle.
  *
- * @gameStats: Pointer to the GameStats struct containing the renderer and floor texture.
- * @player: Pointer to the Player struct containing player's position and view angle.
+ * @gameStats: Pointer to the GameStats struct containing the
+ *		renderer and floor texture.
+ * @player: Pointer to the Player struct containing player's
+ *		position and view angle.
  *
  * Renders the floor using perspective-correct distances and textures.
  */

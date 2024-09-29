@@ -11,7 +11,7 @@
 #define SCREEN_HEIGHT 600
 #define MAP_WIDTH 24
 #define MAP_HEIGHT 24
-#define FOV (M_PI / 3) // 60 degrees field of view
+#define FOV (M_PI / 3) /* 60 degrees field of view */
 #define WALL_CHAR '#'
 #define EMPTY_CHAR '.'
 #define MAP_DISPLAY_WIDTH 200
