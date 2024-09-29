@@ -68,10 +68,10 @@ void render_wall_segment(GameStats *gameStats, Player *player,
 
     int mapX, mapY;
 
-    float wallX = get_wall_hit_coordinates(gameStats, player->x, player->y, rayAngle, &mapX, &mapY, &perpWallDist);
-    /*float wallX = get_wall_hit_coordinates(gameStats, player->x, 
+    
+    float wallX = get_wall_hit_coordinates(gameStats, player->x, 
                                             player->y, rayAngle, 
-                                            &mapX, &mapY);*/
+                                            &mapX, &mapY);
     int wallTextureIndex = gameStats->maze_map[mapX][mapY] - 1;
 
     int texX = (int)(wallX * gameStats->wallTextures[wallTextureIndex].width) % 
