@@ -11,7 +11,7 @@
  * calculates the wall height, and calls render_wall_segment to draw each
  * wall segment.
  */
-/*void render_walls(GameStats *gameStats, Player *player)
+void render_walls(GameStats *gameStats, Player *player)
 {
     for (int x = 0; x < SCREEN_WIDTH; x++)
     {
@@ -43,40 +43,6 @@
 
         render_wall_segment(gameStats, player, rayAngle, 
                             x, wallTop, wallHeight);
-    }
-}*/
-void render_walls(GameStats *gameStats, Player *player)
-{
-    for (int x = 0; x < SCREEN_WIDTH; x++)
-    {
-        float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
-        // Normalize rayAngle to the range [0, 2 * PI]
-        rayAngle = fmod(rayAngle + 2 * M_PI, 2 * M_PI);
-
-        float distance = cast_ray(gameStats, player->x, player->y, rayAngle);
-
-        if (distance < 0.1)
-        {
-            distance = 0.1; // Prevent division by zero
-        }
-
-        // Calculate corrected distance
-        float correctedDistance = distance * cos(rayAngle - player->angle);
-        
-        int wallHeight = (int)(SCREEN_HEIGHT / correctedDistance);
-        int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
-        int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
-
-        if (wallTop < 0)
-        {
-            wallTop = 0;
-        }
-        if (wallBottom >= SCREEN_HEIGHT)
-        {
-            wallBottom = SCREEN_HEIGHT - 1;
-        }
-
-        render_wall_segment(gameStats, player, rayAngle, x, wallTop, wallHeight);
     }
 }
 
