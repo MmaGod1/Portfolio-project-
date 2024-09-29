@@ -49,28 +49,25 @@ void render_walls(GameStats *gameStats, Player *player)
 {
     for (int x = 0; x < SCREEN_WIDTH; x++)
     {
-        // Corrected rayAngle calculation for smoother transitions
+        // Calculate the ray angle based on player's view and FOV
         float rayAngle = player->angle - (FOV / 2.0f) + 
                          (FOV * (x / (float)SCREEN_WIDTH));
-                         
-        // Cast ray and get the distance
+
+        // Cast the ray and get the distance to the nearest wall
         float distance = cast_ray(gameStats, player->x, player->y, rayAngle);
-        
-        // Avoid division by near-zero distances
+
+        // Avoid division by near-zero distances (if too close)
         if (distance < 0.1)
         {
             distance = 0.1;
         }
 
-        // Correcting for fish-eye distortion using cosine with radians
-        float correctedDistance = distance * cos((rayAngle - player->angle) * (M_PI / 180.0f));
-        
-        // Calculate wall height based on corrected distance
-        int wallHeight = (int)(SCREEN_HEIGHT / correctedDistance);
+        // Calculate the wall height based on the raw distance (no cosine correction)
+        int wallHeight = (int)(SCREEN_HEIGHT / distance);
         int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
         int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
-        
-        // Clamping wallTop and wallBottom to valid screen coordinates
+
+        // Ensure the wall's top and bottom are within the screen bounds
         if (wallTop < 0)
         {
             wallTop = 0;
@@ -80,7 +77,7 @@ void render_walls(GameStats *gameStats, Player *player)
             wallBottom = SCREEN_HEIGHT - 1;
         }
 
-        // Render the current wall segment
+        // Render the wall segment for this particular x-column
         render_wall_segment(gameStats, player, rayAngle, x, wallTop, wallHeight);
     }
 }
