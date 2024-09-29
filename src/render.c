@@ -49,23 +49,22 @@ void render_walls(GameStats *gameStats, Player *player)
             distance = 0.1; // Prevent division by zero
         }
 
-        // JavaScript-style distance correction using cosine of angle
         float z = distance * cos(rayAngle - player->angle);
 
-        // Ensure z (corrected distance) is not zero or negative
         if (z <= 0)
         {
             z = 0.1; // Set to a minimum value
         }
 
-        // Replace SCREEN_HEIGHT with the appropriate height if needed
-        int wallHeight = (int)(SCREEN_HEIGHT * SCREEN_HEIGHT / z);
+        // Define the world height of the object (e.g., a wall) you're rendering
+        float objectHeight = 1.0f;  // Fixed height or retrieved from a struct like gameStats
 
-        // Calculate where the top and bottom of the wall should be
+        // Calculate the perceived wall height based on the object height and z (distance)
+        int wallHeight = (int)(SCREEN_HEIGHT * objectHeight / z);
+
         int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
         int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
         
-        // Clamp the drawing range to avoid rendering outside the screen
         if (wallTop < 0)
         {
             wallTop = 0;
@@ -75,11 +74,9 @@ void render_walls(GameStats *gameStats, Player *player)
             wallBottom = SCREEN_HEIGHT - 1;
         }
 
-        // Render the wall segment
         render_wall_segment(gameStats, player, rayAngle, x, wallTop, wallHeight);
     }
 }
-
 
 
 
