@@ -11,7 +11,7 @@
  * calculates the wall height, and calls render_wall_segment to draw each
  * wall segment.
  */
-void render_walls(GameStats *gameStats, Player *player)
+/*void render_walls(GameStats *gameStats, Player *player)
 {
     for (int x = 0; x < SCREEN_WIDTH; x++)
     {
@@ -44,7 +44,47 @@ void render_walls(GameStats *gameStats, Player *player)
         render_wall_segment(gameStats, player, rayAngle, 
                             x, wallTop, wallHeight);
     }
+}*/
+void render_walls(GameStats *gameStats, Player *player)
+{
+    for (int x = 0; x < SCREEN_WIDTH; x++)
+    {
+        float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
+        
+        // Cast the ray and get the distance
+        float distance = cast_ray(gameStats, player->x, player->y, rayAngle);
+        
+        // Ensure minimum distance to avoid division by zero
+        if (distance < 0.1)
+        {
+            distance = 0.1;
+        }
+
+        // Calculate the perpendicular distance as described
+        float perpWallDist;
+        int side = get_ray_side(...);  // You need to track whether it hit X or Y wall
+
+        if (side == 0) {
+            perpWallDist = (sideDistX - deltaDistX);
+        } else {
+            perpWallDist = (sideDistY - deltaDistY);
+        }
+        
+        int wallHeight = (int)(SCREEN_HEIGHT / perpWallDist);
+        int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
+        int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
+
+        if (wallTop < 0) {
+            wallTop = 0;
+        }
+        if (wallBottom >= SCREEN_HEIGHT) {
+            wallBottom = SCREEN_HEIGHT - 1;
+        }
+
+        render_wall_segment(gameStats, player, rayAngle, x, wallTop, wallHeight);
+    }
 }
+
 
 
 
