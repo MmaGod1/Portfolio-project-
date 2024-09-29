@@ -45,6 +45,10 @@ typedef struct GameStats
 int initialize_sdl(GameStats *gameStats);
 int initialize_game(GameStats *gameStats, Player *player, char *mapFile);
 
+
+int get_ray_side(GameStats *gameStats, float playerX, float playerY, 
+                 float rayAngle, int *mapX, int *mapY, 
+                 float *perpWallDist);
 void render_walls(GameStats *gameStats, Player *player);
 void render_wall_segment(GameStats *gameStats, Player *player, 
                          float rayAngle, int x, 
