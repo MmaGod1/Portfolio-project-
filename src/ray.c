@@ -76,7 +76,7 @@ void initialize_ray(float playerX, float playerY, float rayAngle,
  * Iteratively checks for wall collisions and returns the perpendicular distance
  * to the wall hit.
  */
-float perform_ray_cast(GameStats *gameStats, int *mapX, int *mapY,
+/*float perform_ray_cast(GameStats *gameStats, int *mapX, int *mapY,
                        int stepX, int stepY, float sideDistX,
                        float sideDistY, float deltaDistX, float deltaDistY,
                        float playerX, float playerY, float rayAngle)
@@ -118,7 +118,62 @@ float perform_ray_cast(GameStats *gameStats, int *mapX, int *mapY,
 
     return (perpWallDist);
 }
+*/
 
+float perform_ray_cast(GameStats *gameStats, int *mapX, int *mapY,
+                       int stepX, int stepY, float sideDistX,
+                       float sideDistY, float deltaDistX, float deltaDistY,
+                       float playerX, float playerY, float rayAngle)
+{
+    int side;
+    bool hit = false;
+
+    while (!hit)
+    {
+        if (sideDistX < sideDistY)
+        {
+            sideDistX += deltaDistX;
+            *mapX += stepX;
+            side = 0;
+        }
+        else
+        {
+            sideDistY += deltaDistY;
+            *mapY += stepY;
+            side = 1;
+        }
+
+        if (*mapX >= 0 && *mapX < MAP_WIDTH && *mapY >= 0 &&
+            *mapY < MAP_HEIGHT && gameStats->maze_map[*mapX][*mapY] == 1)
+        {
+            hit = true;
+        }
+    }
+
+    // Calculate the perpendicular distance to the wall
+    float perpWallDist;
+    if (side == 0)
+    {
+        perpWallDist = (sideDistX - deltaDistX); // vertical wall
+    }
+    else
+    {
+        perpWallDist = (sideDistY - deltaDistY); // horizontal wall
+    }
+
+    // Calculate the height of the wall to be drawn
+    int lineHeight = (int)(SCREEN_HEIGHT / perpWallDist);
+
+    // Calculate the start and end pixel to draw
+    int drawStart = -lineHeight / 2 + SCREEN_HEIGHT / 2;
+    if (drawStart < 0) drawStart = 0;
+    int drawEnd = lineHeight / 2 + SCREEN_HEIGHT / 2;
+    if (drawEnd >= SCREEN_HEIGHT) drawEnd = SCREEN_HEIGHT - 1;
+
+    // Now you can use drawStart and drawEnd to render the wall segment
+
+    return perpWallDist; // Return the perpendicular wall distance if needed
+}
 
 /**
  * cast_ray - Main function to cast a ray and determine the distance to the wall.
