@@ -133,7 +133,7 @@ float perform_ray_cast(GameStats *gameStats, int *mapX, int *mapY,
  *
  * Return: The distance to the wall hit by the ray.
  */
-/**float cast_ray(GameStats *gameStats, float playerX, float playerY,
+float cast_ray(GameStats *gameStats, float playerX, float playerY,
                 float rayAngle)
 {
     int stepX, stepY, mapX, mapY;
@@ -147,26 +147,4 @@ float perform_ray_cast(GameStats *gameStats, int *mapX, int *mapY,
                              sideDistX, sideDistY, deltaDistX,
                              deltaDistY, playerX, playerY, rayAngle));
 }
-**/
 
-float cast_ray(GameStats *gameStats, float playerX, float playerY,
-               float rayAngle)
-{
-    // Ensure the angle is in radians (if it's not already)
-    float radianAngle = rayAngle * (M_PI / 180.0f);
-
-    // Normalize the angle to ensure it's between 0 and 2π
-    while (radianAngle < 0) radianAngle += 2 * M_PI;
-    while (radianAngle >= 2 * M_PI) radianAngle -= 2 * M_PI;
-
-    int stepX, stepY, mapX, mapY;
-    float sideDistX, sideDistY, deltaDistX, deltaDistY;
-
-    initialize_ray(playerX, playerY, radianAngle, &mapX, &mapY,
-                   &stepX, &stepY, &sideDistX, &sideDistY,
-                   &deltaDistX, &deltaDistY);
-
-    return perform_ray_cast(gameStats, &mapX, &mapY, stepX, stepY,
-                            sideDistX, sideDistY, deltaDistX,
-                            deltaDistY, playerX, playerY, radianAngle);
-}
