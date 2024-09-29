@@ -11,7 +11,7 @@
  * calculates the wall height, and calls render_wall_segment to draw each
  * wall segment.
  */
-void render_walls(GameStats *gameStats, Player *player)
+/**void render_walls(GameStats *gameStats, Player *player)
 {
     for (int x = 0; x < SCREEN_WIDTH; x++)
     {
@@ -44,8 +44,46 @@ void render_walls(GameStats *gameStats, Player *player)
         render_wall_segment(gameStats, player, rayAngle, 
                             x, wallTop, wallHeight);
     }
-}
+}**/
+void render_walls(GameStats *gameStats, Player *player)
+{
+    for (int x = 0; x < SCREEN_WIDTH; x++)
+    {
+        // Corrected rayAngle calculation for smoother transitions
+        float rayAngle = player->angle - (FOV / 2.0f) + 
+                         (FOV * (x / (float)SCREEN_WIDTH));
+                         
+        // Cast ray and get the distance
+        float distance = cast_ray(gameStats, player->x, player->y, rayAngle);
+        
+        // Avoid division by near-zero distances
+        if (distance < 0.1)
+        {
+            distance = 0.1;
+        }
 
+        // Correcting for fish-eye distortion using cosine with radians
+        float correctedDistance = distance * cos((rayAngle - player->angle) * (M_PI / 180.0f));
+        
+        // Calculate wall height based on corrected distance
+        int wallHeight = (int)(SCREEN_HEIGHT / correctedDistance);
+        int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
+        int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
+        
+        // Clamping wallTop and wallBottom to valid screen coordinates
+        if (wallTop < 0)
+        {
+            wallTop = 0;
+        }
+        if (wallBottom >= SCREEN_HEIGHT)
+        {
+            wallBottom = SCREEN_HEIGHT - 1;
+        }
+
+        // Render the current wall segment
+        render_wall_segment(gameStats, player, rayAngle, x, wallTop, wallHeight);
+    }
+}
 
 /**
  * render_wall_segment - Renders a segment of a wall based on the ray hit.
@@ -60,7 +98,7 @@ void render_walls(GameStats *gameStats, Player *player)
  * Calculates the texture coordinates and renders the specified wall segment
  * using the appropriate wall texture from the maze map.
  */
-void render_wall_segment(GameStats *gameStats, Player *player, 
+/**void render_wall_segment(GameStats *gameStats, Player *player, 
                          float rayAngle, int x, 
                          int wallTop, int wallHeight)
 {
@@ -77,6 +115,32 @@ void render_wall_segment(GameStats *gameStats, Player *player,
                          gameStats->wallTextures[wallTextureIndex].height };
     SDL_Rect dstRect = { x, wallTop, 1, wallHeight };
 
+    SDL_RenderCopy(gameStats->renderer, 
+                   gameStats->wallTextures[wallTextureIndex].texture, 
+                   &srcRect, &dstRect);
+} **/
+
+void render_wall_segment(GameStats *gameStats, Player *player, 
+                         float rayAngle, int x, 
+                         int wallTop, int wallHeight)
+{
+    int mapX, mapY;
+    
+    // Get the exact wall hit coordinates
+    float wallX = get_wall_hit_coordinates(gameStats, player->x, player->y, rayAngle, &mapX, &mapY);
+    
+    // Determine the texture index from the maze map
+    int wallTextureIndex = gameStats->maze_map[mapX][mapY] - 1;
+
+    // Compute texture X coordinate based on the wall hit point
+    int texX = (int)(wallX * gameStats->wallTextures[wallTextureIndex].width) % 
+               gameStats->wallTextures[wallTextureIndex].width;
+
+    // Define the source and destination rectangles for rendering the wall slice
+    SDL_Rect srcRect = { texX, 0, 1, gameStats->wallTextures[wallTextureIndex].height };
+    SDL_Rect dstRect = { x, wallTop, 1, wallHeight };
+
+    // Render the wall segment slice to the screen
     SDL_RenderCopy(gameStats->renderer, 
                    gameStats->wallTextures[wallTextureIndex].texture, 
                    &srcRect, &dstRect);
