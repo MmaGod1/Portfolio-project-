@@ -54,25 +54,22 @@ void render_walls(GameStats *gameStats, Player *player)
         
         int mapX, mapY;
         float perpWallDist; // To hold the perpendicular distance
-        
-        // Assuming you modified cast_ray to return a distance and update mapX, mapY, and perpWallDist
+
+        // Assuming get_wall_hit_coordinates is modified to calculate perpWallDist correctly
         float distance = get_wall_hit_coordinates(gameStats, player->x, player->y, rayAngle, &mapX, &mapY, &perpWallDist);
         
         // Handle very close distances
-        if (distance < 0.1)
+        if (perpWallDist < 0.1)
         {
-            distance = 0.1;
+            perpWallDist = 0.1; // Avoid division by zero and extreme values
         }
 
-        // Calculate the corrected distance
-        float correctedDistance = perpWallDist; // Use the perpendicular distance directly
-
-        // Calculate wall height
-        int wallHeight = (int)(SCREEN_HEIGHT / correctedDistance);
+        // Calculate wall height using the perpendicular distance
+        int wallHeight = (int)(SCREEN_HEIGHT / perpWallDist);
         int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
         int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
         
-        // Clamp wallTop and wallBottom
+        // Clamp wallTop and wallBottom to screen bounds
         if (wallTop < 0) wallTop = 0;
         if (wallBottom >= SCREEN_HEIGHT) wallBottom = SCREEN_HEIGHT - 1;
 
@@ -80,7 +77,6 @@ void render_walls(GameStats *gameStats, Player *player)
         render_wall_segment(gameStats, player, rayAngle, x, wallTop, wallHeight);
     }
 }
-
 /**
  * render_wall_segment - Renders a segment of a wall based on the ray hit.
  *
