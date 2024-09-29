@@ -17,6 +17,8 @@
 #define MAP_DISPLAY_WIDTH 200
 #define MAP_DISPLAY_HEIGHT 150
 #define TILE_SIZE (MAP_DISPLAY_WIDTH / MAP_WIDTH)
+#define HORIZONTAL_FIELD_OF_VIEW 1.0472 // Example value: 60 degrees in radians
+
 
 typedef struct {
     SDL_Texture *texture;
