@@ -7,8 +7,7 @@ void render_walls(GameStats *gameStats, Player *player)
     {
         float rayAngle = player->angle - (FOV / 2) + 
                          (FOV * x / SCREEN_WIDTH);
-        float distance = cast_ray(gameStats, player->x, player->y, 
-                                  rayAngle);
+        float distance = cast_ray(gameStats, player->x, player->y, rayAngle, screenWidth, horizontal_field_of_view);
         
         if (distance < 0.1)
         {
