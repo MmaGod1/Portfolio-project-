@@ -84,7 +84,7 @@ float perform_ray_cast(GameStats *gameStats, int *mapX, int *mapY,
 
 
 float cast_ray(GameStats *gameStats, float playerX, float playerY,
-                float rayAngle, float screenWidth, float horizontal_field_of_view)
+               float rayAngle, float screenWidth, float HORIZONTAL_FIELD_OF_VIEW) // Change the parameter name
 {
     int stepX, stepY, mapX, mapY;
     float sideDistX, sideDistY, deltaDistX, deltaDistY;
@@ -95,7 +95,7 @@ float cast_ray(GameStats *gameStats, float playerX, float playerY,
                    &deltaDistX, &deltaDistY);
 
     // Calculate the projection plane width
-    float projection_plane_width = 2.0f * tan(horizontal_field_of_view * M_PI / 360.0f);
+    float projection_plane_width = 2.0f * tan(HORIZONTAL_FIELD_OF_VIEW * M_PI / 360.0f); // Use the updated parameter name
 
     float totalDistance = 0.0f; // This will store the distance of the closest wall hit
 
