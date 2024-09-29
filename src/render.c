@@ -59,7 +59,7 @@ void render_walls(GameStats *gameStats, Player *player)
         }
 
         // Replace SCREEN_HEIGHT with the appropriate height if needed
-        int wallHeight = (int)(your_height_value * SCREEN_HEIGHT / z);
+        int wallHeight = (int)(SCREEN_HEIGHT * SCREEN_HEIGHT / z);
 
         // Calculate where the top and bottom of the wall should be
         int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
