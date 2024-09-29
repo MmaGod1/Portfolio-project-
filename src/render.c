@@ -186,30 +186,41 @@ int get_ray_side(GameStats *gameStats, float posX, float posY, float rayAngle, i
  * Calculates the texture coordinates and renders the specified wall segment
  * using the appropriate wall texture from the maze map.
  */
-void render_wall_segment(GameStats *gameStats, Player *player, 
-                         float rayAngle, int x, 
-                         int wallTop, int wallHeight)
+void render_walls(GameStats *gameStats, Player *player)
 {
-    float perpWallDist;
+    for (int x = 0; x < SCREEN_WIDTH; x++)
+    {
+        float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
+        
+        // Map coordinates and perpendicular wall distance
+        int mapX, mapY;
+        float perpWallDist;
 
-    int mapX, mapY;
+        // Get the side hit (X or Y) and the perpendicular wall distance
+        int side = get_ray_side(gameStats, player->x, player->y, rayAngle, &mapX, &mapY, &perpWallDist);
+        
+        // Use perpWallDist for wall height or texture scaling
+        if (perpWallDist < 0.1)
+        {
+            perpWallDist = 0.1;
+        }
+        
+        int wallHeight = (int)(SCREEN_HEIGHT / perpWallDist);
+        int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
+        int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
 
-    
-    float wallX = get_wall_hit_coordinates(gameStats, player->x, 
-                                            player->y, rayAngle, 
-                                            &mapX, &mapY);
-    int wallTextureIndex = gameStats->maze_map[mapX][mapY] - 1;
+        if (wallTop < 0)
+        {
+            wallTop = 0;
+        }
+        if (wallBottom >= SCREEN_HEIGHT)
+        {
+            wallBottom = SCREEN_HEIGHT - 1;
+        }
 
-    int texX = (int)(wallX * gameStats->wallTextures[wallTextureIndex].width) % 
-               gameStats->wallTextures[wallTextureIndex].width;
-
-    SDL_Rect srcRect = { texX, 0, 1, 
-                         gameStats->wallTextures[wallTextureIndex].height };
-    SDL_Rect dstRect = { x, wallTop, 1, wallHeight };
-
-    SDL_RenderCopy(gameStats->renderer, 
-                   gameStats->wallTextures[wallTextureIndex].texture, 
-                   &srcRect, &dstRect);
+        // Optionally use 'side' to change texture rendering based on hit side
+        render_wall_segment(gameStats, player, rayAngle, x, wallTop, wallHeight, side);
+    }
 }
 
 
