@@ -149,7 +149,7 @@ int dda_raycast_step(int *mapX, int *mapY, float *sideDistX, float *sideDistY,
  *
  * Computes the wall hit coordinates relative to the texture coordinates.
  */
-/**float calculate_wall_x(float playerX, float playerY, int side,
+float calculate_wall_x(float playerX, float playerY, int side,
                        float sideDistX, float sideDistY,
                        float deltaDistX, float deltaDistY,
                        float rayDirX, float rayDirY)
@@ -168,27 +168,7 @@ int dda_raycast_step(int *mapX, int *mapY, float *sideDistX, float *sideDistY,
     wallX -= floor(wallX);
 
     return (wallX);
-}*/
-float calculate_wall_x(float playerX, float playerY, int side,
-                       float perpWallDist, float rayDirX, float rayDirY)
-{
-    float wallX;
-
-    if (side == 0)
-    {
-        wallX = playerY + perpWallDist * rayDirY;
-    }
-    else
-    {
-        wallX = playerX + perpWallDist * rayDirX;
-    }
-
-    wallX -= floor(wallX);  // Remove the integer part to get texture position
-
-    return (wallX);
 }
-
-
 
 
 
@@ -206,7 +186,7 @@ float calculate_wall_x(float playerX, float playerY, int side,
  * Initializes ray parameters, calculates step direction, performs DDA steps,
  * and calculates wall hit coordinates for rendering.
  */
-/*float get_wall_hit_coordinates(GameStats *gameStats, float playerX,
+float get_wall_hit_coordinates(GameStats *gameStats, float playerX,
                                float playerY, float rayAngle,
                                int *mapX, int *mapY)
 {
@@ -233,45 +213,4 @@ float calculate_wall_x(float playerX, float playerY, int side,
                              deltaDistX, deltaDistY, rayDirX, rayDirY);
 
     return (wallX);
-}*/
 
-
-
-float get_wall_hit_coordinates(GameStats *gameStats, float playerX,
-                               float playerY, float rayAngle,
-                               int *mapX, int *mapY)
-{
-    float rayDirX, rayDirY, sideDistX, sideDistY, wallX, perpWallDist;
-    int stepX, stepY, side;
-
-    init_ray_direction(&rayDirX, &rayDirY, rayAngle);
-    init_map_coordinates(playerX, playerY, mapX, mapY);
-
-    float deltaDistX = (rayDirX == 0) ? 1e30 : fabs(1 / rayDirX);
-    float deltaDistY = (rayDirY == 0) ? 1e30 : fabs(1 / rayDirY);
-
-    calculate_step_and_initial_side_dist(playerX, playerY, mapX, mapY,
-                                         rayDirX, rayDirY,
-                                         &stepX, &stepY,
-                                         &sideDistX, &sideDistY,
-                                         deltaDistX, deltaDistY);
-
-    dda_raycast_step(mapX, mapY, &sideDistX, &sideDistY,
-                     deltaDistX, deltaDistY, stepX, stepY,
-                     &side, gameStats);
-
-    // Calculate perpendicular distance to the wall hit
-    if (side == 0)
-    {
-        perpWallDist = (*mapX - playerX + (1 - stepX) / 2) / rayDirX;
-    }
-    else
-    {
-        perpWallDist = (*mapY - playerY + (1 - stepY) / 2) / rayDirY;
-    }
-
-    // Use the corrected function to calculate wallX
-    wallX = calculate_wall_x(playerX, playerY, side, perpWallDist, rayDirX, rayDirY);
-
-    return (wallX);
-}
