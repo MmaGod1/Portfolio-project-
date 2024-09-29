@@ -1,12 +1,11 @@
 #include "raycasting.h"
 
 
-void render_walls(GameStats *gameStats, Player *player)
+void render_walls(GameStats *gameStats, Player *player, float screenWidth, float horizontal_field_of_view)
 {
-    for (int x = 0; x < SCREEN_WIDTH; x++)
+    for (int x = 0; x < screenWidth; x++)
     {
-        float rayAngle = player->angle - (FOV / 2) + 
-                         (FOV * x / SCREEN_WIDTH);
+        float rayAngle = player->angle - (FOV / 2) + (FOV * x / screenWidth);
         float distance = cast_ray(gameStats, player->x, player->y, rayAngle, screenWidth, horizontal_field_of_view);
         
         if (distance < 0.1)
@@ -14,8 +13,7 @@ void render_walls(GameStats *gameStats, Player *player)
             distance = 0.1;
         }
 
-        float correctedDistance = distance * 
-                                  cos(rayAngle - player->angle);
+        float correctedDistance = distance * cos(rayAngle - player->angle);
         
         int wallHeight = (int)(SCREEN_HEIGHT / correctedDistance);
         int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
@@ -30,12 +28,9 @@ void render_walls(GameStats *gameStats, Player *player)
             wallBottom = SCREEN_HEIGHT - 1;
         }
 
-        render_wall_segment(gameStats, player, rayAngle, 
-                            x, wallTop, wallHeight);
+        render_wall_segment(gameStats, player, rayAngle, x, wallTop, wallHeight);
     }
 }
-
-
 
 
 
@@ -72,7 +67,7 @@ void render(Player *player, GameStats *gameStats)
     draw_floor(gameStats, player);
 
     // Call the refactored render_walls function
-    render_walls(gameStats, player);
+    render_walls(gameStats, player, SCREEN_WIDTH, HORIZONTAL_FIELD_OF_VIEW);
 
     if (gameStats->showMap)
     {
