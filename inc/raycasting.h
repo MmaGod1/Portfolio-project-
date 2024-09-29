@@ -109,23 +109,14 @@ void calculate_step_and_initial_side_dist(float playerX, float playerY,
                                           int *stepX, int *stepY,
                                           float *sideDistX, float *sideDistY,
                                           float deltaDistX, float deltaDistY);
-/*int dda_raycast_step(int *mapX, int *mapY, float *sideDistX, float *sideDistY,
+int dda_raycast_step(int *mapX, int *mapY, float *sideDistX, float *sideDistY,
                 float deltaDistX, float deltaDistY, int stepX, int stepY,
                 int *side, GameStats *gameStats);
 float get_wall_hit_coordinates(GameStats *gameStats, float playerX,
                                float playerY, float rayAngle,
-                               int *mapX, int *mapY);*/
+                               int *mapX, int *mapY);
 
 
-
-
-int dda_raycast_step(int *mapX, int *mapY, float *sideDistX, float *sideDistY,
-                float deltaDistX, float deltaDistY, int stepX, int stepY,
-                int *side, GameStats *gameStats, float *perpWallDist);
-
-float get_wall_hit_coordinates(GameStats *gameStats, float playerX,
-                               float playerY, float rayAngle,
-                               int *mapX, int *mapY, float *perpWallDist);
 
 
 void clean_up(GameStats *gameStats);
