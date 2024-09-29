@@ -102,7 +102,7 @@ void calculate_step_and_initial_side_dist(float playerX, float playerY,
  * Continues stepping until a wall is hit, updating the map coordinates 
  * and side distances accordingly.
  */
-int dda_raycast_step(int *mapX, int *mapY, float *sideDistX, float *sideDistY,
+/*int dda_raycast_step(int *mapX, int *mapY, float *sideDistX, float *sideDistY,
                 float deltaDistX, float deltaDistY, int stepX, int stepY,
                 int *side, GameStats *gameStats)
 {
@@ -131,6 +131,47 @@ int dda_raycast_step(int *mapX, int *mapY, float *sideDistX, float *sideDistY,
     }
 
     return hit;
+}
+*/
+
+int dda_raycast_step(int *mapX, int *mapY, float *sideDistX, float *sideDistY,
+                float deltaDistX, float deltaDistY, int stepX, int stepY,
+                int *side, GameStats *gameStats, float *perpWallDist)
+{
+    int hit = 0;
+
+    while (hit == 0)
+    {
+        if (*sideDistX < *sideDistY)
+        {
+            *sideDistX += deltaDistX;
+            *mapX += stepX;
+            *side = 0;
+        }
+        else
+        {
+            *sideDistY += deltaDistY;
+            *mapY += stepY;
+            *side = 1;
+        }
+
+        if (*mapX >= 0 && *mapX < MAP_WIDTH && *mapY >= 0 &&
+            *mapY < MAP_HEIGHT && gameStats->maze_map[*mapX][*mapY] == 1)
+        {
+            hit = 1;
+        }
+    }
+
+    // Calculate the perpendicular distance to the wall
+    if (*side == 0) // Vertical wall hit
+    {
+        *perpWallDist = (*sideDistX - deltaDistX); 
+    }
+    else // Horizontal wall hit
+    {
+        *perpWallDist = (*sideDistY - deltaDistY);
+    }
+   return hit;
 }
 
 
@@ -186,7 +227,7 @@ float calculate_wall_x(float playerX, float playerY, int side,
  * Initializes ray parameters, calculates step direction, performs DDA steps,
  * and calculates wall hit coordinates for rendering.
  */
-float get_wall_hit_coordinates(GameStats *gameStats, float playerX,
+/*float get_wall_hit_coordinates(GameStats *gameStats, float playerX,
                                float playerY, float rayAngle,
                                int *mapX, int *mapY)
 {
@@ -214,3 +255,34 @@ float get_wall_hit_coordinates(GameStats *gameStats, float playerX,
 
     return (wallX);
 }
+*/
+
+float get_wall_hit_coordinates(GameStats *gameStats, float playerX,
+                               float playerY, float rayAngle,
+                               int *mapX, int *mapY, float *perpWallDist)
+{
+    float rayDirX, rayDirY, sideDistX, sideDistY, wallX;
+    int stepX, stepY, side;
+
+    init_ray_direction(&rayDirX, &rayDirY, rayAngle);
+    init_map_coordinates(playerX, playerY, mapX, mapY);
+
+    float deltaDistX = fabs(1 / rayDirX);
+    float deltaDistY = fabs(1 / rayDirY);
+
+    calculate_step_and_initial_side_dist(playerX, playerY, mapX, mapY,
+                                         rayDirX, rayDirY,
+                                         &stepX, &stepY,
+                                         &sideDistX, &sideDistY,
+                                         deltaDistX, deltaDistY);
+
+    dda_raycast_step(mapX, mapY, &sideDistX, &sideDistY,
+                deltaDistX, deltaDistY, stepX, stepY,
+                &side, gameStats, perpWallDist);
+
+    wallX = calculate_wall_x(playerX, playerY, side, sideDistX, sideDistY,
+                             deltaDistX, deltaDistY, rayDirX, rayDirY);
+
+    return wallX;
+}
+
