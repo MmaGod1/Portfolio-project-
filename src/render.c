@@ -8,7 +8,7 @@
  * @gameStats: Pointer to the GameStats struct containing rendering data.
  * @player: Pointer to the Player struct containing player position and angle.
  */
-void render_walls(GameStats *gameStats, Player *player)
+/*void render_walls(GameStats *gameStats, Player *player)
 {
     for (int x = 0; x < SCREEN_WIDTH; x++)
     {
@@ -43,6 +43,52 @@ void render_walls(GameStats *gameStats, Player *player)
             wallBottom = SCREEN_HEIGHT - 1;
         }
 
+        render_wall_segment(gameStats, player, rayAngle, x, wallTop, wallHeight);
+    }
+}*/
+
+void render_walls(GameStats *gameStats, Player *player)
+{
+    for (int x = 0; x < SCREEN_WIDTH; x++)
+    {
+        // Calculate ray angle for each column
+        float rayAngle = player->angle - (FOV / 2) + (FOV * x / SCREEN_WIDTH);
+        
+        // Cast ray to find distance to wall
+        float distance = cast_ray(gameStats, player->x, player->y, rayAngle);
+        
+        if (distance < 0.1)
+        {
+            distance = 0.1; // Prevent division by zero
+        }
+
+        // JavaScript-style distance correction using cosine of angle
+        float z = distance * cos(rayAngle - player->angle);
+
+        // Ensure that z (corrected distance) is not zero or negative
+        if (z <= 0)
+        {
+            z = 0.1; // Set to a minimum value
+        }
+
+        // Calculate wall height similar to the JavaScript logic
+        int wallHeight = (int)(this->height * SCREEN_HEIGHT / z);
+
+        // Calculate where the top and bottom of the wall should be
+        int wallTop = (SCREEN_HEIGHT / 2) - (wallHeight / 2);
+        int wallBottom = (SCREEN_HEIGHT / 2) + (wallHeight / 2);
+        
+        // Clamp the drawing range to avoid rendering outside the screen
+        if (wallTop < 0)
+        {
+            wallTop = 0;
+        }
+        if (wallBottom >= SCREEN_HEIGHT)
+        {
+            wallBottom = SCREEN_HEIGHT - 1;
+        }
+
+        // Render the wall segment
         render_wall_segment(gameStats, player, rayAngle, x, wallTop, wallHeight);
     }
 }
