@@ -123,12 +123,9 @@ void initialize_ray(float playerX, float playerY, float rayAngle,
 float perform_ray_cast(GameStats *gameStats, int *mapX, int *mapY,
                        int stepX, int stepY, float sideDistX,
                        float sideDistY, float deltaDistX, float deltaDistY,
-                       float playerX, float playerY, float rayAngle)
+                       float playerX, float playerY, float rayAngle,
+                       float playerViewAngle)
 {
-    (void)playerX;  // Suppress unused parameter warning
-    (void)playerY;  // Suppress unused parameter warning
-    (void)rayAngle; // Suppress unused parameter warning
-
     int side;
     bool hit = false;
 
@@ -154,19 +151,19 @@ float perform_ray_cast(GameStats *gameStats, int *mapX, int *mapY,
         }
     }
 
-    // Calculate the perpendicular distance to the wall
     float perpWallDist;
     if (side == 0)
     {
-        perpWallDist = (sideDistX - deltaDistX); // vertical wall
+        perpWallDist = (sideDistX - deltaDistX);
     }
     else
     {
-        perpWallDist = (sideDistY - deltaDistY); // horizontal wall
+        perpWallDist = (sideDistY - deltaDistY);
     }
 
-    // Calculate the height of the wall to be drawn
-    int lineHeight = (int)(SCREEN_HEIGHT / perpWallDist);
+    // Adjust for the angle to avoid fisheye effect
+    float adjustedDistance = perpWallDist * cos(rayAngle - playerViewAngle);
+    int lineHeight = (int)(SCREEN_HEIGHT / adjustedDistance);
 
     // Calculate the start and end pixel to draw
     int drawStart = -lineHeight / 2 + SCREEN_HEIGHT / 2;
@@ -178,6 +175,8 @@ float perform_ray_cast(GameStats *gameStats, int *mapX, int *mapY,
 
     return perpWallDist; // Return the perpendicular wall distance if needed
 }
+
+
 /**
  * cast_ray - Main function to cast a ray and determine the distance to the wall.
  *
