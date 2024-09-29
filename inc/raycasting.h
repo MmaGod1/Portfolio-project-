@@ -113,7 +113,7 @@ float perform_ray_cast(GameStats *gameStats, int *mapX, int *mapY,
                 float rayAngle);*/
 
 float cast_ray(GameStats *gameStats, float playerX, float playerY,
-                float rayAngle, float screenWidth, float horizontal_field_of_view);
+               float rayAngle, float screenWidth, float HORIZONTAL_FIELD_OF_VIEW);
 
 
 
