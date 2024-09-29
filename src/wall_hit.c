@@ -213,4 +213,4 @@ float get_wall_hit_coordinates(GameStats *gameStats, float playerX,
                              deltaDistX, deltaDistY, rayDirX, rayDirY);
 
     return (wallX);
-
+}
