@@ -122,10 +122,10 @@ void render_wall_segment(GameStats *gameStats, Player *player,
                          int wallTop, int wallHeight)
 {
     int mapX, mapY;
-    
+    float perpWallDist;
     // Get the exact wall hit coordinates
-    float wallX = get_wall_hit_coordinates(gameStats, player->x, player->y, rayAngle, &mapX, &mapY);
-    
+    //float wallX = get_wall_hit_coordinates(gameStats, player->x, player->y, rayAngle, &mapX, &mapY);
+    float wallX = get_wall_hit_coordinates(gameStats, player->x, player->y, rayAngle, &mapX, &mapY, &perpWallDist);
     // Determine the texture index from the maze map
     int wallTextureIndex = gameStats->maze_map[mapX][mapY] - 1;
 
