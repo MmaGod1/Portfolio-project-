@@ -121,10 +121,15 @@ void initialize_ray(float playerX, float playerY, float rayAngle,
 */
 
 float perform_ray_cast(GameStats *gameStats, int *mapX, int *mapY,
+float perform_ray_cast(GameStats *gameStats, int *mapX, int *mapY,
                        int stepX, int stepY, float sideDistX,
                        float sideDistY, float deltaDistX, float deltaDistY,
                        float playerX, float playerY, float rayAngle)
 {
+    (void)playerX;  // Suppress unused parameter warning
+    (void)playerY;  // Suppress unused parameter warning
+    (void)rayAngle; // Suppress unused parameter warning
+
     int side;
     bool hit = false;
 
@@ -174,7 +179,6 @@ float perform_ray_cast(GameStats *gameStats, int *mapX, int *mapY,
 
     return perpWallDist; // Return the perpendicular wall distance if needed
 }
-
 /**
  * cast_ray - Main function to cast a ray and determine the distance to the wall.
  *
