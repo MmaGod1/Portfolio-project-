@@ -123,7 +123,7 @@ void render_walls(GameStats *gameStats, Player *player)
         }
 
         // Render the wall segment for this column
-        render_wall_segment(gameStats, player, rayAngle, x, wallTop, wallHeight, side);
+        render_wall_segment(gameStats, player, rayAngle, x, wallTop, wallHeight);
 
     }
 }
