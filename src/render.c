@@ -38,6 +38,7 @@
 */
 
 
+
 void render_walls(GameStats *gameStats, Player *player)
 {
     // Forward direction (normalized vector)
@@ -65,8 +66,11 @@ void render_walls(GameStats *gameStats, Player *player)
         rayDir_x /= ray_length;
         rayDir_y /= ray_length;
 
+        // Calculate the ray angle from the ray direction
+        float rayAngle = atan2(rayDir_y, rayDir_x); // Get the angle in radians
+
         // Cast the ray and get the distance to the wall
-        float distance = cast_ray(gameStats, player->x, player->y, rayDir_x, rayDir_y);
+        float distance = cast_ray(gameStats, player->x, player->y, rayAngle); // Call with rayAngle
 
         if (distance < 0.1)
         {
@@ -90,12 +94,10 @@ void render_walls(GameStats *gameStats, Player *player)
             wallBottom = SCREEN_HEIGHT - 1;
         }
 
-        // Render the wall segment
-        render_wall_segment(gameStats, player, rayDir_x, rayDir_y, x, wallTop, wallHeight);
+        // Render the wall segment using the correct arguments
+        render_wall_segment(gameStats, player, rayAngle, x, wallTop, wallHeight); // Call with rayAngle
     }
 }
-
-
 
 
 
