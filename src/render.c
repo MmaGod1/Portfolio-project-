@@ -1,46 +1,4 @@
-#include "raycasting.h"
-
-
-int get_ray_side(GameStats *gameStats, float playerX, float playerY, 
-                 float rayAngle, int *mapX, int *mapY, 
-                 float *perpWallDist)
-{
-    float rayDirX, rayDirY, sideDistX, sideDistY;
-    int stepX, stepY, side;
-
-    // Initialize ray direction and map coordinates
-    init_ray_direction(&rayDirX, &rayDirY, rayAngle);
-    init_map_coordinates(playerX, playerY, mapX, mapY);
-
-    // Calculate the distance the ray must travel to cross a grid line
-    float deltaDistX = fabs(1 / rayDirX);
-    float deltaDistY = fabs(1 / rayDirY);
-
-    // Determine the step direction and the initial side distances
-    calculate_step_and_initial_side_dist(playerX, playerY, mapX, mapY, 
-                                         rayDirX, rayDirY, 
-                                         &stepX, &stepY, 
-                                         &sideDistX, &sideDistY, 
-                                         deltaDistX, deltaDistY);
-
-    // Perform the DDA loop to find the wall hit
-    dda_raycast_step(mapX, mapY, &sideDistX, &sideDistY, 
-                     deltaDistX, deltaDistY, stepX, stepY, 
-                     &side, gameStats);
-
-    // Calculate perpendicular wall distance
-    if (side == 0)
-    {
-        *perpWallDist = (sideDistX - deltaDistX);
-    }
-    else
-    {
-        *perpWallDist = (sideDistY - deltaDistY);
-    }
-
-    // Return whether the hit was on the X or Y axis
-    return side;  // 0 = X-axis (vertical wall), 1 = Y-axis (horizontal wall)
-}
+f#include "raycasting.h"
 
 
 /**
