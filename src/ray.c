@@ -80,17 +80,48 @@ float perform_ray_cast(GameStats *gameStats, int *mapX, int *mapY,
     return (perpWallDist);
 }
 
+
+
+
 float cast_ray(GameStats *gameStats, float playerX, float playerY,
-                float rayAngle)
+                float rayAngle, float screenWidth, float horizontal_field_of_view)
 {
     int stepX, stepY, mapX, mapY;
     float sideDistX, sideDistY, deltaDistX, deltaDistY;
 
+    // Initialize the ray for the first ray
     initialize_ray(playerX, playerY, rayAngle, &mapX, &mapY,
                    &stepX, &stepY, &sideDistX, &sideDistY,
                    &deltaDistX, &deltaDistY);
 
-    return (perform_ray_cast(gameStats, &mapX, &mapY, stepX, stepY,
-                             sideDistX, sideDistY, deltaDistX,
-                             deltaDistY, playerX, playerY, rayAngle));
+    // Calculate the projection plane width
+    float projection_plane_width = 2.0f * tan(horizontal_field_of_view * M_PI / 360.0f);
+
+    float totalDistance = 0.0f; // This will store the distance of the closest wall hit
+
+    // Loop over each pixel (or ray) on the screen
+    for (int i = 0; i < screenWidth; i++) {
+        // Calculate the normalized offset for the current ray
+        float progress = (i / screenWidth) - 0.5f; // Normalize to [-0.5, 0.5]
+
+        // Adjust the ray direction based on the projection
+        float adjustedRayAngle = rayAngle + (progress * projection_plane_width);
+
+        // Re-initialize ray parameters based on the adjusted angle
+        initialize_ray(playerX, playerY, adjustedRayAngle, &mapX, &mapY,
+                       &stepX, &stepY, &sideDistX, &sideDistY,
+                       &deltaDistX, &deltaDistY);
+
+        // Perform ray casting to find the wall distance
+        float wallDistance = perform_ray_cast(gameStats, &mapX, &mapY, stepX, stepY,
+                                               sideDistX, sideDistY, deltaDistX,
+                                               deltaDistY, playerX, playerY, adjustedRayAngle);
+        
+        // Store the total distance for the closest wall hit (if needed)
+        if (i == 0 || wallDistance < totalDistance) {
+            totalDistance = wallDistance; // Update if it's the closest hit
+        }
+    }
+
+    return totalDistance; // Return the distance of the closest wall hit
 }
