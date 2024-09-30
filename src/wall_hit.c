@@ -47,7 +47,7 @@ int dda_raycast_step(int *mapX, int *mapY, float *sideDistX, float *sideDistY,
                 int *side, GameStats *gameStats, float rayAngle)
 {
     int hit = 0;
-    float perpWallDist = 0.0f;
+    //float perpWallDist = 0.0f;
 
     // Raycasting loop to find wall hit
     while (hit == 0)
@@ -122,9 +122,8 @@ float get_wall_hit_coordinates(GameStats *gameStats, float playerX,
                                          &sideDistX, &sideDistY,
                                          deltaDistX, deltaDistY);
 
-    dda_raycast_step(&mapX, &mapY, &sideDistX, &sideDistY, 
-                 deltaDistX, deltaDistY, stepX, stepY, 
-                 &side, gameStats, rayAngle);
+    dda_raycast_step(mapX, mapY, &sideDistX, &sideDistY, deltaDistX, deltaDistY, 
+                 stepX, stepY, side, gameStats, rayAngle);
 
     wallX = calculate_wall_x(playerX, playerY, side, sideDistX, sideDistY,
                              deltaDistX, deltaDistY, rayDirX, rayDirY);
