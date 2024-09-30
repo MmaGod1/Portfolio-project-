@@ -37,10 +37,14 @@ void initialize_ray(float playerX, float playerY, float rayAngle,
     }
 }
 
+
+
+
+
 float perform_ray_cast(GameStats *gameStats, int *mapX, int *mapY,
                        int stepX, int stepY, float sideDistX,
                        float sideDistY, float deltaDistX, float deltaDistY,
-                       float playerX, float playerY, float rayAngle)
+                       float rayDirX, float rayDirY, float playerX, float playerY)
 {
     int side;
     bool hit = false;
@@ -67,18 +71,16 @@ float perform_ray_cast(GameStats *gameStats, int *mapX, int *mapY,
         }
     }
 
-    float perpWallDist = (sideDistX - deltaDistX) * cos(rayAngle);
+    // Correct the fish-eye effect by calculating the perpendicular distance
+    float perpWallDist;
     if (side == 0)
-    {
-        perpWallDist = (*mapX - playerX + (1 - stepX) / 2) / cos(rayAngle);
-    }
+        perpWallDist = (sideDistX - deltaDistX) / rayDirX;
     else
-    {
-        perpWallDist = (*mapY - playerY + (1 - stepY) / 2) / sin(rayAngle);
-    }
-  
-    return (perpWallDist);
+        perpWallDist = (sideDistY - deltaDistY) / rayDirY;
+
+    return perpWallDist;
 }
+
 
 
 float cast_ray(GameStats *gameStats, float playerX, float playerY,
@@ -86,6 +88,8 @@ float cast_ray(GameStats *gameStats, float playerX, float playerY,
 {
     int stepX, stepY, mapX, mapY;
     float sideDistX, sideDistY, deltaDistX, deltaDistY;
+    float rayDirX = cos(rayAngle);
+    float rayDirY = sin(rayAngle);
 
     initialize_ray(playerX, playerY, rayAngle, &mapX, &mapY,
                    &stepX, &stepY, &sideDistX, &sideDistY,
@@ -93,5 +97,5 @@ float cast_ray(GameStats *gameStats, float playerX, float playerY,
 
     return (perform_ray_cast(gameStats, &mapX, &mapY, stepX, stepY,
                              sideDistX, sideDistY, deltaDistX,
-                             deltaDistY, playerX, playerY, rayAngle));
+                             deltaDistY, rayDirX, rayDirY, playerX, playerY));
 }
