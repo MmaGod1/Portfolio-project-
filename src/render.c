@@ -34,7 +34,7 @@ void render_walls(GameStats *gameStats, Player *player, float screenWidth, float
 
 
 
-void render_wall_segment(GameStats *gameStats, Player *player, 
+/*void render_wall_segment(GameStats *gameStats, Player *player, 
                          float rayAngle, int x, 
                          int wallTop, int wallHeight)
 {
@@ -56,7 +56,37 @@ void render_wall_segment(GameStats *gameStats, Player *player,
                    &srcRect, &dstRect);
 }
 
+*/
 
+
+void render_wall_segment(GameStats *gameStats, Player *player, 
+                         float rayAngle, int x, 
+                         int wallTop, int wallHeight)
+{
+    int mapX, mapY;  // Variables to hold the map coordinates
+    float wallX = get_wall_hit_coordinates(gameStats, player->x, 
+                                            player->y, rayAngle, 
+                                            &mapX, &mapY);  // Call the function
+
+    // Calculate the texture index based on the wall hit coordinates
+    int wallTextureIndex = gameStats->maze_map[mapX][mapY] - 1;
+
+    // Calculate the texture X coordinate for mapping
+    int texX = (int)(wallX * gameStats->wallTextures[wallTextureIndex].width) % 
+               gameStats->wallTextures[wallTextureIndex].width;
+
+    // Set up the source rectangle for the texture
+    SDL_Rect srcRect = { texX, 0, 1, 
+                         gameStats->wallTextures[wallTextureIndex].height };
+    
+    // Set up the destination rectangle for rendering
+    SDL_Rect dstRect = { x, wallTop, 1, wallHeight };
+
+    // Render the wall segment using the SDL rendering context
+    SDL_RenderCopy(gameStats->renderer, 
+                   gameStats->wallTextures[wallTextureIndex].texture, 
+                   &srcRect, &dstRect);
+}
 
 
 void render(Player *player, GameStats *gameStats)
