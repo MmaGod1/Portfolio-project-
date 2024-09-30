@@ -171,25 +171,36 @@ float calculate_wall_x(float playerX, float playerY, int side,
 
     return (wallX);*/
 
-   float wallX;
-float perpWallDist;  // Perpendicular distance to eliminate fish-eye
+    int hit = 0;
+    float perpWallDist;  // Perpendicular distance to eliminate fish-eye
 
-// Calculate wallX for texture mapping (exact hit point on the wall)
-if (side == 0)
-{
-    wallX = playerY + ((sideDistX - deltaDistX) * rayDirY);  // Vertical wall hit
-    perpWallDist = (sideDistX - deltaDistX) / cos(rayAngle);  // Fish-eye correction
-}
-else
-{
-    wallX = playerX + ((sideDistY - deltaDistY) * rayDirX);  // Horizontal wall hit
-    perpWallDist = (sideDistY - deltaDistY) / cos(rayAngle);  // Fish-eye correction
-}
+    while (hit == 0)
+    {
+        if (*sideDistX < *sideDistY)
+        {
+            *sideDistX += deltaDistX;
+            *mapX += stepX;
+            *side = 0;
 
-wallX -= floor(wallX);  // Get the fractional part for texture mapping
+            perpWallDist = (*sideDistX - deltaDistX) / cos(rayAngle);  // Fish-eye correction
+        }
+        else
+        {
+            *sideDistY += deltaDistY;
+            *mapY += stepY;
+            *side = 1;
 
-// Now you have the corrected perpendicular distance and the texture coordinate
-return wallX;  // Use wallX for texture mapping
+            perpWallDist = (*sideDistY - deltaDistY) / cos(rayAngle);  // Fish-eye correction
+        }
+
+        if (*mapX >= 0 && *mapX < MAP_WIDTH && *mapY >= 0 &&
+            *mapY < MAP_HEIGHT && gameStats->maze_map[*mapX][*mapY] == 1)
+        {
+            hit = 1;
+        }
+    }
+
+    return hit;
 }
 
 
@@ -208,7 +219,7 @@ return wallX;  // Use wallX for texture mapping
  * Initializes ray parameters, calculates step direction, performs DDA steps,
  * and calculates wall hit coordinates for rendering.
  */
-float get_wall_hit_coordinates(GameStats *gameStats, float playerX,
+/*float get_wall_hit_coordinates(GameStats *gameStats, float playerX,
                                float playerY, float rayAngle,
                                int *mapX, int *mapY)
 {
@@ -235,4 +246,43 @@ float get_wall_hit_coordinates(GameStats *gameStats, float playerX,
                              deltaDistX, deltaDistY, rayDirX, rayDirY);
 
     return (wallX);
+}
+*/
+
+
+
+float get_wall_hit_coordinates(GameStats *gameStats, float playerX,
+                               float playerY, float rayAngle,
+                               int *mapX, int *mapY)
+{
+    float rayDirX, rayDirY, sideDistX, sideDistY, wallX;
+    int stepX, stepY, side;
+
+    // Initialize ray direction based on rayAngle
+    init_ray_direction(&rayDirX, &rayDirY, rayAngle);
+    
+    // Initialize map coordinates
+    init_map_coordinates(playerX, playerY, mapX, mapY);
+
+    // Calculate delta distances for raycasting
+    float deltaDistX = fabs(1 / rayDirX);
+    float deltaDistY = fabs(1 / rayDirY);
+
+    // Calculate the steps and initial side distances for DDA
+    calculate_step_and_initial_side_dist(playerX, playerY, mapX, mapY,
+                                         rayDirX, rayDirY,
+                                         &stepX, &stepY,
+                                         &sideDistX, &sideDistY,
+                                         deltaDistX, deltaDistY);
+
+    // Perform DDA raycasting step to find wall hit
+    dda_raycast_step(mapX, mapY, &sideDistX, &sideDistY,
+                     deltaDistX, deltaDistY, stepX, stepY,
+                     &side, gameStats);
+
+    // Calculate the exact wall hit coordinate for texture mapping
+    wallX = calculate_wall_x(playerX, playerY, side, sideDistX, sideDistY,
+                             deltaDistX, deltaDistY, rayDirX, rayDirY);
+
+    return wallX;  // Return the texture mapping coordinate
 }
