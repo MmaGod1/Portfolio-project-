@@ -61,9 +61,16 @@ void render_walls(GameStats *gameStats, Player *player, float screenWidth, float
 
 
 
+/*void render_wall_segment(GameStats *gameStats, Player *player, 
+                         float rayAngle, int x, 
+                         int wallTop, int wallHeight);
+*/
+
 void render_wall_segment(GameStats *gameStats, Player *player, 
                          float rayAngle, int x, 
                          int wallTop, int wallHeight);
+
+                         
 void render(Player *player, GameStats *gameStats);
 
 
