@@ -11,14 +11,12 @@
 #define SCREEN_HEIGHT 600
 #define MAP_WIDTH 24
 #define MAP_HEIGHT 24
-#define FOV (M_PI / 3) /* 60 degrees field of view */
+#define FOV (M_PI / 3) // 60 degrees field of view
 #define WALL_CHAR '#'
 #define EMPTY_CHAR '.'
 #define MAP_DISPLAY_WIDTH 200
 #define MAP_DISPLAY_HEIGHT 150
 #define TILE_SIZE (MAP_DISPLAY_WIDTH / MAP_WIDTH)
-#define HORIZONTAL_FIELD_OF_VIEW 1.0472 // Example value: 60 degrees in radians
-
 
 typedef struct {
     SDL_Texture *texture;
@@ -47,30 +45,10 @@ typedef struct GameStats
 int initialize_sdl(GameStats *gameStats);
 int initialize_game(GameStats *gameStats, Player *player, char *mapFile);
 
-
-int get_ray_side(GameStats *gameStats, float playerX, float playerY, 
-                 float rayAngle, int *mapX, int *mapY, 
-                 float *perpWallDist);
-
-
-
-
-
-/*void render_walls(GameStats *gameStats, Player *player);*/
-void render_walls(GameStats *gameStats, Player *player, float screenWidth, float horizontal_field_of_view);
-
-
-
-/*void render_wall_segment(GameStats *gameStats, Player *player, 
-                         float rayAngle, int x, 
-                         int wallTop, int wallHeight);
-*/
-
+void render_walls(GameStats *gameStats, Player *player);
 void render_wall_segment(GameStats *gameStats, Player *player, 
                          float rayAngle, int x, 
                          int wallTop, int wallHeight);
-
-                         
 void render(Player *player, GameStats *gameStats);
 
 
@@ -116,11 +94,8 @@ float perform_ray_cast(GameStats *gameStats, int *mapX, int *mapY,
                        float sideDistY, float deltaDistX, float deltaDistY,
                        float playerX, float playerY, float rayAngle);
 
-/*float cast_ray(GameStats *gameStats, float playerX, float playerY, 
-                float rayAngle);*/
-
-float cast_ray(GameStats *gameStats, float playerX, float playerY,
-               float rayAngle, float screenWidth, float hFOV);
+float cast_ray(GameStats *gameStats, float playerX, float playerY, 
+                float rayAngle);
 
 
 
@@ -134,24 +109,15 @@ void calculate_step_and_initial_side_dist(float playerX, float playerY,
                                           int *stepX, int *stepY,
                                           float *sideDistX, float *sideDistY,
                                           float deltaDistX, float deltaDistY);
-
-/*
 int dda_raycast_step(int *mapX, int *mapY, float *sideDistX, float *sideDistY,
                 float deltaDistX, float deltaDistY, int stepX, int stepY,
                 int *side, GameStats *gameStats);
-*/
-
-int dda_raycast_step(int *mapX, int *mapY, float *sideDistX, float *sideDistY,
-                float deltaDistX, float deltaDistY, int stepX, int stepY,
-                int *side, GameStats *gameStats, float rayAngle);
-    
-/*float get_wall_hit_coordinates(GameStats *gameStats, float playerX,
+float get_wall_hit_coordinates(GameStats *gameStats, float playerX,
                                float playerY, float rayAngle,
                                int *mapX, int *mapY);
 
-*/
-float get_wall_hit_coordinates(GameStats *gameStats, float playerX,
-                               float playerY, float rayAngle,
+float get_wall_hit_coordinates(GameStats *gameStats, float playerX, 
+                               float playerY, float rayAngle, 
                                int *mapX, int *mapY);
 
 

@@ -44,30 +44,25 @@ void calculate_step_and_initial_side_dist(float playerX, float playerY,
 
 int dda_raycast_step(int *mapX, int *mapY, float *sideDistX, float *sideDistY,
                 float deltaDistX, float deltaDistY, int stepX, int stepY,
-                int *side, GameStats *gameStats, float rayAngle)
+                int *side, GameStats *gameStats)
 {
     int hit = 0;
-    float perpWallDist;
 
-    // Raycasting loop to find wall hit
     while (hit == 0)
     {
-        if (*sideDistX < *sideDistY)  // Use dereferencing because sideDistX and sideDistY are pointers
+        if (*sideDistX < *sideDistY)
         {
             *sideDistX += deltaDistX;
-            *mapX += stepX;  // Ensure mapX is a pointer
-            *side = 0;       // Indicates a hit on the X side
-            perpWallDist = (*sideDistX - deltaDistX) / cos(rayAngle);  // Fish-eye correction
+            *mapX += stepX;
+            *side = 0;
         }
         else
         {
             *sideDistY += deltaDistY;
-            *mapY += stepY;  // Ensure mapY is a pointer
-            *side = 1;       // Indicates a hit on the Y side
-            perpWallDist = (*sideDistY - deltaDistY) / cos(rayAngle);  // Fish-eye correction
+            *mapY += stepY;
+            *side = 1;
         }
 
-        // Ensure gameStats is passed correctly
         if (*mapX >= 0 && *mapX < MAP_WIDTH && *mapY >= 0 &&
             *mapY < MAP_HEIGHT && gameStats->maze_map[*mapX][*mapY] == 1)
         {
@@ -78,7 +73,6 @@ int dda_raycast_step(int *mapX, int *mapY, float *sideDistX, float *sideDistY,
     return hit;
 }
 
-
 float calculate_wall_x(float playerX, float playerY, int side,
                        float sideDistX, float sideDistY,
                        float deltaDistX, float deltaDistY,
@@ -88,19 +82,16 @@ float calculate_wall_x(float playerX, float playerY, int side,
 
     if (side == 0)
     {
-        // Wall hit on X-axis
-        wallX = playerY + (sideDistX - deltaDistX) * rayDirY;
+        wallX = playerY + ((sideDistX - deltaDistX) * rayDirY);
     }
     else
     {
-        // Wall hit on Y-axis
-        wallX = playerX + (sideDistY - deltaDistY) * rayDirX;
+        wallX = playerX + ((sideDistY - deltaDistY) * rayDirX);
     }
 
-    // We only need the fractional part of the wall hit position for texture mapping
     wallX -= floor(wallX);
 
-    return wallX;
+    return (wallX);
 }
 
 float get_wall_hit_coordinates(GameStats *gameStats, float playerX,
@@ -122,8 +113,9 @@ float get_wall_hit_coordinates(GameStats *gameStats, float playerX,
                                          &sideDistX, &sideDistY,
                                          deltaDistX, deltaDistY);
 
-    dda_raycast_step(mapX, mapY, &sideDistX, &sideDistY, deltaDistX, deltaDistY, 
-                 stepX, stepY, side, gameStats, rayAngle);
+    dda_raycast_step(mapX, mapY, &sideDistX, &sideDistY,
+                deltaDistX, deltaDistY, stepX, stepY,
+                &side, gameStats);
 
     wallX = calculate_wall_x(playerX, playerY, side, sideDistX, sideDistY,
                              deltaDistX, deltaDistY, rayDirX, rayDirY);
