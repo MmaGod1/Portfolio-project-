@@ -73,9 +73,10 @@ int dda_raycast_step(int *mapX, int *mapY, float *sideDistX, float *sideDistY,
     return hit;
 }
 
+
+
+
 float calculate_wall_x(float playerX, float playerY, int side,
-                       float sideDistX, float sideDistY,
-                       float deltaDistX, float deltaDistY,
                        float rayDirX, float rayDirY,
                        int mapX, int mapY, int stepX, int stepY)
 {
@@ -102,6 +103,9 @@ float calculate_wall_x(float playerX, float playerY, int side,
 
 
 
+
+
+
 float get_wall_hit_coordinates(GameStats *gameStats, float playerX,
                                float playerY, float rayAngle,
                                int *mapX, int *mapY)
@@ -125,9 +129,8 @@ float get_wall_hit_coordinates(GameStats *gameStats, float playerX,
                 deltaDistX, deltaDistY, stepX, stepY,
                 &side, gameStats);
 
-    // Pass mapX, mapY, stepX, stepY to calculate_wall_x
-    wallX = calculate_wall_x(playerX, playerY, side, sideDistX, sideDistY,
-                             deltaDistX, deltaDistY, rayDirX, rayDirY,
+    // Call calculate_wall_x with the updated parameter list
+    wallX = calculate_wall_x(playerX, playerY, side, rayDirX, rayDirY,
                              *mapX, *mapY, stepX, stepY);
 
     return wallX;
