@@ -156,7 +156,7 @@ float calculate_wall_x(float playerX, float playerY, int side,
                        float deltaDistX, float deltaDistY,
                        float rayDirX, float rayDirY)
 {
-    float wallX;
+   /* float wallX;
 
     if (side == 0)
     {
@@ -169,7 +169,27 @@ float calculate_wall_x(float playerX, float playerY, int side,
 
     wallX -= floor(wallX);
 
-    return (wallX);
+    return (wallX);*/
+
+   float wallX;
+float perpWallDist;  // Perpendicular distance to eliminate fish-eye
+
+// Calculate wallX for texture mapping (exact hit point on the wall)
+if (side == 0)
+{
+    wallX = playerY + ((sideDistX - deltaDistX) * rayDirY);  // Vertical wall hit
+    perpWallDist = (sideDistX - deltaDistX) / cos(rayAngle);  // Fish-eye correction
+}
+else
+{
+    wallX = playerX + ((sideDistY - deltaDistY) * rayDirX);  // Horizontal wall hit
+    perpWallDist = (sideDistY - deltaDistY) / cos(rayAngle);  // Fish-eye correction
+}
+
+wallX -= floor(wallX);  // Get the fractional part for texture mapping
+
+// Now you have the corrected perpendicular distance and the texture coordinate
+return wallX;  // Use wallX for texture mapping
 }
 
 
