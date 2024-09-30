@@ -156,12 +156,12 @@ int dda_raycast_step(int *mapX, int *mapY, float *sideDistX, float *sideDistY,
  *
  * Computes the wall hit coordinates relative to the texture coordinates.
  */
-float calculate_wall_x(float playerX, float playerY, int side,
+/*float calculate_wall_x(float playerX, float playerY, int side,
                        float sideDistX, float sideDistY,
                        float deltaDistX, float deltaDistY,
                        float rayDirX, float rayDirY)
 {
-   /* float wallX;
+    float wallX;
 
     if (side == 0)
     {
@@ -207,6 +207,35 @@ float calculate_wall_x(float playerX, float playerY, int side,
 
     return hit;
 }
+
+
+
+
+
+float calculate_wall_x(float playerX, float playerY, int side,
+                       float sideDistX, float sideDistY,
+                       float deltaDistX, float deltaDistY,
+                       float rayDirX, float rayDirY)
+{
+    float wallX;
+
+    if (side == 0)
+    {
+        // Wall hit on X-axis
+        wallX = playerY + (sideDistX - deltaDistX) * rayDirY;
+    }
+    else
+    {
+        // Wall hit on Y-axis
+        wallX = playerX + (sideDistY - deltaDistY) * rayDirX;
+    }
+
+    // We only need the fractional part of the wall hit position for texture mapping
+    wallX -= floor(wallX);
+
+    return wallX;
+}
+
 
 
 
