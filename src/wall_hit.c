@@ -174,7 +174,7 @@ int dda_raycast_step(int *mapX, int *mapY, float *sideDistX, float *sideDistY,
 
     wallX -= floor(wallX);
 
-    return (wallX);*/
+    return (wallX);
 
     int hit = 0;
     float perpWallDist;  // Perpendicular distance to eliminate fish-eye
@@ -208,7 +208,7 @@ int dda_raycast_step(int *mapX, int *mapY, float *sideDistX, float *sideDistY,
     return hit;
 }
 
-
+*/
 
 
 
@@ -315,8 +315,8 @@ float get_wall_hit_coordinates(GameStats *gameStats, float playerX,
                      &side, gameStats);
 
     // Calculate the exact wall hit coordinate for texture mapping
-    wallX = calculate_wall_x(playerX, playerY, side, sideDistX, sideDistY,
-                             deltaDistX, deltaDistY, rayDirX, rayDirY);
+    float wallX = calculate_wall_x(playerX, playerY, side, sideDistX, sideDistY,
+                               deltaDistX, deltaDistY, rayDirX, rayDirY);;
 
     return wallX;  // Return the texture mapping coordinate
 }
