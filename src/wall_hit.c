@@ -1,4 +1,4 @@
-#include "raycasting.h"
+ #include "raycasting.h"
 
 
 /**
@@ -104,25 +104,30 @@ void calculate_step_and_initial_side_dist(float playerX, float playerY,
  */
 int dda_raycast_step(int *mapX, int *mapY, float *sideDistX, float *sideDistY,
                 float deltaDistX, float deltaDistY, int stepX, int stepY,
-                int *side, GameStats *gameStats)
+                int *side, GameStats *gameStats, float rayAngle)
 {
     int hit = 0;
+    float perpWallDist = 0.0f;
 
+    // Raycasting loop to find wall hit
     while (hit == 0)
     {
-        if (*sideDistX < *sideDistY)
+        if (*sideDistX < *sideDistY)  // Use dereferencing because sideDistX and sideDistY are pointers
         {
             *sideDistX += deltaDistX;
-            *mapX += stepX;
-            *side = 0;
+            *mapX += stepX;  // Ensure mapX is a pointer
+            *side = 0;       // Indicates a hit on the X side
+            perpWallDist = (*sideDistX - deltaDistX) / cos(rayAngle);  // Fish-eye correction
         }
         else
         {
             *sideDistY += deltaDistY;
-            *mapY += stepY;
-            *side = 1;
+            *mapY += stepY;  // Ensure mapY is a pointer
+            *side = 1;       // Indicates a hit on the Y side
+            perpWallDist = (*sideDistY - deltaDistY) / cos(rayAngle);  // Fish-eye correction
         }
 
+        // Ensure gameStats is passed correctly
         if (*mapX >= 0 && *mapX < MAP_WIDTH && *mapY >= 0 &&
             *mapY < MAP_HEIGHT && gameStats->maze_map[*mapX][*mapY] == 1)
         {
