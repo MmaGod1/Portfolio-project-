@@ -44,7 +44,7 @@ void initialize_ray(float playerX, float playerY, float rayAngle,
 float perform_ray_cast(GameStats *gameStats, int *mapX, int *mapY,
                        int stepX, int stepY, float sideDistX,
                        float sideDistY, float deltaDistX, float deltaDistY,
-                       float rayDirX, float rayDirY, float playerX, float playerY)
+                       float rayDirX, float rayDirY) // Removed playerX, playerY
 {
     int side;
     bool hit = false;
@@ -81,8 +81,6 @@ float perform_ray_cast(GameStats *gameStats, int *mapX, int *mapY,
     return perpWallDist;
 }
 
-
-
 float cast_ray(GameStats *gameStats, float playerX, float playerY,
                 float rayAngle)
 {
@@ -97,5 +95,5 @@ float cast_ray(GameStats *gameStats, float playerX, float playerY,
 
     return (perform_ray_cast(gameStats, &mapX, &mapY, stepX, stepY,
                              sideDistX, sideDistY, deltaDistX,
-                             deltaDistY, rayDirX, rayDirY, playerX, playerY));
+                             deltaDistY, rayDirX, rayDirY));
 }
