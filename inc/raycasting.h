@@ -150,6 +150,10 @@ int dda_raycast_step(int *mapX, int *mapY, float *sideDistX, float *sideDistY,
                                int *mapX, int *mapY);
 
 */
+float get_wall_hit_coordinates(GameStats *gameStats, float playerX,
+                               float playerY, float rayAngle,
+                               int *mapX, int *mapY);
+
 
 
 void clean_up(GameStats *gameStats);
