@@ -76,23 +76,31 @@ int dda_raycast_step(int *mapX, int *mapY, float *sideDistX, float *sideDistY,
 float calculate_wall_x(float playerX, float playerY, int side,
                        float sideDistX, float sideDistY,
                        float deltaDistX, float deltaDistY,
-                       float rayDirX, float rayDirY)
+                       float rayDirX, float rayDirY,
+                       int mapX, int mapY, int stepX, int stepY)
 {
-    float wallX;
-
+    // Step 1: Calculate the perpendicular wall distance (fish-eye correction)
+    float perpWallDist;
     if (side == 0)
-    {
-        wallX = playerY + ((sideDistX - deltaDistX) * rayDirY);
-    }
+        perpWallDist = (mapX - playerX + (1 - stepX) / 2) / rayDirX;
     else
-    {
-        wallX = playerX + ((sideDistY - deltaDistY) * rayDirX);
-    }
+        perpWallDist = (mapY - playerY + (1 - stepY) / 2) / rayDirY;
 
+    // Step 2: Calculate the exact hit position (wallX) for texture mapping
+    float wallX;
+    if (side == 0)
+        wallX = playerY + perpWallDist * rayDirY;  // Use perpendicular distance here
+    else
+        wallX = playerX + perpWallDist * rayDirX;  // Use perpendicular distance here
+
+    // Get the fractional part of wallX (for texture mapping)
     wallX -= floor(wallX);
 
-    return (wallX);
+    // Use perpWallDist for correct wall scaling, and wallX for texture mapping
+    return wallX;
 }
+
+
 
 float get_wall_hit_coordinates(GameStats *gameStats, float playerX,
                                float playerY, float rayAngle,
@@ -117,8 +125,10 @@ float get_wall_hit_coordinates(GameStats *gameStats, float playerX,
                 deltaDistX, deltaDistY, stepX, stepY,
                 &side, gameStats);
 
+    // Pass mapX, mapY, stepX, stepY to calculate_wall_x
     wallX = calculate_wall_x(playerX, playerY, side, sideDistX, sideDistY,
-                             deltaDistX, deltaDistY, rayDirX, rayDirY);
+                             deltaDistX, deltaDistY, rayDirX, rayDirY,
+                             *mapX, *mapY, stepX, stepY);
 
-    return (wallX);
+    return wallX;
 }
